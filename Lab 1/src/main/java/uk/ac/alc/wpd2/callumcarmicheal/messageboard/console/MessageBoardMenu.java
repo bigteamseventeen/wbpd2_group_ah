@@ -1,4 +1,7 @@
-package uk.ac.alc.wpd2.callumcarmicheal.messageboard;
+package uk.ac.alc.wpd2.callumcarmicheal.messageboard.console;
+
+import uk.ac.alc.wpd2.callumcarmicheal.messageboard.MessageBoard;
+import uk.ac.alc.wpd2.callumcarmicheal.messageboard.Topic;
 
 public class MessageBoardMenu {
 	private MessageBoard currentBoard;
@@ -8,10 +11,7 @@ public class MessageBoardMenu {
 	}
 	
 	public void displayMessageBoardMenu() {
-		int option = 0;
-		
-		
-		do {
+		while(true) {
 			Console.Clear();
 			currentBoard.display();
 			
@@ -21,7 +21,7 @@ public class MessageBoardMenu {
 			System.out.println("2. Select a topic to view or post to");
 			System.out.println("3. Quit");
 			System.out.println("----------");
-			option = Console.Integer("Enter your choice> ");
+			int option = Console.Integer("Enter your choice> ");
 			
 			switch (option) {
 				case 1:
@@ -34,7 +34,6 @@ public class MessageBoardMenu {
 					break;
 				
 				case 2:
-					
 					System.out.print("\n\nEnter the number of the topic you would like to go to\n");
 					int choice = Console.Integer("> ");
 					
@@ -45,20 +44,21 @@ public class MessageBoardMenu {
 					} else {
 						System.out.println("Invalid index.");
 					}
-					
-					
+
 					Console.WaitMessage();
 					break;
 					
 				case 3:
 					System.out.println("Goodbye.");
 					System.exit(0);
+					break;
+
 				default:
 					System.out.println("Invalid option. Please enter one of the options above.");
 					displayMessageBoardMenu();
 					
 					Console.WaitMessage();
 			}
-		} while (option != 3);
+		}
 	}
 }

@@ -11,7 +11,11 @@ public class MessageBoard {
 		mBTitle = name;
 		topics = new ArrayList<Topic>();
 	}
-	
+
+	public String getTitle() {
+		return this.mBTitle;
+	}
+
 	public void addTopic(Topic t) {
 		topics.add(t);
 	}
@@ -32,5 +36,14 @@ public class MessageBoard {
 			System.out.println(String.format("%d: %s", i, topics.get(i).toString()));
 		
 		System.out.println();
+	}
+
+
+	public List<Topic> getLatestTopics(int n) {
+		return topics.subList(Math.max(topics.size() - 3, 0), topics.size());
+	}
+
+	public List<Topic> getTopics() {
+		return this.topics;
 	}
 }

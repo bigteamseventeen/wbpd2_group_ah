@@ -1,0 +1,18 @@
+{# @pebvariable name="debug" type="boolean" #}
+{# @pebvariable name="message" type="String" #}
+{# @pebvariable name="ex" type="Exception" #}
+
+<h1>Something went wrong</h1>
+<p>Im sorry something has gone wrong.</p>
+
+{% if debug == true %}
+    <div style="margin-left:10px; background:#ccc;">
+        {{ message }}
+    </div>
+
+    <div style="margin-left:5px;margin-top:20px;">
+        <pre>
+            {{ ex.getStackTrace() }}
+        </pre>
+    </div>
+{% endif %}

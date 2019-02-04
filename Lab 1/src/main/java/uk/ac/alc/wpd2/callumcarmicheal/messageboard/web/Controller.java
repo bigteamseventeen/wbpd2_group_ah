@@ -8,6 +8,10 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("UnstableApiUsage")
 public abstract class Controller implements HttpHandler {
@@ -65,9 +69,19 @@ public abstract class Controller implements HttpHandler {
             try {
                 if (Server.IsDebugging()) {
                     Write("<h1>There was an error</h1><p>Im sorry there was a error loading resources.</p>");
-                    Send("<br><p>Exception message: " + ex.getMessage() + "</p>");
+                    Write("<br><p>Exception message : <b>" + ex.getMessage() + "</b></p>");
+                    Write("<br><pre style=\"background:#ccc\">");
+                    
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    ex.printStackTrace(pw);
+                    Write(sw.toString());
+                    
+                    Write("</pre>");
+                    Send(500);
                 } else {
-                    Send("<h1>There was an error</h1><p>Im sorry there was a error loading resources.</p>");
+                    Send(500,
+                            "<h1>There was an error</h1><p>Im sorry there was a error loading resources.</p>");
                 }
             }
             catch (IOException e2) { /**/ }
@@ -80,11 +94,44 @@ public abstract class Controller implements HttpHandler {
                 Context ctx = Template.CreateContext();
                 ctx.put("ex", ex);
                 ctx.put("debug", Server.IsDebugging());
-                ctx.put("message", ex.getMessage());
+
+                if (Server.IsDebugging()) {
+                    ctx.put("message", ex.getMessage());
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    ex.printStackTrace(pw);
+                    ctx.put("stack", sw.toString());
+                }
 
                 String response = Template.Execute("_framework/exception", ctx);
-                Send(response);
+                Send(500, response);
             } catch (Exception e) { System.out.println("Failed to send exception to client."); }
+        }
+    }
+    
+    protected Map<String, String> getQuery() {
+        return Server.ParseQuery(this.exchange);
+    }
+    
+    protected void Clear() {
+        this.buffer = ByteStreams.newDataOutput();
+    }
+    
+    protected void SendMessagePage(String Title, String Message) {
+        SendMessagePage(Title, Message, 200);
+    }
+    
+    protected void SendMessagePage(String Title, String Message, int Error){
+        Clear();
+        
+        Context ctx = Template.CreateContext();
+        ctx.put("MessageTitle", Title);
+        ctx.put("MessageText", Message);
+    
+        try {
+            Send(Error, Template.Execute("_framework/message", ctx));
+        } catch (Exception e) {
+            ThrowException(e);
         }
     }
 }

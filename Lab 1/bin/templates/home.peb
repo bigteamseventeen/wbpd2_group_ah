@@ -11,7 +11,6 @@
         <h4>Please select a topic from below.</h4>
 
         {% for _t in Board.topics %}
-                topic
             <div class="card sb-card">
                 <div class="card-body">
                     <a href="topic?id={{ loop.index }}">{{ _t.title }}</a>

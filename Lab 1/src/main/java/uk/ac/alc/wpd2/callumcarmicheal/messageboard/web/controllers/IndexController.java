@@ -10,7 +10,7 @@ public class IndexController extends Controller {
     @Override
     public void handle(HttpExchange e) {
         HandleRequest(e);
-
+    
         try { get(); } catch (Exception ex) { ThrowException(ex); }
     }
 

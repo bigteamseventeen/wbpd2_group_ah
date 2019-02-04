@@ -16,6 +16,7 @@ public class Main {
 
             Server server = new Server(8080);
             server.Start();
+            
             System.err.println("Server started!");
         } catch (Exception e) {
             System.err.println("Failed to start server!");
@@ -26,6 +27,9 @@ public class Main {
     private static void ServiceWarmup() {
         Topic t = new Topic("Default Topic");
         t.addNewMessage(new TopicMessage("SYSTEM", "New topic created!"));
+        t.addNewMessage(new TopicMessage("Callum", "Hey guys :-) !"));
+        
+        
         WebBoard.MB.addTopic(t);
     }
 }

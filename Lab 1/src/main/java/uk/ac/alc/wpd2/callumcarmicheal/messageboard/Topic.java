@@ -63,6 +63,10 @@ public class Topic {
 		return this.messageList.size();
 	}
 	
+	public List<TopicMessage> getMessageList() {
+		return this.messageList;
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("%s (%d messages)", this.title, this.messageList.size());

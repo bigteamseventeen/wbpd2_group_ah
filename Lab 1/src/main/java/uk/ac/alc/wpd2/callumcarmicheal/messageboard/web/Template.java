@@ -14,11 +14,14 @@ public class Template {
     private static PebbleEngine createEngine() {
         PebbleEngine.Builder builder = new PebbleEngine.Builder();
 
+        boolean isDebugging = Server.IsDebugging();
+        
         return builder
-                .cacheActive(! Server.IsDebugging())
+                .cacheActive(false)
+                //.cacheActive(! isDebugging)
                 .build();
     }
-
+    
     public static Context CreateContext() {
         Context ctx = new Context();
 

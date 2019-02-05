@@ -5,16 +5,15 @@ import com.google.common.io.ByteStreams;
 import com.mitchellbosecke.pebble.error.LoaderException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import sun.misc.IOUtils;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.nio.file.*;
 
 @SuppressWarnings("UnstableApiUsage")
-public abstract class Controller implements HttpHandler {
+public abstract class   Controller implements HttpHandler {
 
     private ByteArrayDataOutput buffer;
     protected HttpExchange exchange;
@@ -23,7 +22,32 @@ public abstract class Controller implements HttpHandler {
         buffer = ByteStreams.newDataOutput();
         this.exchange = e;
     }
-
+    
+    // -----------
+    
+    @Override
+    public void handle(HttpExchange e) {
+        HandleRequest(e);
+        System.out.println("Controller.handle()");
+        Request();
+        
+        // Serve for POST requests only
+        if (e.getRequestMethod().equalsIgnoreCase("POST")) {
+            try { Post(); return; } catch (Exception ex) { ThrowException(ex); }
+        }
+        
+        try { Get(); return; } catch (Exception ex) { ThrowException(ex); }
+    }
+    
+    protected void Request() { System.out.println("Controller.Request"); }
+    
+    protected void Get() throws Exception { System.out.println("Controller.Get"); }
+    
+    protected void Post() throws Exception { System.out.println("Controller.Post"); }
+    
+    // -----------
+    
+    
     protected void Write(String str) {
         buffer.write(str.getBytes());
     }
@@ -133,5 +157,28 @@ public abstract class Controller implements HttpHandler {
         } catch (Exception e) {
             ThrowException(e);
         }
+    }
+    
+    protected boolean SendFileSafe(int code, File f) {
+        try {
+            SendFile(code, f);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+    
+    protected void SendFile(int code, File f) throws IOException {
+        // Clear the output buffer as we dont want to use it
+        Clear();
+    
+        byte [] fileBytes = Files.readAllBytes(f.toPath());
+        
+//
+//        exchange.sendResponseHeaders(code, fileBytes.length);
+//
+//        OutputStream os = exchange.getResponseBody();
+//        os.write(buf);
+//        os.close();
     }
 }

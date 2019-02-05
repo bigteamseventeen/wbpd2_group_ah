@@ -1,11 +1,12 @@
 package uk.ac.alc.wpd2.callumcarmicheal.messageboard.web;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 import uk.ac.alc.wpd2.callumcarmicheal.messageboard.Topic;
 import uk.ac.alc.wpd2.callumcarmicheal.messageboard.TopicMessage;
 
 public class Main {
-
+	
     public static void main(String[] args) {
         try {
             BasicConfigurator.configure();
@@ -28,7 +29,6 @@ public class Main {
         Topic t = new Topic("Default Topic");
         t.addNewMessage(new TopicMessage("SYSTEM", "New topic created!"));
         t.addNewMessage(new TopicMessage("Callum", "Hey guys :-) !"));
-        
         
         WebBoard.MB.addTopic(t);
     }

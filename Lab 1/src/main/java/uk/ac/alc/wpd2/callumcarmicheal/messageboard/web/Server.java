@@ -28,9 +28,8 @@ public class Server {
         if (Started) return;
         Started=true;
 
-        Server.createContext("/", new IndexController());
-        Server.createContext("/topic", new TopicController());
-        
+	    Server.createContext("/", new IndexController());
+	    Server.createContext("/topic", new TopicController());
         Server.setExecutor(Executors.newFixedThreadPool(__THREAD_COUNT));
         Server.start();
     }

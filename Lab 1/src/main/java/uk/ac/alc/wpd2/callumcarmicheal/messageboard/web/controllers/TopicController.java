@@ -2,6 +2,7 @@ package uk.ac.alc.wpd2.callumcarmicheal.messageboard.web.controllers;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
+import org.apache.log4j.Logger;
 import uk.ac.alc.wpd2.callumcarmicheal.messageboard.Topic;
 import uk.ac.alc.wpd2.callumcarmicheal.messageboard.web.*;
 
@@ -12,20 +13,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class TopicController extends Controller {
-	@Override
-	public void handle(HttpExchange e) {
-		HandleRequest(e);
-		
-		// Serve for POST requests only
-		if (e.getRequestMethod().equalsIgnoreCase("POST")) {
-			try { temp(); return; } catch (Exception ex) { ThrowException(ex); }
-		}
-		
-		try { get(); return; } catch (Exception ex) { ThrowException(ex); }
-	}
+	final static Logger logger = Logger.getLogger(TopicController.class);
 	
-	private void get() throws Exception {
-		System.out.println("TopicController: Handling Request");
+	@Override
+	protected void Get() throws Exception {
+		System.out.println("TopicController.get()");
 		Map<String,String> query = this.getQuery();
 		
 		if (!query.containsKey("id")) {
@@ -34,9 +26,8 @@ public class TopicController extends Controller {
 		}
 		
 		int id = -1;
-		try {
-			id = Integer.parseInt(query.get("id"));
-		} catch (NumberFormatException ex) {
+		try { id = Integer.parseInt(query.get("id")); }
+		catch (NumberFormatException ex) {
 			topicNotFound();
 			return;
 		}
@@ -56,27 +47,10 @@ public class TopicController extends Controller {
 		Send(response);
 	}
 	
-	private void temp() throws Exception {
-		// parse request
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(), "utf-8");
-		BufferedReader br = new BufferedReader(isr);
-		String query = br.readLine();
-		Server.ParseDataQuery(query, parameters);
+	@Override
+	protected void Post() throws Exception {
+		System.out.println("TopicController.post()");
 		
-		// send response
-		String response = "";
-		for (String key : parameters.keySet())
-			response += key + " = " + parameters.get(key) + "\n";
-		exchange.sendResponseHeaders(200, response.length());
-		
-		System.out.println(response.toString());
-		OutputStream os = exchange.getResponseBody();
-		os.write(response.toString().getBytes());
-		os.close();
-	}
-	
-	private void post() throws Exception {
 		System.out.println("This is a post request");
 		Headers requestHeaders = exchange.getRequestHeaders();
 		Set<Map.Entry<String, List<String>>> entries = requestHeaders.entrySet();
@@ -89,9 +63,49 @@ public class TopicController extends Controller {
 		byte[] data = new byte[contentLength];
 		int length = is.read(data);
 		Map<String,String> query = Server.ParseQuery(new String(data));
-
+		
 		System.out.println(query);
 		SendMessagePage("Hello World",  new String(data) + "   \n   " + query.toString());
+	}
+	
+	
+	private void temp() throws Exception {
+		/*System.out.println("TopicController.temp()");
+
+		// parse request
+		Map<String, Object> parameters = new HashMap<>();
+		InputStreamReader isr = new InputStreamReader(exchange.getRequest(), "utf-8");
+		BufferedReader br = new BufferedReader(isr);
+		String query = br.readLine();
+		System.out.println("Query = " + query);
+		Server.ParseDataQuery(query, parameters);
+		
+		// send response
+		String response = "";
+		for (String key : parameters.keySet())
+			response += key + " = " + parameters.get(key) + "\n";
+		exchange.sendResponseHeaders(200, response.length());
+		
+		System.out.println(response.toString());
+		OutputStream os = exchange.getResponseBody();
+		os.write(response.toString().getBytes());
+		os.close();*/
+		
+		InputStreamReader isr =  new InputStreamReader(exchange.getRequestBody(),"utf-8");
+		BufferedReader br = new BufferedReader(isr);
+
+		// From now on, the right way of moving from bytes to utf-8 characters:
+		int b;
+		StringBuilder buf = new StringBuilder(512);
+		while ((b = br.read()) != -1) {
+			buf.append((char) b);
+		}
+		
+		br.close();
+		isr.close();
+		
+		System.out.println(buf.toString());
+		Send(buf.toString());
 	}
 	
 	private void topicNotFound() {

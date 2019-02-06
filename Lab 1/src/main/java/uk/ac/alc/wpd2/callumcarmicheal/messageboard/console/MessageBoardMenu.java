@@ -21,9 +21,11 @@ public class MessageBoardMenu {
 			System.out.println("2. Select a topic to view or post to");
 			System.out.println("3. Quit");
 			System.out.println("----------");
-			int option = Console.Integer("Enter your choice> ");
 			
+			// Switch our input
+			int option = Console.Integer("Enter your choice> ");
 			switch (option) {
+				// Add new topic
 				case 1:
 					System.out.print("\n\nEnter the title of your new topic\n> ");
 					String t = Console.String();
@@ -32,11 +34,13 @@ public class MessageBoardMenu {
 					currentBoard.addTopic(new Topic(t));
 					Console.WaitMessage();
 					break;
-				
+					
+				// Select a topic
 				case 2:
 					System.out.print("\n\nEnter the number of the topic you would like to go to\n");
 					int choice = Console.Integer("> ");
 					
+					// Make sure the integer is within range.
 					if (choice >= 0 && choice < currentBoard.getNumberOfTopics()) {
 						Topic topic = currentBoard.getTopic(choice);
 						System.out.println("Topic " + choice + " (" + topic.getTitle() + ") selected");
@@ -48,11 +52,13 @@ public class MessageBoardMenu {
 					Console.WaitMessage();
 					break;
 					
+				// Exit
 				case 3:
 					System.out.println("Goodbye.");
 					System.exit(0);
 					break;
-
+					
+				// Invalid option.
 				default:
 					System.out.println("Invalid option. Please enter one of the options above.");
 					displayMessageBoardMenu();

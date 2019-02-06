@@ -16,8 +16,10 @@ public class MessageBoard {
 		return this.mBTitle;
 	}
 
-	public void addTopic(Topic t) {
+	public int addTopic(Topic t) {
+		int index = topics.size();
 		topics.add(t);
+		return index;
 	}
 	
 	public Topic getTopic(int n) {
@@ -32,6 +34,7 @@ public class MessageBoard {
 		System.out.println(mBTitle);
 		System.out.println("-----------");
 		
+		// Print our topics
 		for (int i = 0; i < topics.size(); i++)
 			System.out.println(String.format("%d: %s", i, topics.get(i).toString()));
 		
@@ -40,6 +43,7 @@ public class MessageBoard {
 
 
 	public List<Topic> getLatestTopics(int n) {
+		// Get the last(n) items in the list
 		return topics.subList(Math.max(topics.size() - 3, 0), topics.size());
 	}
 

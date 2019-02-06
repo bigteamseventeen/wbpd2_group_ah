@@ -9,10 +9,10 @@ import java.io.File;
 
 
 public class IndexController extends Controller {
-    @Override
     protected void Get() throws Exception {
         System.out.println("IndexController: Handling Request" + "(" + exchange.getRequestURI() + ")");
 
+        // Check if we are requesting a resource (something that is not just index /)
         String request = exchange.getRequestURI().toString();
         if (!request.equals("/")) {
             if (request.startsWith("/"))
@@ -21,21 +21,27 @@ public class IndexController extends Controller {
             return;
         }
     
+        // Render the index page
         IndexPage();
     }
     
+    /**
+     * Index page
+     * @request GET /
+     * @throws Exception
+     */
     private void IndexPage() throws Exception {
-        Context ctx = Template.CreateContext();
-        String response = Template.Execute("home", ctx);
-        Send(response);
+        // Render the page
+        Send(Template.Execute("home", Template.CreateContext()));
     }
     
+    
     private void LoadResource(String resource) throws Exception {
-        // Todo caching
+        // Todo caching and sending of resources
         
         // Protect against traversal attacks
         if (Resource.IsUnsafePath(resource)) {
-            Send(400, "<h1>Malformed resource request</h1><p>Unable to process request for resource</p>");
+            SendMessagePage("Resource not found", "The requested resource could not be found.", 404);
             return;
         }
         
@@ -44,12 +50,17 @@ public class IndexController extends Controller {
         
         // The file does not exist
         if (f == null || !f.exists() || !f.canRead()) {
-            Send(404, "<h1>Resource not found</h1><p>The requested resource could not be found</p>");
+            SendMessagePage(
+                    "Resource not found",
+                    "The requested resource could not be found.", 404);
             return;
         }
         
+        // This function is not finished yet.
+        SendMessagePage("Not implemented", "Not implemented");
+        
         // We can now output the file to the request
-        SendFile(400, f);
+        //SendFile(400, f);
     }
     
 }

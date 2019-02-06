@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Topic {
 	private String title;
+	private String description = "";
 	private List<TopicMessage> messageList;
 	
 	
@@ -16,10 +17,11 @@ public class Topic {
 	public void displayThread() {
 		System.out.println("[THREAD START] " + this.title + "\n\n");
 		
+		// Loop the messages and print em
 		for (int x = 0; x < messageList.size(); x++) {
 			TopicMessage msg = messageList.get(x);
-			
-			System.out.println(String.format("%d: %s -------- %s\n\t%s\n", x, msg.getDate(), msg.getAuthor(), msg.getMessage()));
+			System.out.println(
+				String.format("%d: %s -------- %s\n\t%s\n", x, msg.getDate(), msg.getAuthor(), msg.getMessage()));
 		}
 		
 		System.out.println("\n[THREAD END]");
@@ -71,5 +73,12 @@ public class Topic {
 	public String toString() {
 		return String.format("%s (%d messages)", this.title, this.messageList.size());
 	}
-	
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

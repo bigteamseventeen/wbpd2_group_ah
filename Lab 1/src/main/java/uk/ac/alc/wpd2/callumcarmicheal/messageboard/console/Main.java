@@ -9,22 +9,19 @@ public class Main {
     MessageBoardMenu menu;
     
     public Main(String t){
-        mb = new MessageBoard(t);
+        // Create the instances, MessageBoard and then the Menu
+        mb = new MessageBoard(t); // Create mb with the Title of t.
         menu = new MessageBoardMenu(mb);
     }
     
     public void start() {
+        // Display the message board menu
         menu.displayMessageBoardMenu();
     }
     
     public static void main(String[] args) {
-        boolean t = true;
-        while(t) {
-            System.out.println(URLConnection.guessContentTypeFromName(Console.String("Enter file> ")));
-        }
-        
-        
         try {
+            // We want to instantiate the Main class
             Main main = new Main("Simple TopicMessage MB 1");
             main.start();
         } catch(Exception e) {

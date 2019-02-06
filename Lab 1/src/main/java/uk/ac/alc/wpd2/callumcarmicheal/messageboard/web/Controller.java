@@ -3,14 +3,17 @@ package uk.ac.alc.wpd2.callumcarmicheal.messageboard.web;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.mitchellbosecke.pebble.error.LoaderException;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import sun.misc.IOUtils;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.nio.file.*;
+import java.util.Set;
 
 @SuppressWarnings("UnstableApiUsage")
 public abstract class   Controller implements HttpHandler {
@@ -28,7 +31,7 @@ public abstract class   Controller implements HttpHandler {
     @Override
     public void handle(HttpExchange e) {
         HandleRequest(e);
-        System.out.println("Controller.handle()");
+        //System.out.println("Controller.handle()");
         Request();
         
         // Serve for POST requests only
@@ -39,11 +42,17 @@ public abstract class   Controller implements HttpHandler {
         try { Get(); return; } catch (Exception ex) { ThrowException(ex); }
     }
     
-    protected void Request() { System.out.println("Controller.Request"); }
+    protected void Request() {
+        //System.out.println("Controller.Request");
+    }
     
-    protected void Get() throws Exception { System.out.println("Controller.Get"); }
+    protected void Get() throws Exception {
+        //System.out.println("Controller.Get");
+    }
     
-    protected void Post() throws Exception { System.out.println("Controller.Post"); }
+    protected void Post() throws Exception {
+        //System.out.println("Controller.Post");
+    }
     
     // -----------
     
@@ -60,14 +69,22 @@ public abstract class   Controller implements HttpHandler {
         buffer.write(i);
     }
 
+    protected void Redirect(String to, String why) throws IOException {
+        Headers headers = exchange.getResponseHeaders();
+        headers.add("Location", to);
+        Send(302, why);
+    }
+
+    protected void Redirect(String to) throws IOException {
+       Redirect(to, "Redirecting to " + to);
+    }
+
     protected void Send(int Response) throws IOException {
         byte[] buf = buffer.toByteArray();
         exchange.sendResponseHeaders(Response, buf.length);
         OutputStream os = exchange.getResponseBody();
         os.write(buf);
         os.close();
-
-        System.out.println("Send response to client!");
     }
 
     protected void Send(String data) throws IOException {
@@ -85,6 +102,8 @@ public abstract class   Controller implements HttpHandler {
     }
 
     protected void ThrowException(Exception ex) {
+        ex.printStackTrace();
+
         if (ex instanceof LoaderException) {
             // Clear the output buffer.
             buffer = ByteStreams.newDataOutput();
@@ -133,10 +152,31 @@ public abstract class   Controller implements HttpHandler {
         }
     }
     
-    protected Map<String, String> getQuery() {
+    protected Map<String,String> getQuery() {
         return Server.ParseQuery(this.exchange);
     }
-    
+
+    protected String getQueryString() {
+        return Server.GetQueryString(this.exchange);
+    }
+
+    protected byte[] GetPost() throws IOException {
+        Headers requestHeaders = exchange.getRequestHeaders();
+        Set<Map.Entry<String, List<String>>> entries = requestHeaders.entrySet();
+
+        int contentLength = Integer.parseInt(requestHeaders.getFirst("Content-length"));
+
+        InputStream is = exchange.getRequestBody();
+        byte[] data = new byte[contentLength];
+        int length = is.read(data);
+
+        return data;
+    }
+
+    protected Map<String,String> GetPostForm() throws IOException {
+        return Server.ParseQueryEncoding(new String(GetPost()));
+    }
+
     protected void Clear() {
         this.buffer = ByteStreams.newDataOutput();
     }
@@ -145,7 +185,7 @@ public abstract class   Controller implements HttpHandler {
         SendMessagePage(Title, Message, 200);
     }
     
-    protected void SendMessagePage(String Title, String Message, int Error){
+    protected void SendMessagePage(String Title, String Message, int HttpResponse){
         Clear();
         
         Context ctx = Template.CreateContext();
@@ -153,7 +193,7 @@ public abstract class   Controller implements HttpHandler {
         ctx.put("MessageText", Message);
     
         try {
-            Send(Error, Template.Execute("_framework/message", ctx));
+            Send(HttpResponse, Template.Execute("_framework/message", ctx));
         } catch (Exception e) {
             ThrowException(e);
         }
@@ -167,7 +207,7 @@ public abstract class   Controller implements HttpHandler {
             return false;
         }
     }
-    
+
     protected void SendFile(int code, File f) throws IOException {
         // Clear the output buffer as we dont want to use it
         Clear();

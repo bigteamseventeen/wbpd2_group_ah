@@ -18,12 +18,6 @@ public class Main {
     }
     
     public static void main(String[] args) {
-        boolean t = true;
-        while(t) {
-            System.out.println(URLConnection.guessContentTypeFromName(Console.String("Enter file> ")));
-        }
-        
-        
         try {
             Main main = new Main("Simple TopicMessage MB 1");
             main.start();

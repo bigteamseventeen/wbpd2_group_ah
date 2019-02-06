@@ -3,6 +3,7 @@ package uk.ac.alc.wpd2.callumcarmicheal.messageboard.web;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import uk.ac.alc.wpd2.callumcarmicheal.messageboard.web.controllers.IndexController;
+import uk.ac.alc.wpd2.callumcarmicheal.messageboard.web.controllers.SearchController;
 import uk.ac.alc.wpd2.callumcarmicheal.messageboard.web.controllers.TopicController;
 
 import java.io.UnsupportedEncodingException;
@@ -29,12 +30,37 @@ public class Server {
         Started=true;
 
 	    Server.createContext("/", new IndexController());
-	    Server.createContext("/topic", new TopicController());
+        Server.createContext("/topic", new TopicController());
+        Server.createContext("/search", new SearchController());
+
+
         Server.setExecutor(Executors.newFixedThreadPool(__THREAD_COUNT));
         Server.start();
     }
 
-    public static Map<String, String> ParseQuery(String query) {
+    public static Map<String,String> ParseQuery(String query) {
+        return ParseQuery(query,true);
+    }
+
+    public static Map<String,String> ParseQueryEncoding(String query) throws UnsupportedEncodingException {
+        return ParseQueryEncoding(query, "UTF-8");
+    }
+
+    public static Map<String,String> ParseQueryEncoding(String query, String encoding) throws UnsupportedEncodingException {
+        Map<String, String> result = new HashMap<>();
+        for (String param : query.split("&")) {
+            String[] entry = param.split("=");
+            if (entry.length > 1) {
+                result.put(entry[0], URLDecoder.decode(entry[1], encoding));
+            }else{
+                result.put(entry[0], "");
+            }
+        }
+
+        return result;
+    }
+
+    public static Map<String, String> ParseQuery(String query, boolean decode) {
         Map<String, String> result = new HashMap<>();
         for (String param : query.split("&")) {
             String[] entry = param.split("=");
@@ -44,7 +70,12 @@ public class Server {
                 result.put(entry[0], "");
             }
         }
+
         return result;
+    }
+
+    public static String GetQueryString(HttpExchange Exchange) {
+        return Exchange.getRequestURI().getQuery();
     }
 
     public static Map<String, String> ParseQuery(HttpExchange Exchange) {

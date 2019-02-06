@@ -16,8 +16,10 @@ public class MessageBoard {
 		return this.mBTitle;
 	}
 
-	public void addTopic(Topic t) {
+	public int addTopic(Topic t) {
+		int index = topics.size();
 		topics.add(t);
+		return index;
 	}
 	
 	public Topic getTopic(int n) {

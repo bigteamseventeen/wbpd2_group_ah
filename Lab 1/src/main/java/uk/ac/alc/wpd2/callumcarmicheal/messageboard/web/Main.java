@@ -27,6 +27,7 @@ public class Main {
 
     private static void ServiceWarmup() {
         Topic t = new Topic("Default Topic");
+        t.setDescription("A generic place where people can come together and discuss anything.");
         t.addNewMessage(new TopicMessage("SYSTEM", "New topic created!"));
         t.addNewMessage(new TopicMessage("Callum", "Hey guys :-) !"));
         

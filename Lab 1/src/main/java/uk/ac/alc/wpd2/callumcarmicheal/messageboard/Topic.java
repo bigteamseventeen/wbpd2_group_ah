@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Topic {
 	private String title;
+	private String description = "";
 	private List<TopicMessage> messageList;
 	
 	
@@ -71,5 +72,12 @@ public class Topic {
 	public String toString() {
 		return String.format("%s (%d messages)", this.title, this.messageList.size());
 	}
-	
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

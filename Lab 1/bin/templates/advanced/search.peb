@@ -1,0 +1,33 @@
+{# @pebvariable name="U" type="uk.ac.alc.wpd2.callumcarmicheal.messageboard.web.ViewUtil" #}
+{# @pebvariable name="Board" type="uk.ac.alc.wpd2.callumcarmicheal.messageboard.MessageBoard" #}
+{# @pebvariable name="_t" type="uk.ac.alc.wpd2.callumcarmicheal.messageboard.web.models.SearchResult" #}
+{# @pebvariable name="SearchResults" type="List<uk.ac.alc.wpd2.callumcarmicheal.messageboard.web.models.SearchResult>" #}
+
+
+
+{% extends "templates/_site/template.peb" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div style="margin-top:20px;">
+    <h4 style="margin-bottom:20px;">
+        Search results ({{ SearchResults.size() }} found)
+    </h4>
+    <p style="color:#555"><i>{{ SearchCriteria }}</i></p>
+
+
+    {% for _t in SearchResults %}
+        <div class="card sb-card" style="margin-bottom: 2px">
+            <div class="card-body">
+                {{ _t.HtmlName }}
+                <p class="mb-0">{{ _t.HtmlDescription }}</p>
+            </div>
+        </div>
+    {% else %}
+        <p class="mb-0">Could not find any search results for query.</p>
+    {% endfor %}
+
+
+</div>
+{% endblock %}

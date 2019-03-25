@@ -10,7 +10,6 @@ import java.net.HttpURLConnection;
 import java.util.Map;
 
 public class TopicController extends Controller {
-	final static Logger logger = Logger.getLogger(TopicController.class);
     
     /**
      * @request GET /topic?id={id}

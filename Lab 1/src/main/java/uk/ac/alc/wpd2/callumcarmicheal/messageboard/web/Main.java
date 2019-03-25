@@ -4,9 +4,12 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import uk.ac.alc.wpd2.callumcarmicheal.messageboard.Topic;
 import uk.ac.alc.wpd2.callumcarmicheal.messageboard.TopicMessage;
+import uk.ac.alc.wpd2.callumcarmicheal.messageboard.web.advanced.AServer;
 
 public class Main {
-	
+	private static int PORT = 8080;
+    
+    
     public static void main(String[] args) {
         try {
             BasicConfigurator.configure();
@@ -14,11 +17,14 @@ public class Main {
             System.err.println("Starting server!");
 
             ServiceWarmup();
-
-            Server server = new Server(8080);
-            server.Start();
+    
+            // AServer server = new AServer(PORT);
+            // server.Start();
             
-            System.err.println("Server started!");
+           Server server = new Server(PORT);
+           server.Start();
+            
+            System.err.println("Server started on port: " + PORT + "!");
         } catch (Exception e) {
             System.err.println("Failed to start server!");
             e.printStackTrace();

@@ -1,0 +1,13 @@
+{
+    "configurations": [
+
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Main",
+            "request": "launch",
+            "mainClass": "uk.ac.alc.wpd2.callumcarmicheal.messageboard.web.Main",
+            "projectName": "cc-messageboard",
+            "cwd": "C:\\Users\\callu\\OneDrive\\Documents\\Edu\\GCU - Uni\\Web Platform Development 2\\yr3_web_platform_development_2\\Lab 1\\bin";
+        }
+    ]
+}

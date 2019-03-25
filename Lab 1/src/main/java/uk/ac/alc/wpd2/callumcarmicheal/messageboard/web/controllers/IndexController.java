@@ -10,10 +10,10 @@ import java.io.File;
 
 public class IndexController extends Controller {
     protected void Get() throws Exception {
-        System.out.println("IndexController: Handling Request" + "(" + exchange.getRequestURI() + ")");
+        System.out.println("IndexController: Handling Request" + "(" + Exchange.getRequestURI() + ")");
 
         // Check if we are requesting a resource (something that is not just index /)
-        String request = exchange.getRequestURI().toString();
+        String request = Exchange.getRequestURI().toString();
         if (!request.equals("/")) {
             if (request.startsWith("/"))
                  LoadResource(request.substring(1));
@@ -37,30 +37,39 @@ public class IndexController extends Controller {
     
     
     private void LoadResource(String resource) throws Exception {
-        // Todo caching and sending of resources
-        
         // Protect against traversal attacks
         if (Resource.IsUnsafePath(resource)) {
-            SendMessagePage("Resource not found", "The requested resource could not be found.", 404);
+            SendMessagePage("Resource not found", "The requested resource could not be found or the request was malformed", 404);
             return;
         }
         
         // Attempt to load the file
-        File f = Resource.GetFile();
+        File f = Resource.GetPublicFile(resource);
         
         // The file does not exist
         if (f == null || !f.exists() || !f.canRead()) {
+            if (f == null) {
+                SendMessagePage(
+                        "Resource not found",
+                        "The requested resource could not be found. (f == null)", 404);
+                return;
+            }
+            
+            if (!f.exists()) {
+                SendMessagePage(
+                        "Resource not found",
+                        "The requested resource could not be found. (!f.exists()) - Path: " + f.getAbsolutePath(), 404);
+                return;
+            }
+            
             SendMessagePage(
                     "Resource not found",
-                    "The requested resource could not be found.", 404);
+                    "The requested resource could not be found. (f == null, !f.exists(), !f.canRead())", 404);
             return;
         }
         
-        // This function is not finished yet.
-        SendMessagePage("Not implemented", "Not implemented");
-        
         // We can now output the file to the request
-        //SendFile(400, f);
+        SendFile(200, f);
     }
     
 }

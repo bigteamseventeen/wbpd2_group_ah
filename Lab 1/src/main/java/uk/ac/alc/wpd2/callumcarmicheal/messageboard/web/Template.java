@@ -9,6 +9,7 @@ import java.io.Writer;
 
 public class Template {
     public static PebbleEngine Engine = createEngine();
+    public static String TEMPLATES_PATH = "templates/";
     private static ViewUtil vUtil = new ViewUtil();
 
     private static PebbleEngine createEngine() {
@@ -33,7 +34,7 @@ public class Template {
     }
 
     public static PebbleTemplate GetTemplate(String template) {
-        return Engine.getTemplate("templates/" + template + ".peb");
+        return Engine.getTemplate(TEMPLATES_PATH + template + ".peb");
     }
 
     public static String Execute(String template, Context context) throws Exception {

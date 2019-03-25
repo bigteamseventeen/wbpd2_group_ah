@@ -26,26 +26,35 @@ public class SearchResult {
 
     private void generateHtml(String q) {
         int qs = q.length();
-
+        System.out.println("Q Size = " + qs);
+        
         if (InTitle) {
             // Split the name
             Integer[] indexes = findIndex(q, Topic.getTitle());
             StringBuilder sb = new StringBuilder();
             String title = Topic.getTitle();
-
+            
+            System.out.println("Q Size Before = " + qs);
             highlightText(q, qs, indexes, sb, title);
+            System.out.println("Q Size After = " + qs);
+    
             HtmlName = new SafeString("<a href=\"/topic?id=" + Index + "\">" + sb.toString() + "</a>");
         } else {
             HtmlName = new SafeString("<a href=\"/topic?id=" + Index + "\">" + Topic.getTitle() + "</a>");
         }
 
         if (InDescription) {
+            System.out.println("Q Size = " + qs);
+
             // Split the name
             Integer[] indexes = findIndex(q, Topic.getDescription());
             StringBuilder sb = new StringBuilder();
             String description = Topic.getDescription();
 
+            System.out.println("Q Size Before = " + qs);
             highlightText(q, qs, indexes, sb, description);
+            System.out.println("Q Size After = " + qs);
+            
             HtmlDescription = new SafeString(sb.toString());
         } else {
             HtmlDescription = new SafeString(Topic.getDescription());
@@ -57,24 +66,37 @@ public class SearchResult {
         int start = 0;
 
         for (Integer x : indexes) {
-            sb.append(string, start, x);
-            sb.append("<b>").append(HtmlEscape.escapeHtml5(q)).append("</b>");
+            // TODO: Replace highlightText(q...) with an algorithm to extract text from the original title
+    
+            sb.append(string, start, x)
+                .append("<b>")
+                    .append(HtmlEscape.escapeHtml5(string.substring(x, qs)))
+                .append("</b>");
+            
             start += x + qs;
         }
 
         sb.append(string, start, ts);
     }
-
+    
     private Integer[] findIndex(String needle, String haystack) {
+        return findIndex(needle, haystack, true);
+    }
+    
+    private Integer[] findIndex(String needle, String haystack, boolean ignoreCase) {
         List<Integer> li = new ArrayList<Integer>();
 
+        if (ignoreCase) {
+            needle = needle.toLowerCase();
+            haystack = haystack.toLowerCase();
+        }
+        
         int index = haystack.indexOf(needle);
         while (index >= 0) {
-            System.out.println(index);
             li.add(index);
             index = haystack.indexOf(needle, index + 1);
         }
 
-        return li.toArray(new Integer[li.size()]);
+        return li.toArray(new Integer[0]);
     }
 }

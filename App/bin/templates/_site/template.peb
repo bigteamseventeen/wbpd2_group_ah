@@ -1,0 +1,102 @@
+{# @pebvariable name="U" type="uk.ac.alc.wpd2.callumcarmicheal.messageboard.web.ViewUtil" #}
+{# @pebvariable name="Board" type="uk.ac.alc.wpd2.callumcarmicheal.messageboard.MessageBoard" #}
+{# @pebvariable name="_t" type="uk.ac.alc.wpd2.callumcarmicheal.messageboard.Topic" #}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <script defer src="https://use.fontawesome.com/releases/v5.0.2/js/all.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>{{ Board.title }} - {% block title %}Browsing{% endblock %}</title>
+</head>
+<body class="bg-light">
+
+{% include "templates/_site/navigation.peb" %}
+
+<!-- Page Content -->
+<div class="container">
+
+    <div class="row">
+
+        <!-- Post Content Column -->
+        <div class="col-lg-8" id="page_content">
+            {% block content %}{%endblock%}
+        </div>
+
+        <!-- Sidebar Widgets Column -->
+        <div class="col-md-4">
+
+
+            <!-- Search Widget -->
+            <div class="card my-4">
+                <h5 class="card-header">Search</h5>
+                <div class="card-body">
+                    <form action="/search" method="post">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" minlength="2" maxlength="50" placeholder="Search for..." name="query">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="submit">Go</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Categories Widget -->
+            <div class="card my-4">
+                <h5 class="card-header">Recent Threads</h5>
+                <div class="card-body">
+                    <div class="row" style="margin-left:5px;margin-right:5px;">
+                        <ul class="list-unstyled mb-0">
+                        {% for _t in Board.getLatestTopics(U.I(5)) %}
+                            <li>
+                                <a href="topic?id={{ loop.index }}">{{ _t.title }}</a>
+                            </li>
+                        {% else %}
+                            There are no users to display.
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            {% block sidebar_content %}{%endblock%}
+        </div>
+
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+
+<!-- Footer -->
+<footer class="py-5 bg-dark" style="margin-top:40px;">
+    <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; {{ Board.title }} 2019</p>
+    </div>
+    <!-- /.container -->
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/holder/2.9.6/holder.min.js"
+        integrity="sha256-yF/YjmNnXHBdym5nuQyBNU62sCUN9Hx5awMkApzhZR0="
+        crossorigin="anonymous"></script>
+<style>
+    body {
+        padding-top: 56px;
+    }
+</style>
+</body>
+</html>

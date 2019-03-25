@@ -59,6 +59,7 @@ public class SDWhereQuery<T> {
         for(int x = 0; x < values.length; x++) {
             Object o = values[x];
 
+            // TODO: Bind the parameters here
             if (o instanceof String) {
 
             }
@@ -79,9 +80,7 @@ public class SDWhereQuery<T> {
         } else {
             stmt = con.prepareStatement(sql);
         }
-
-
-
+        
         return new QueryResults<>(false, null);
     }
 

@@ -1,0 +1,14 @@
+{# @pebvariable name="U" type="uk.ac.alc.wpd2.callumcarmicheal.messageboard.web.ViewUtil" #}
+{# @pebvariable name="Board" type="uk.ac.alc.wpd2.callumcarmicheal.messageboard.MessageBoard" #}
+{# @pebvariable name="_t" type="uk.ac.alc.wpd2.callumcarmicheal.messageboard.Topic" #}
+
+{% extends "templates/_site/template.peb" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    <div style="margin-top:20px;">
+        <h4>{{ MessageTitle }}</h4>
+        <p class="mb-0"> {{ MessageText }}</p>
+    </div>
+{% endblock %}

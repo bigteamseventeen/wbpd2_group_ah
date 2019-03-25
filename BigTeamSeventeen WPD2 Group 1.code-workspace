@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "WFramework"
+		},
+		{
+			"path": "App"
+		}
+	],
+	"settings": {
+		"java.dependency.packagePresentation": "flat",
+		"java.configuration.updateBuildConfiguration": "automatic"
+	}
+}

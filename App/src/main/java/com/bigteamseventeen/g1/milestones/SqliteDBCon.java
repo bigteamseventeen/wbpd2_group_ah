@@ -1,4 +1,4 @@
-package com.callumcarmicheal.app;
+package com.bigteamseventeen.g1.milestones;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -13,18 +13,12 @@ import org.sqlite.SQLiteConnectionPoolDataSource;
 class SqliteDBCon {
     private static SQLiteConnectionPoolDataSource dataSource;
 
-    public static void InitializeDatbase() {
-        
-    }
-
-    public static Connection GetConnection() {
-        return null;
-    }
-
     /**
      * Connect to a sample database
      */
-    public static Connection Old() {
+    public static Connection Connect() {
+        
+        
         Connection conn = null;
 
         try {

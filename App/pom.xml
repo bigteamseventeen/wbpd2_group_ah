@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.callumcarmicheal.wframework</groupId>
-    <artifactId>wframework</artifactId>
-    <version>0.2-SNAPSHOT</version>
-    
+    <groupId>com.bigteamseventeen.g1.milestones</groupId>
+    <artifactId>bts_g1_milestones</artifactId>
+    <version>0.1-SNAPSHOT</version>
+
     <build>
         <plugins>
             <plugin>
@@ -38,6 +38,14 @@
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/sqlite-connection-pool_v1.2.0.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.callumcarmicheal.wframework</groupId>
+            <artifactId>wframework</artifactId>
+            <version>0.2-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/wframework-0.2-SNAPSHOT.jar</systemPath>
         </dependency>
 
         <dependency>
@@ -83,18 +91,21 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.8.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations-java5</artifactId>
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations-java5</artifactId>
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
+        
         <dependency>
             <groupId>org.unbescape</groupId>
             <artifactId>unbescape</artifactId>

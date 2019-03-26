@@ -5,48 +5,57 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import com.callumcarmicheal.app.models.Account;
+import javax.sql.PooledConnection;
+
 import com.callumcarmicheal.app.models.User;
 
-import org.sqlite.SQLiteConnectionPoolDataSource;
+import org.sqlite.javax.SQLiteConnectionPoolDataSource;
 
-class SqliteDBCon {
+public class SqliteDBCon {
     private static SQLiteConnectionPoolDataSource dataSource;
+    private static PooledConnection connectionPool;
 
-    public static void InitializeDatbase() {
-        
-    }
+    /**
+     * Setup the database pool
+     * @throws SQLException
+     */
+    public static void InitializeDatabase() throws SQLException {
+        dataSource = new SQLiteConnectionPoolDataSource();
+        dataSource.setUrl("jdbc:sqlite:application.db");
 
-    public static Connection GetConnection() {
-        return null;
+        // Optional Configuration Settings
+        org.sqlite.SQLiteConfig config = new org.sqlite.SQLiteConfig();
+        config.enforceForeignKeys(true);
+        config.enableLoadExtension(true);
+        dataSource.setConfig(config);
+
+        connectionPool = dataSource.getPooledConnection();
     }
 
     /**
-     * Connect to a sample database
+     * Setup the database orm's 
+     * @param con
      */
-    public static Connection Old() {
-        Connection conn = null;
-
-        try {
-            // db parameters
-            String url = "jdbc:sqlite:application.db";
-
-            // create a connection to the database
-            conn = DriverManager.getConnection(url);
-            DatabaseMetaData meta = conn.getMetaData();
-            
-            System.out.println("Connection to SQLite has been established.");
-            System.out.println("Database driver name is " + meta.getDriverName());
-            
-            return conn;
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+    public static void SetupORM(Connection con) {
+        // Add all ORM models here
+        User.Initialize(con);
     }
 
-    public static void InitializeDatabase(Connection c) {
-        // TODO: Create database tables
-        User.Initialize(c);
+    /**
+     * Retrieve a connection from the pool
+     */
+    public static Connection GetConnection() throws SQLException {
+        return connectionPool.getConnection();
+    }
+
+    /**
+     * Retrieve a connection from the pool
+     */
+    public static Connection GetConnectionSafe() {
+        try {
+            return connectionPool.getConnection(); 
+        } catch (SQLException e) {
+            return null;
+        }
     }
 }

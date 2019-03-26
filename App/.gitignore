@@ -68,3 +68,5 @@ fabric.properties
 # Target files
 target/
 
+# Local File history
+.history

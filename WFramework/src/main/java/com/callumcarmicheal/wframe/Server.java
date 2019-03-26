@@ -239,7 +239,7 @@ public class Server implements HttpHandler {
 		String path = r.getRequestURI(false);
 		String request = r.getRequestURI(true);
 
-		// TODO: Display remote ip address and store it in the HttpRequest
+		// FIXME: Display remote ip address and store it in the HttpRequest
 		System.out.println(
 			String.format("WFrameworkServer: %s %s", isPost ? "GET " : "POST", path));
 		

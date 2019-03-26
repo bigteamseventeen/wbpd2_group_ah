@@ -13,38 +13,50 @@ import org.sqlite.core.DB;
 public class Main {
     private static final String CONTROLLERSPACKAGE = "com.callumcarmicheal.app.controllers";
     private static final int PORT = 8080;
-    
+
     public static void main(String[] args) throws Exception {
+        System.out.println("Starting WFramework");
+
         try {
             BasicConfigurator.configure();
 
             System.out.println("Connecting to database");
+            SqliteDBCon.InitializeDatabase();
             Connection DB = SqliteDBCon.GetConnection();
-            
+
             if (DB == null) {
                 System.err.println("ERROR: Failed to connect to database.");
                 return;
             } else {
                 System.out.println("Initializing Database");
-                SqliteDBCon.InitializeDatabase(DB);
+                SqliteDBCon.SetupORM(DB);
             }
 
-            // (new User())
-            //     .setUsername("username")
-            //     .setPassword("password")
-            //     .save();
+            (new User(DB))
+                .setUsername("CallumCarmicheal")
+                .setPassword("password")
+                .setEmail("callum@gmail.com")
+                .setAdmin(1)
+                .setBanned(0)
+                .save();
+
+            System.exit(0);
             
             QueryResults<User> query = 
-                User.where(DB, "username", "=", "Callum")
-                    .andWhere ("password", "=", "password")
+                User.where(DB, "username", "=", "CallumC")
                     .Execute();
-            
+
+            System.out.println("\n\n\n");
+            System.out.println("Length: " + query.Length);
+
+            for (int i = 0; i < query.Length; i++)
+                System.out.println("Row " + i + ": " + query.Rows[i]);
+
             System.exit(0);
 
             System.out.println("Starting server!");
-            
             ServiceWarmup();
-            
+
             Server server = new Server(PORT, CONTROLLERSPACKAGE);
             server.Start();
 
@@ -57,6 +69,6 @@ public class Main {
     }
 
     private static void ServiceWarmup() {
-        // 
+        //
     }
 }

@@ -5,6 +5,7 @@ import com.callumcarmicheal.wframe.database.CVarchar;
 import com.callumcarmicheal.wframe.database.DatabaseColumn;
 import com.callumcarmicheal.wframe.database.DatabaseModel;
 import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery;
+import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery.QueryValueType;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -22,12 +23,12 @@ public class User extends DatabaseModel<User> {
     private static LinkedHashMap<String, DatabaseColumn> _ColumnsDefinition = new LinkedHashMap<>();
     private static CInteger _PrimaryKey;
 
+    /**
+     * Create a instance of the user model
+     */
     public User(Connection c) { 
         // Setup the model instance settings
-        table   = "users";
-        columns = _ColumnsDefinition;
-        primaryKey = _PrimaryKey;
-        connection = c;
+        super("users", _ColumnsDefinition, _PrimaryKey, c);
     }
 
     private static void _addColumn(DatabaseColumn db) {
@@ -46,8 +47,12 @@ public class User extends DatabaseModel<User> {
         return u.CreateTable(true);
     }
 
-    public static SDWhereQuery<User> where(Connection c, String column, String comparison, String value) {
+    public static SDWhereQuery<User> where(Connection c, String column, String comparison, Object value) {
         return User.where(new User(c), column, comparison, value);
+    }
+
+    public static SDWhereQuery<User> where(Connection c, String column, String comparison, Object value, QueryValueType qvt) {
+        return User.where(new User(c), column, comparison, value, qvt);
     }
 
     // -----------------------------------------------------------
@@ -57,7 +62,6 @@ public class User extends DatabaseModel<User> {
     // -----------------------------------------------------------
 
     public static User FindUser(String username) {
-
         return null;
     }
 
@@ -109,5 +113,10 @@ public class User extends DatabaseModel<User> {
     
     public int isBanned() {
         return (int) values.get("banned").Value;
+    }
+
+    @Override
+    public String toString() {
+        return values.toString();
     }
 }

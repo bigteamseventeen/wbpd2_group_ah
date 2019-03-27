@@ -5,6 +5,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
+import com.callumcarmicheal.wframe.TemplatePebble;
+import org.jtwig.JtwigModel;
+import org.jtwig.JtwigTemplate;
+
 import com.callumcarmicheal.app.Main;
 import com.callumcarmicheal.app.models.User;
 import com.callumcarmicheal.wframe.Get;
@@ -15,13 +19,19 @@ import com.callumcarmicheal.wframe.database.querybuilder.QueryResults;
 import com.callumcarmicheal.app.SqliteDBCon;
 
 public class TestController {
-    @Get("/test")
+
+    @Get("/")
     public void Index(HttpRequest r) throws IOException {
+        r.Send(TemplatePebble.Execute("templates/home.peb", TemplatePebble.CreateContext()));
+    }
+
+    @Get("/test")
+    public void TestGet(HttpRequest r) throws IOException {
         r.SendMessageText("Hello", "from the other side");
     }
 
     @Post("/test")
-    public void Test(HttpRequest r) throws IOException {
+    public void TestPost(HttpRequest r) throws IOException {
         r.SendMessageText("Hello World", "How are you doing.");
     }
 

@@ -29,7 +29,6 @@ import java.util.concurrent.Executors;
 
 @SuppressWarnings("rawtypes")
 public class Server implements HttpHandler {
-	private static final String DUPLICATES = "Duplicates";
 	private static final int __THREAD_COUNT = 4;
 	private String controllersPackage = null;
 	private HttpServer Server;

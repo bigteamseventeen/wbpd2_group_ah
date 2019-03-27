@@ -16,6 +16,14 @@
                     <target>8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.1</version>
+                <configuration>
+                    <outputDirectory>${project.basedir}/../App/src/main/resources/lib</outputDirectory>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -43,6 +51,12 @@
             <groupId>io.pebbletemplates</groupId>
             <artifactId>pebble</artifactId>
             <version>3.0.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jtwig</groupId>
+            <artifactId>jtwig-core</artifactId>
+            <version>5.87.0.RELEASE</version>
         </dependency>
 
         <dependency>
@@ -102,6 +116,12 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
+        </repository>
+
+        <repository>
+            <id>jcenter</id>
+            <name>jcenter Repository</name>
+            <url>https://jcenter.bintray.com/</url>
         </repository>
     </repositories>
 </project>

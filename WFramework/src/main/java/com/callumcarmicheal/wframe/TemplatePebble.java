@@ -4,10 +4,11 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
-public class Template {
+public class TemplatePebble {
     public static PebbleEngine Engine = createEngine();
     public static String TEMPLATES_PATH = "templates/";
     private static ViewUtil vUtil = new ViewUtil();
@@ -42,7 +43,7 @@ public class Template {
 
         if (TemplateIsFile) {
             File f = new File(TemplateFile);
-            return f == null ? false : f.exists();
+            return f.exists();
         }
 
         else {
@@ -51,16 +52,16 @@ public class Template {
         }
     }
 
-    public static PebbleTemplate GetTemplate(String template, boolean TemplateIsFile) throws Exception {
+    public static com.mitchellbosecke.pebble.template.PebbleTemplate GetTemplate(String template, boolean TemplateIsFile) {
         return Engine.getTemplate(template);
     }
 
-    public static String Execute(String Template, Context Ctx) throws Exception {
+    public static String Execute(String Template, Context Ctx) throws IOException {
         return Execute(Template, Ctx, true);
     }
 
-    public static String Execute(String Template, Context Ctx, boolean TemplateIsFile) throws Exception {
-        PebbleTemplate compiledTemplate = GetTemplate(Template, TemplateIsFile);
+    public static String Execute(String Template, Context Ctx, boolean TemplateIsFile) throws IOException {
+        com.mitchellbosecke.pebble.template.PebbleTemplate compiledTemplate = GetTemplate(Template, TemplateIsFile);
         Writer writer = new StringWriter();
 
         compiledTemplate.evaluate(writer, Ctx);

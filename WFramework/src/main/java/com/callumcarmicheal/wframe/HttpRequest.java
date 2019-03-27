@@ -1,5 +1,7 @@
 package com.callumcarmicheal.wframe;
 
+import com.callumcarmicheal.wframe.TemplatePebble;
+
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.mitchellbosecke.pebble.error.LoaderException;
@@ -19,11 +21,7 @@ import java.util.Set;
 
 public class HttpRequest {
 	/** ---- Settings ---- */
-	public static String SET_Template_Generic_Message_Template = null;
-	public static Boolean SET_Template_Generic_Message_Template_isResource = false;
-	
-	public static String SET_Template_Error_Template = null;
-	public static Boolean SET_Template_Error_Template_isResource = false;
+	public static IHttpRequestExtensions HttpExtensions = null;
 	/** ---- Settings ---- */
 
 	private boolean sentResponse = false;
@@ -56,7 +54,6 @@ public class HttpRequest {
 		headers.add("Location", to);
 		Send(302, why);
 	}
-	
 	
 	/**
 	 * Send the http response code with buffer
@@ -100,7 +97,7 @@ public class HttpRequest {
 	}
 
 	public void ThrowExceptionText(String PublicMessage, String DebugMessage, Exception ex) {
-		ThrowExceptionText(PublicMessage, DebugMessage, ex);
+		ThrowExceptionText(PublicMessage, DebugMessage, ex, true, true);
 	}
 
 	public void ThrowExceptionText(String PublicMessage, String DebugMessage, Exception ex, boolean EscapePublicMessage, boolean EscapeDebugMessage) {
@@ -133,6 +130,8 @@ public class HttpRequest {
 	public void ThrowException(Exception ex) {
 		ex.printStackTrace();
 		
+		// If the exception is an LoaderException (PEBBLE SUPPORT)
+		// assume that we could not load a file and assume its the exception template
 		if (ex instanceof LoaderException) {
 			// Clear the output buffer.
 			buffer = ByteStreams.newDataOutput();
@@ -144,35 +143,9 @@ public class HttpRequest {
 		else {
 			System.out.println(ex.getMessage());
 
-			if (SET_Template_Generic_Message_Template == null) {
-				System.err.println("ThrowException: Template is not specified, defaulting to text (SET_Template_Error_Template)");
-				ThrowExceptionText("Im sorry there was a error on our side.", ex);			
-				return;	
-			}
-	
-			if (!Template.TemplateExists(SET_Template_Error_Template, SET_Template_Error_Template_isResource)) {
-				System.err.println("ThrowException: Template cant be found (" + SET_Template_Error_Template + 
-					"), isRes = " + SET_Template_Error_Template_isResource);
-				
-				ThrowExceptionText("Im sorry there was a error on our side.", ex);
-				return;
-			}
+			if (HttpExtensions == null) {
 
-			try {
-				Context ctx = Template.CreateContext();
-				ctx.put("ex", ex);
-				ctx.put("debug", Server.IsDebugging());
-				
-				if (Server.IsDebugging()) {
-					ctx.put("message", ex.getMessage());
-					StringWriter sw = new StringWriter();
-					PrintWriter pw = new PrintWriter(sw);
-					ex.printStackTrace(pw);
-					ctx.put("stack", sw.toString());
-				}
-				
-				Send(500, Template.Execute(SET_Template_Error_Template, ctx, SET_Template_Error_Template_isResource));
-			} catch (Exception e) { System.out.println("Failed to send exception to client."); }
+			}
 		}
 	}
 	
@@ -213,27 +186,35 @@ public class HttpRequest {
 	public void SendMessagePage(String Title, String Message, int HttpResponse) {
 		Clear();
 
-		if (SET_Template_Generic_Message_Template == null) {
-			System.err.println("SendMessagePage: Template is not specified, defaulting to text (SET_Template_Generic_Message_Template)");
+		if (HttpExtensions == null) {
 			SendMessageText(Title, Message, HttpResponse);
 			return;
 		}
+		
+		// Invoke the message page
+		HttpExtensions.SendMessagePage(this, Title, Message, HttpResponse);
 
-		if (!Template.TemplateExists(SET_Template_Generic_Message_Template, SET_Template_Generic_Message_Template_isResource)) {
-			System.err.println("SendMessagePage: Template cant be found (" + SET_Template_Generic_Message_Template + 
-				"), isRes = " + SET_Template_Generic_Message_Template_isResource);
-			SendMessageText(Title, Message, HttpResponse);
-			return;
-		}
+		// if (SET_Template_Generic_Message_Template == null) {
+		// 	System.err.println("SendMessagePage: Template is not specified, defaulting to text (SET_Template_Generic_Message_Template)");
+		// 	SendMessageText(Title, Message, HttpResponse);
+		// 	return;
+		// }
 
-		Context ctx = Template.CreateContext();
-		ctx.put("MessageTitle", Title);
-		ctx.put("MessageText", Message);
+		// if (!TemplatePebble.TemplateExists(SET_Template_Generic_Message_Template, SET_Template_Generic_Message_Template_isResource)) {
+		// 	System.err.println("SendMessagePage: Template cant be found (" + SET_Template_Generic_Message_Template + 
+		// 		"), isRes = " + SET_Template_Generic_Message_Template_isResource);
+		// 	SendMessageText(Title, Message, HttpResponse);
+		// 	return;
+		// }
 
-		try {
-			Send(HttpResponse, Template.Execute(SET_Template_Generic_Message_Template, ctx, 
-				SET_Template_Generic_Message_Template_isResource));
-		} catch (Exception e) { ThrowException(e); }
+		// Context ctx = TemplatePebble.CreateContext();
+		// ctx.put("MessageTitle", Title);
+		// ctx.put("MessageText", Message);
+
+		// try {
+		// 	Send(HttpResponse, TemplatePebble.Execute(SET_Template_Generic_Message_Template, ctx, 
+		// 		SET_Template_Generic_Message_Template_isResource));
+		// } catch (Exception e) { ThrowException(e); }
 	}
 
 	public void SendMessageText(String Title, String Message) {

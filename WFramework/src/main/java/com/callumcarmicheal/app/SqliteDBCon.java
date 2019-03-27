@@ -51,7 +51,7 @@ public class SqliteDBCon {
     /**
      * Retrieve a connection from the pool
      */
-    public static Connection GetConnectionSafe() {
+    public static Connection GetConnection_s() {
         try {
             return connectionPool.getConnection(); 
         } catch (SQLException e) {

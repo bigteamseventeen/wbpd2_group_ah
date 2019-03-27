@@ -32,12 +32,12 @@ public class User extends DatabaseModel<User> {
     }
 
     private static void _addColumn(DatabaseColumn db) {
-        _ColumnsDefinition.put(db.GetName(), db); 
+        _ColumnsDefinition.put(db.getName(), db); 
     }
 
     public static boolean Initialize(Connection c) {
-        _addColumn( _PrimaryKey = new CInteger("id").SetPrimaryKey(true) );
-        _addColumn( new CVarchar("username").SetUnique(true) );
+        _addColumn( _PrimaryKey = new CInteger("id").setPrimaryKey(true) );
+        _addColumn( new CVarchar("username").setUnique(true) );
         _addColumn( new CVarchar("password") );
         _addColumn( new CVarchar("email", 255) );
         _addColumn( new CInteger("isAdmin") );
@@ -92,11 +92,11 @@ public class User extends DatabaseModel<User> {
     }
 
     public User setEmail(String Email) {
-        values.get("Email").Value = Email; return this;
+        values.get("email").Value = Email; return this;
     }
     
     public String getEmail() {
-        return (String) values.get("Email").Value;
+        return (String) values.get("email").Value;
     }
 
     public User setAdmin(int isAdmin) {
@@ -108,11 +108,11 @@ public class User extends DatabaseModel<User> {
     }
 
     public User setBanned(int banned) {
-        values.get("banned").Value = banned; return this;
+        values.get("isBanned").Value = banned; return this;
     }
     
     public int isBanned() {
-        return (int) values.get("banned").Value;
+        return (int) values.get("isBanned").Value;
     }
 
     @Override

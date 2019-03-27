@@ -113,6 +113,7 @@ public class SDWhereQuery<T> {
         }
         
         try {
+            // Attempt to create a new instance of the modelClass 
             return modelClass.getClass().getDeclaredConstructor(cArg).newInstance(modelClass.getConnection());
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -135,8 +136,8 @@ public class SDWhereQuery<T> {
         // Generate the SQL statement
         String sql = generateSqlQuery();
 
-        System.out.println("SQL:    " + sql);
-        System.out.println("Params: " + this.boundParameters);
+        // System.out.println("SQL:    " + sql);
+        // System.out.println("Params: " + this.boundParameters);
 
         Connection con = modelClass.getConnection();
         Statement stmt = null;
@@ -181,6 +182,10 @@ public class SDWhereQuery<T> {
             rowsArray.add(instance);
         }
 
+        // Clear up resources
+        resultSet.close();
+        stmt.close();
+
         if (queryResults.Length > 0)
             queryResults.Successful = true;
 
@@ -195,8 +200,34 @@ public class SDWhereQuery<T> {
     }
 
     public enum QueryValueType {
-        Bound, 
+        /** 
+         * Information is attached via a prepared statement
+         */
+        Bound,
+        /**
+         * Information is surrounded with parentheses
+         * 
+         * <p><b>
+         * WARNING: If the object does not support toString unintended results may be produced such as
+         * className#1234CDE as java automatically generates a hash depending on the input.
+         * </b></p>
+         * 
+         * <p>
+         * For example, let NN be the input value
+         * <pre><code>column = 'NN'</code></pre>
+         * </p>
+         */
         String,
+        /**
+         * The value is treated as a string and is appened inside the SQL statement
+         * 
+         * <p><b>WARNING: This is unsafe, use bound if the input must be sanitised</b></p>         
+         *
+         * <p>
+         * For example, let NN be the input value (<i>no protection</i>)
+         * <pre><code>column = NN</code></pre>
+         * </p>
+         */
         Raw
     }
 
@@ -245,6 +276,7 @@ public class SDWhereQuery<T> {
                 // Removed as JDBC does not support named parameters
                 // value = ":sdwq_" + (boundParams++);
                 // where.boundParameters.put(value, this.Query.value);
+
                 this.value = "?";
                 Where.boundParameters.add(this.Query.value);
                 boundParams++;

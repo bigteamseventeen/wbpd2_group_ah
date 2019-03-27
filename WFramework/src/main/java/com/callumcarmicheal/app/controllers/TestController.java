@@ -50,7 +50,7 @@ public class TestController {
                 .setAdmin(1)
                 .setBanned(0)
                 .save();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             r.ThrowExceptionText("Failed to process user request", "There was an error saving user to the database", ex);
             return;
         }

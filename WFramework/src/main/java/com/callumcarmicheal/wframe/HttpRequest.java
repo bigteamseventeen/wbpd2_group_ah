@@ -248,7 +248,7 @@ public class HttpRequest {
 		catch (Exception e) { }
 	}
 	
-	public boolean SendFileSafe(int code, File f) {
+	public boolean SendFile_s(int code, File f) {
 		try {
 			SendFile(code, f);
 			return true;

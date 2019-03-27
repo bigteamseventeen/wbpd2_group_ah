@@ -1,6 +1,10 @@
 package com.callumcarmicheal.wframe.database;
 
+import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery.QueryValueType;
+
 public abstract class DatabaseColumn<T> {
+    protected QueryValueType dataHandlingMethod = QueryValueType.Bound;
+
     protected boolean primaryKey = false;
     protected boolean nullable = true;
     protected boolean autoincrements = false;
@@ -10,20 +14,23 @@ public abstract class DatabaseColumn<T> {
     protected String name = "";
     protected Integer size = 0;
 
-    public String GetName() { return this.name; }
-    public String GetType() { return this.type; }
+    public String getName() { return this.name; }
+    public String getType() { return this.type; }
     
-    public boolean GetPrimaryKey() { return this.primaryKey; }
-    public T SetPrimaryKey(boolean b) {  this.nullable = false; this.primaryKey = b; return (T)this; }
-    
-    public boolean GetAutoIncrement() { return this.autoincrements; }
-    public T SetAutoIncrements(boolean b) { this.autoincrements = b; return (T)this; }
+    public QueryValueType getHandlingMethod() { return this.dataHandlingMethod; }
+    public T setHandlingMethod(QueryValueType b) { this.dataHandlingMethod = b; return (T)this; }
 
-    public boolean GetNullable() { return this.nullable; }
-    public T SetNullable(boolean b) { this.nullable = b; return (T)this; }
+    public boolean getPrimaryKey() { return this.primaryKey; }
+    public T setPrimaryKey(boolean b) {  this.nullable = false; this.primaryKey = b; return (T)this; }
     
-    public boolean GetUnique() { return this.unique; }
-    public T SetUnique(boolean b) {  this.unique = b; return (T)this; }
+    public boolean getAutoIncrement() { return this.autoincrements; }
+    public T setAutoIncrements(boolean b) { this.autoincrements = b; return (T)this; }
+
+    public boolean getNullable() { return this.nullable; }
+    public T setNullable(boolean b) { this.nullable = b; return (T)this; }
+    
+    public boolean getUnique() { return this.unique; }
+    public T setUnique(boolean b) {  this.unique = b; return (T)this; }
     
     public abstract String getColumnDefition();
 

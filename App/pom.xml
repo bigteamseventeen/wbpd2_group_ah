@@ -33,11 +33,11 @@
         </dependency>
 
         <dependency>
-            <groupId>com.callumcarmicheal.wframework</groupId>
-            <artifactId>wframework</artifactId>
+            <groupId>com.callumcarmicheal.wframe</groupId>
+            <artifactId>wframe</artifactId>
             <version>0.2-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/main/resources/wframework-0.2-SNAPSHOT.jar</systemPath>
+            <systemPath>${project.basedir}/src/main/resources/lib/wframework-0.2-SNAPSHOT.jar</systemPath>
         </dependency>
 
         <dependency>

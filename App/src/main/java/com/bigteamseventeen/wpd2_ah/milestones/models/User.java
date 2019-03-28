@@ -1,9 +1,10 @@
-package com.callumcarmicheal.app.models;
+package com.bigteamseventeen.wpd2_ah.milestones.models;
 
 import com.callumcarmicheal.wframe.database.CInteger;
 import com.callumcarmicheal.wframe.database.CVarchar;
 import com.callumcarmicheal.wframe.database.DatabaseColumn;
 import com.callumcarmicheal.wframe.database.DatabaseModel;
+import com.callumcarmicheal.wframe.database.querybuilder.QueryResults;
 import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery;
 import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery.QueryValueType;
 
@@ -12,11 +13,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class User extends DatabaseModel<User> {
     // -----------------------------------------------------------
     // --                                                       --
-    // ------------- Model Definition Attributes ----------------- 
+    // ------------- Model Definition Attributes -----------------
     // --                                                       --
     // -----------------------------------------------------------
     // Creating these for each instance would be taxing so we want to cache them
@@ -39,7 +40,7 @@ public class User extends DatabaseModel<User> {
         _addColumn( _PrimaryKey = new CInteger("id").setPrimaryKey(true) );
         _addColumn( new CVarchar("username").setUnique(true) );
         _addColumn( new CVarchar("password") );
-        _addColumn( new CVarchar("email", 255) );
+        _addColumn( new CVarchar("email", 320).setUnique(true) );
         _addColumn( new CInteger("isAdmin") );
         _addColumn( new CInteger("isBanned") );
 
@@ -47,12 +48,12 @@ public class User extends DatabaseModel<User> {
         return u.CreateTable(true);
     }
 
-    public static SDWhereQuery<User> where(Connection c, String column, String comparison, Object value) {
-        return User.where(new User(c), column, comparison, value);
+    public static SDWhereQuery<User> where(Connection connection, String column, String comparison, Object value) {
+        return User.where(new User(connection), column, comparison, value);
     }
 
-    public static SDWhereQuery<User> where(Connection c, String column, String comparison, Object value, QueryValueType qvt) {
-        return User.where(new User(c), column, comparison, value, qvt);
+    public static SDWhereQuery<User> where(Connection connection, String column, String comparison, Object value, QueryValueType qvt) {
+        return User.where(new User(connection), column, comparison, value, qvt);
     }
 
     // -----------------------------------------------------------
@@ -61,9 +62,72 @@ public class User extends DatabaseModel<User> {
     // --                                                       --
     // -----------------------------------------------------------
 
-    public static User FindUser(String username) {
+    public static User[] All(Connection con) {
+        return All(new User(con));
+    }
+
+    public static User Find(Connection connection, String username) {
+        try {
+            // Query the database
+            QueryResults<User> query = 
+                where(connection, "username", "=", username, QueryValueType.Bound)
+                    .setLimit(1)
+                    .execute();
+
+            if (query.Successful)
+                return query.Rows[0];
+        } catch (SQLException e) {
+
+            return null;
+        }
+
         return null;
     }
+
+    public static User FindUsernameLike(Connection connection, String username) {
+        return FindUsernameLike(connection, username, true, true);
+    }
+
+    public static User FindUsernameLike(Connection connection, String username, boolean front, boolean back) {
+        try {
+            String un = "";
+
+            if (front) un+="%";
+            un+=username;
+            if (back) un+="%";
+
+            // Query the database
+            QueryResults<User> query = 
+                where(connection, "username", "LIKE", un, QueryValueType.Bound)
+                    .setLimit(1)
+                    .execute();
+
+            if (query.Successful)
+                return query.Rows[0];
+        } catch (SQLException e) {
+            return null;
+        }
+
+        return null;
+    }
+
+    public static User FindEmail(Connection connection, String email) {
+        try {
+            // Query the database
+            QueryResults<User> query = 
+                where(connection, "email", "=", email, QueryValueType.Bound)
+                    .setLimit(1)
+                    .execute();
+
+            if (query.Successful)
+                return query.Rows[0];
+        } catch (SQLException e) {
+            return null;
+        }
+
+        return null;
+    }
+    
 
     // -----------------------------------------------------------
     // --                                                       --
@@ -91,10 +155,10 @@ public class User extends DatabaseModel<User> {
         return (String) values.get("password").Value;
     }
 
-    public User setEmail(String Email) {
-        values.get("email").Value = Email; return this;
+    public User setEmail(String email) {
+        values.get("email").Value = email; return this;
     }
-    
+
     public String getEmail() {
         return (String) values.get("email").Value;
     }

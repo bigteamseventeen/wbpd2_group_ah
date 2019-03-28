@@ -4,7 +4,7 @@
 
     <groupId>com.callumcarmicheal.wframe</groupId>
     <artifactId>wframe</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2.1-SNAPSHOT</version>
     
     <build>
         <plugins>
@@ -23,6 +23,22 @@
                 <configuration>
                     <outputDirectory>${project.basedir}/../App/src/main/resources/lib</outputDirectory>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <doclint>none</doclint>
+                    <jarOutputDirectory>${project.basedir}/../App/src/main/resources/lib</jarOutputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

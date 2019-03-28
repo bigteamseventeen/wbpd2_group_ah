@@ -1,4 +1,4 @@
-package com.callumcarmicheal.app;
+package com.bigteamseventeen.wpd2_ah.milestones;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

@@ -6,6 +6,10 @@ public class Resource {
 	private static final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 	private static final String workingDirectory = System.getProperty("user.dir");
 	
+	public static String getWorkingDirection() {
+		return workingDirectory;
+	}
+
 	public static File GetResource(String fileName) {
 		return new File(classLoader.getResource(fileName).getFile());
 	}
@@ -19,7 +23,16 @@ public class Resource {
 		// Return the file
 		return f;
 	}
-	
+
+	public static File GetFile_s(String filePath) {
+		// Refuse to read any unsafe paths
+		if (IsUnsafePath(filePath))
+			return null;
+		
+		// Return the file
+		return GetFile(filePath);
+	}
+
 	public static File GetPublicFile(String path) {
 		// Refuse to read any unsafe paths
 		if (IsUnsafePath(path))

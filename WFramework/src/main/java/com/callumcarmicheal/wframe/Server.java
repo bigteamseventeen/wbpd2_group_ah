@@ -33,9 +33,11 @@ public class Server implements HttpHandler {
 	private String controllersPackage = null;
 	private HttpServer Server;
 	private boolean Started = false;
-	
 	private HashMap<String, ControllerMethodPair> Router;
 	
+	private boolean resourcesEnabled = false;
+	private String resourcesDirectory = "";
+
 	private enum RequestType { GET, POST }
 	private class ControllerMethodPair {
 		public Object GetInstance = null;
@@ -43,7 +45,12 @@ public class Server implements HttpHandler {
 		public Object PostInstance = null;
 		public Method Post = null;
 	}
-	
+
+	public Server setResourcesEnabled(boolean v) { resourcesEnabled = v; return this; }
+	public boolean getResourcesEnabled() { return resourcesEnabled; }
+	public Server setResourcesDirectory(String v) { resourcesDirectory = v; return this; }
+	public String getResourcesDirectory() { return resourcesDirectory; }
+
 	/**
 	 * Create a new server
 	 * 
@@ -69,8 +76,8 @@ public class Server implements HttpHandler {
 				new MethodAnnotationsScanner()
 			));
 		
-		Set<Method> getMethods = reflections.getMethodsAnnotatedWith(Get.class);
-		Set<Method> postMethods = reflections.getMethodsAnnotatedWith(Post.class);
+		Set<Method> getMethods = reflections.getMethodsAnnotatedWith(GetRequest.class);
+		Set<Method> postMethods = reflections.getMethodsAnnotatedWith(PostRequest.class);
 		HashMap<String, Tuple<RequestType, Method>> paths
 				= new HashMap<>();
 		HashMap<Class, ArrayList<Tuple3<String, Method, RequestType>>> classes = new HashMap<>();
@@ -79,7 +86,7 @@ public class Server implements HttpHandler {
 		// Loop Router
 		for (Method m : getMethods) {
 			Class c = m.getDeclaringClass();
-			Get g = m.getAnnotation(Get.class);
+			GetRequest g = m.getAnnotation(GetRequest.class);
 			String path = g.value();
 			
 			if (!Modifier.isPublic(m.getModifiers())) {
@@ -112,7 +119,7 @@ public class Server implements HttpHandler {
 		
 		for (Method m : postMethods) {
 			Class c = m.getDeclaringClass();
-			Post p = m.getAnnotation(Post.class);
+			PostRequest p = m.getAnnotation(PostRequest.class);
 			String path = p.value();
 			
 			if (!Modifier.isPublic(m.getModifiers())) {
@@ -221,13 +228,15 @@ public class Server implements HttpHandler {
 		return s.replaceAll("\\B\\w+(\\.[a-z])","$1");
 	}
 	
-	public void Start() {
-		if (Started) return;
+	public Server start() {
+		if (Started) return this;
 		Started = true;
 		
 		Server.createContext("/", this);
 		Server.setExecutor(Executors.newFixedThreadPool(__THREAD_COUNT));
 		Server.start();
+
+		return this;
 	}
 	
 	@Override
@@ -283,6 +292,11 @@ public class Server implements HttpHandler {
 	}
 	
 	private void handleFileResource(HttpRequest r, String request) throws IOException {
+		if (!resourcesEnabled){
+			display404(r);
+			return;
+		}
+
 		// Get the resource without the leading /
 		String resource = request.startsWith("/") ? request.substring(1) : request;
 		
@@ -293,7 +307,7 @@ public class Server implements HttpHandler {
 		}
 		
 		// Attempt to load the file
-		File f = Resource.GetPublicFile(resource);
+		File f = Resource.GetFile(this.resourcesDirectory + "/" + resource);
 		
 		// The file does not exist
 		if (f == null || !f.exists() || !f.canRead()) {

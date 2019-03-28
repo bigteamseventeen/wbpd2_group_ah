@@ -5,6 +5,6 @@ import java.lang.annotation.RetentionPolicy;
 
 // create a custom Annotation
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Post {
+public @interface GetRequest {
 	String value();
 }

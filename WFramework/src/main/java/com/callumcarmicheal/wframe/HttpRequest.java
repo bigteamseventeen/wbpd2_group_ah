@@ -1,23 +1,20 @@
 package com.callumcarmicheal.wframe;
 
-import com.callumcarmicheal.wframe.TemplatePebble;
-
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.mitchellbosecke.pebble.error.LoaderException;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import org.unbescape.html.HtmlEscape;
+
+import com.mitchellbosecke.pebble.error.LoaderException;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class HttpRequest {
 	/** ---- Settings ---- */
@@ -26,15 +23,16 @@ public class HttpRequest {
 
 	private boolean sentResponse = false;
 	private ByteArrayDataOutput buffer;
+
 	public HttpExchange Exchange;
+
 	public HttpRequest() {}
-	
-	public HttpRequest(HttpExchange e) {
-		Prepare(e);
+	public HttpRequest(HttpExchange httpExchange) {
+		Prepare(httpExchange);
 	}
 	
-	protected void Prepare(HttpExchange e) {
-		this.Exchange = e;
+	protected void Prepare(HttpExchange httpExchange) {
+		this.Exchange = httpExchange;
 		this.buffer = ByteStreams.newDataOutput();
 	}
 
@@ -43,12 +41,36 @@ public class HttpRequest {
 	}
 	
 	// Write data into the buffer
+
+	/**
+	 * Append string to the output buffer
+	 * @param str
+	 */
 	public void Write(String str)   { buffer.write(str.getBytes()); }
+	/**
+	 * Append bytes to output buffer
+	 * @param bytes
+	 */
 	public void Write(byte[] bytes) { buffer.write(bytes); }
+	/**
+	 * Append integer to output buffer
+	 * @param i
+	 */
 	public void Write(int i)        { buffer.write(i); }
 	
-	// Redirect to a page
+	/**
+	 * Redirect to another page
+	 * @param to 			The url to be redirected to
+	 * @throws IOException	
+	 */ 
 	public void Redirect(String to) throws IOException { Redirect(to, "Redirecting to " + to); }
+
+	/**
+	 * Redirect to another page
+	 * @param to 			The url to be redirected to
+	 * @param why			Why the user is being redirected
+	 * @throws IOException	
+	 */ 
 	public void Redirect(String to, String why) throws IOException {
 		Headers headers = Exchange.getResponseHeaders();
 		headers.add("Location", to);
@@ -56,112 +78,200 @@ public class HttpRequest {
 	}
 	
 	/**
-	 * Send the http response code with buffer
-	 * @param Response
+	 * Send the http response code with existing buffer
+	 * @param response
 	 * @throws IOException
 	 */
-	public void Send(int Response) throws IOException {
+	public void Send(int response) throws IOException {
 		byte[] buf = buffer.toByteArray();
-		Send(Response, buf);
+		Send(response, buf);
 	}
 	
-	public void Send(int Response, byte[] Buffer) throws IOException {
-		Exchange.sendResponseHeaders(Response, Buffer.length);
+	/**
+	 * Send the http response with specified bytes buffer
+	 * @param response		The http response code
+	 * @param buffer		Byte array to be sent to client
+	 * @throws IOException	
+	 */
+	public void Send(int response, byte[] buffer) throws IOException {
+		Exchange.sendResponseHeaders(response, buffer.length);
 		OutputStream os = Exchange.getResponseBody();
-		os.write(Buffer);
+		os.write(buffer);
 		os.close();
 
 		sentResponse = true;
 	}
 	
-	public void Send(byte[] Buffer) throws IOException {
-		Send(200, Buffer);
+	/**
+	 * Send current buffer with appended data and send OK (200)
+	 * @param data		Data to be appended to the buffered output
+	 * @throws IOException
+	 */
+	public void Send(byte[] buffer) throws IOException {
+		Send(200, buffer);
 	}
 	
+	/**
+	 * Send current buffer with appended data and send OK (200)
+	 * @param data		Data to be appended to the buffered output
+	 * @throws IOException
+	 */
 	public void Send(String data) throws IOException {
 		Write(data);
 		Send(200);
 	}
 	
-	public void Send(int Response, String data) throws IOException {
+	/**
+	 * Send current buffer with appended data and Response
+	 * @param response	Http response code
+	 * @param data		Data to be appended to the buffered output
+	 * @throws IOException
+	 */
+	public void Send(int response, String data) throws IOException {
 		Write(data);
-		Send(Response);
+		Send(response);
 	}
 	
+	/**
+	 * Send current buffer with 200 (OK) http header
+	 * @throws IOException
+	 */
 	public void Send() throws IOException {
 		Send(200);
 	}
 	
-	public void ThrowExceptionText(String Message, Exception e) {
-		ThrowExceptionText(Message, Message, e);
+	/**
+	 * Send a exception page to the client with added user safe information
+	 * @param message	The message that is displayed to the end user and developer
+	 * @param exception	The exception
+	 */
+	public void ThrowExceptionText(String message, Exception exception) {
+		ThrowExceptionText(message, message, exception);
 	}
 
-	public void ThrowExceptionText(String PublicMessage, String DebugMessage, Exception ex) {
-		ThrowExceptionText(PublicMessage, DebugMessage, ex, true, true);
+	/**
+	 * Send a exception page to the client with added user safe information
+	 * @param message	The message that is displayed to the end user and developer
+	 * @param exception	The exception
+	 * @param httpResponseCode	The http error code sent in the header
+	 */
+	public void ThrowExceptionText(String message, Exception exception, int httpResponseCode) {
+		ThrowExceptionText(message, message, exception, httpResponseCode);
 	}
 
-	public void ThrowExceptionText(String PublicMessage, String DebugMessage, Exception ex, boolean EscapePublicMessage, boolean EscapeDebugMessage) {
-		if (EscapePublicMessage)
-			PublicMessage = HtmlEscape.escapeHtml5(PublicMessage);
+	/**
+	 * Send a exception page to the client with added user safe information
+	 * @param publicMessage	The message that is displayed to the end user
+	 * @param debugMessage	The debug message that is visible when the application is being debugged
+	 * @param exception		The exception
+	 */
+	public void ThrowExceptionText(String publicMessage, String debugMessage, Exception exception) {
+		ThrowExceptionText(publicMessage, debugMessage, exception, true, true, 500);
+	}
 
-		if (EscapeDebugMessage)
-			DebugMessage = HtmlEscape.escapeHtml5(DebugMessage);
+	/**
+	 * Send a exception page to the client with added user safe information
+	 * @param publicMessage		The message that is displayed to the end user
+	 * @param debugMessage		The debug message that is visible when the application is being debugged
+	 * @param exception			The exception
+	 * @param httpResponseCode	The http error code sent in the header
+	 */
+	public void ThrowExceptionText(String publicMessage, String debugMessage, Exception exception, int httpResponseCode) {
+		ThrowExceptionText(publicMessage, debugMessage, exception, true, true, httpResponseCode);
+	}
+
+	/**
+	 * Send a exception page to the client with added user safe information
+	 * @param publicMessage			The message that is displayed to the end user
+	 * @param debugMessage			The debug message that is visible when the application is being debugged
+	 * @param exception				The exception
+	 * @param escapePublicMessage	If we are escaping the public message (set to false for HTML)
+	 * @param escapeDebugMessage	If we are escaping the debug message (set to false for HTML)
+	 * @param httpResponseCode		The http error code sent in the header
+	 */
+	public void ThrowExceptionText(String publicMessage, String debugMessage, Exception exception, boolean escapePublicMessage, boolean escapeDebugMessage, int httpResponseCode) {
+		if (escapePublicMessage)
+			publicMessage = HtmlEscape.escapeHtml5(publicMessage);
+
+		if (escapeDebugMessage)
+			debugMessage = HtmlEscape.escapeHtml5(debugMessage);
 
 		if (Server.IsDebugging()) {
 			Write("<h1>There was an error</h1><p>Im sorry there was a error loading resources.</p>");
-			Write("<br><p>Exception message : <b>" + ex.getMessage() + "</b></p>");
+			Write("<br><p>Exception message : <b>" + exception.getMessage() + "</b></p>");
 			Write("<br><pre style=\"background:#ccc\">");
 			
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
-			ex.printStackTrace(pw);
+			exception.printStackTrace(pw);
 			Write(sw.toString());
 			
 			Write("</pre>");
 
-			try { Send(500); } catch (Exception e) { }
+			try { Send(httpResponseCode); } catch (Exception e) { }
 		} else {
 			try {
-				Send(500, "<h1>There was an error</h1><p>Im sorry there was a error loading resources.</p>");
+				Send(httpResponseCode, "<h1>There was an error</h1><p>Im sorry there was a error loading resources.</p>");
 			} catch (Exception e) { }
 		}
 	}
 
-	public void ThrowException(Exception ex) {
-		ex.printStackTrace();
+	/**
+	 * Throw an exception (attempt to use a page or fallback to a basic page)
+	 * @param exception
+	 */
+	public void ThrowException(Exception exception) {
+		exception.printStackTrace();
 		
 		// If the exception is an LoaderException (PEBBLE SUPPORT)
 		// assume that we could not load a file and assume its the exception template
-		if (ex instanceof LoaderException) {
+		if (exception instanceof LoaderException) {
 			// Clear the output buffer.
 			buffer = ByteStreams.newDataOutput();
 			
 			// Attempt to tell the browser something went wrong.
-			ThrowExceptionText("Im sorry there was a error loading resources.", ex);
+			ThrowExceptionText("Im sorry there was a error loading resources.", exception);
 		}
 		
+		// We are just showing the page
 		else {
-			System.out.println(ex.getMessage());
+			// Print the error
+			exception.printStackTrace();
 
-			if (HttpExtensions == null) {
-
+			// If we can call the exception page then invoke it
+			if (HttpExtensions != null && HttpExtensions.isThrowExceptionPageSupported()) {
+				HttpExtensions.ThrowExceptionPage(exception);
+				return;
 			}
+
+			// Fallback to a text based error page
+			ThrowExceptionText("I'm sorry there was an error while processing your request.", exception);			
 		}
 	}
 	
-	
+	/** 
+	 * Get a string map of the query string
+	 * @return A map containing the queries
+	 */
 	public Map<String,String> getQuery() {
 		return Server.ParseQuery(this.Exchange);
 	}
 	
+	/**
+	 * Get the query string from the URI
+	 * @return
+	 */
 	public String getQueryString() {
 		return Server.GetQueryString(this.Exchange);
 	}
 	
-	public byte[] GetPost() throws IOException {
+	/**
+	 * Get post body content as bytes
+	 * @return Byte array containg post body
+	 * @throws IOException
+	 */
+	public byte[] GetPostBytes() throws IOException {
 		Headers requestHeaders = Exchange.getRequestHeaders();
-		Set<Map.Entry<String, List<String>>> entries = requestHeaders.entrySet();
-		
 		int contentLength = Integer.parseInt(requestHeaders.getFirst("Content-length"));
 		
 		InputStream is = Exchange.getRequestBody();
@@ -171,130 +281,185 @@ public class HttpRequest {
 		return data;
 	}
 	
+	/**
+	 * Get the post form as a string map
+	 * @return
+	 * @throws IOException
+	 */
 	public Map<String,String> GetPostForm() throws IOException {
-		return Server.ParseQueryEncoding(new String(GetPost()));
+		return Server.ParseQueryEncoding(new String(GetPostBytes()));
 	}
 	
+	/**
+	 * Clear the buffer and recreate the bytestream
+	 */
 	public void Clear() {
 		this.buffer = ByteStreams.newDataOutput();
 	}
 	
-	public void SendMessagePage(String Title, String Message) {
-		SendMessagePage(Title, Message, 200);
+	/**
+	 * Generate a html message page
+	 * @param title
+	 * @param message
+	 */
+	public void SendMessagePage(String title, String message) {
+		SendMessagePage(title, message, 200);
 	}
 	
-	public void SendMessagePage(String Title, String Message, int HttpResponse) {
+	/**
+	 * Generate a html message page
+	 * @param title
+	 * @param message
+	 * @param httpResponseCode The http response code
+	 */
+	public void SendMessagePage(String title, String message, int httpResponseCode) {
 		Clear();
 
-		if (HttpExtensions == null) {
-			SendMessageText(Title, Message, HttpResponse);
+		// Check if the SendMessagePage function is implemented
+		if (HttpExtensions != null && HttpExtensions.isSendMessagePageSupported()) {
+			HttpExtensions.SendMessagePage(this, title, message, httpResponseCode);
 			return;
 		}
 		
 		// Invoke the message page
-		HttpExtensions.SendMessagePage(this, Title, Message, HttpResponse);
-
-		// if (SET_Template_Generic_Message_Template == null) {
-		// 	System.err.println("SendMessagePage: Template is not specified, defaulting to text (SET_Template_Generic_Message_Template)");
-		// 	SendMessageText(Title, Message, HttpResponse);
-		// 	return;
-		// }
-
-		// if (!TemplatePebble.TemplateExists(SET_Template_Generic_Message_Template, SET_Template_Generic_Message_Template_isResource)) {
-		// 	System.err.println("SendMessagePage: Template cant be found (" + SET_Template_Generic_Message_Template + 
-		// 		"), isRes = " + SET_Template_Generic_Message_Template_isResource);
-		// 	SendMessageText(Title, Message, HttpResponse);
-		// 	return;
-		// }
-
-		// Context ctx = TemplatePebble.CreateContext();
-		// ctx.put("MessageTitle", Title);
-		// ctx.put("MessageText", Message);
-
-		// try {
-		// 	Send(HttpResponse, TemplatePebble.Execute(SET_Template_Generic_Message_Template, ctx, 
-		// 		SET_Template_Generic_Message_Template_isResource));
-		// } catch (Exception e) { ThrowException(e); }
+		SendMessageText(title, message, httpResponseCode);
 	}
 
-	public void SendMessageText(String Title, String Message) {
-		SendMessageText(Title, Message, 200);
+	/**
+	 * Generate a basic html message page
+	 * @param title
+	 * @param message
+	 */
+	public void SendMessageText(String title, String message) {
+		SendMessageText(title, message, 200);
 	}
 
-	public void SendMessageText(String Title, String Message, int HttpResponse) {
-		Title = HtmlEscape.escapeHtml5(Title);
-		Message = HtmlEscape.escapeHtml5(Message);
+	/**
+	 * Generate a basic html message page
+	 * @param title
+	 * @param message
+	 * @param httpResponseCode
+	 */
+	public void SendMessageText(String title, String message, int httpResponseCode) {
+		title = HtmlEscape.escapeHtml5(title);
+		message = HtmlEscape.escapeHtml5(message);
 		
-		try { Send(HttpResponse, "<h1>"+Title+"</h1><p>"+Message+"</p>"); } 
+		try { Send(httpResponseCode, "<h1>"+title+"</h1><p>"+message+"</p>"); } 
 		catch (Exception e) { }
 	}
 	
-	public boolean SendFile_s(int code, File f) {
+	/**
+	 * Write a file to the client
+	 * <p>Without raising any exceptions through the chain</p>
+	 * @param httpResponseCode 	Http Response Code
+	 * @param file 				The file to be sent to the client
+	 * @return If the file was successfully sent to the client
+	 */
+	public boolean SendFile_s(int httpResponseCode, File file) {
 		try {
-			SendFile(code, f);
+			SendFile(httpResponseCode, file);
 			return true;
 		} catch (IOException e) {
 			return false;
 		}
 	}
 	
-	public void SendFile(int code, File f) throws IOException {
+	/**
+	 * Write a file to the client
+	 * @param httpResponseCode	Http Response Code
+	 * @param file 				The file to be sent to the client
+	 * @throws IOException		The exception thrown when trying to read the file
+	 */
+	public void SendFile(int httpResponseCode, File file) throws IOException {
 		// Clear the output buffer as we dont want to use it
 		Clear();
+
+		ByteBuffer buffer; // Local buffer
+		String mime_type;  // Http mime type
 		
-		ByteBuffer buffer;
-		String mime_type;
-		
+		// Attempt to get the MIME_TYPE for the file
 		try {
-			mime_type = Files.probeContentType(f.toPath());
+			// Attempt to find the mime type for the file
+			mime_type = Files.probeContentType(file.toPath());
+
+			// Check if the mime type cannot be determined
+			if (mime_type == null) {
+				// Use the default mime type stated by RFC
+				// RFC 2046 - section 4.5.1: The "octet-stream" subtype is used to indicate that a body contains arbitrary binary data.
+				mime_type = "application/octet-stream";
+			}
 		} catch (Exception ex) {
+			// Send the error page
 			SendMessagePage(
-					"Resource not found",
-					"The requested resource could not be found.", 404);
+				"Resource not found",
+				"The requested resource could not be found.", 404);
 			return;
 		}
 		
-		try (FileInputStream stream = new FileInputStream(f)) {
+		// Try to read the file in a stream
+		try (FileInputStream stream = new FileInputStream(file)) {
+			// Get the file channel
 			FileChannel inChannel = stream.getChannel();
 			
+			// Read in the file into the output buffer
 			buffer = inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
-			buffer.order( ByteOrder.BIG_ENDIAN );
+
+			// Set the byte order to BIG ENDIAN (support for various byte orders)
+			buffer.order( ByteOrder.BIG_ENDIAN ); 
 		} catch (Exception ex) {
+			// Send the error page
 			SendMessagePage(
-					"Resource not found",
-					"The requested resource could not be found.", 404);
+				"Resource not found",
+				"The requested resource could not be found.", 404);
 			return;
 		}
 		
-		Files.probeContentType(f.toPath());
-		
+		// Get the headers and set the content type
 		Headers headers = Exchange.getResponseHeaders();
 		headers.add("Content-Type", mime_type);
 		
+		// If we can convert to an array
 		if (buffer.hasArray()) {
+			// Send the array
 			Send(buffer.array());
 			return;
 		}
 		
+		// Create a new array using the buffer
 		byte[] arr = new byte[buffer.remaining()];
 		buffer.get(arr);
-		Send(arr);
+		
+		// Send the http response
+		Send(arr); 
 	}
 	
-	String _request = null;
-	String _request_query = null;
+	/** Cached uri without the query */
+	String _request_uri = null;
+	/** Cached uri including query */
+	String _request_uri_query = null;
+
+	/**
+	 * Get the request URI
+	 * @param removeQuery Strip the query from the URI
+	 * @return The URI with or without the query stripped
+	 */
 	public String getRequestURI(boolean removeQuery) {
+		// If we are removing the query from the uri
 		if (removeQuery) {
-			if (_request != null)
-				return _request;
+			// Caching
+			if (_request_uri != null)
+				return _request_uri;
 				
-			_request = Exchange.getRequestURI().toString();
-			return _request.contains("?") ? _request = _request.split("\\?")[0] : _request;
+			// Get the URI and strip the query
+			_request_uri = Exchange.getRequestURI().toString();
+			return _request_uri.contains("?") ? _request_uri = _request_uri.split("\\?")[0] : _request_uri;
 		}
 		
-		if (_request_query != null)
-			return _request_query;
+		// Caching
+		if (_request_uri_query != null)
+			return _request_uri_query;
 			
-		return _request_query = Exchange.getRequestURI().toString();
+		// Return the request uri
+		return _request_uri_query = Exchange.getRequestURI().toString();
 	}
 }

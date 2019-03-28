@@ -10,6 +10,6 @@ public class CVarchar extends DatabaseColumn<CVarchar> {
 
     @Override
     public String getColumnDefition() {
-        return String.format("\"%s\" VARCHAR(%d),", this.name, this.size, this.getColumnAttributes());
+        return String.format("\"%s\" VARCHAR(%d)%s", this.name, this.size, this.getColumnAttributes());
     }
 }

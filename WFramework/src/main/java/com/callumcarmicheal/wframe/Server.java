@@ -9,11 +9,13 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
+import org.slf4j.Logger;
 
 import com.callumcarmicheal.wframe.library.Tuple;
 import com.callumcarmicheal.wframe.library.Tuple3;
 import com.callumcarmicheal.wframe.HttpRequest;
 import com.callumcarmicheal.wframe.Resource;
+import com.callumcarmicheal.wframe.web.SessionList;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,11 +35,14 @@ public class Server implements HttpHandler {
 	private String controllersPackage = null;
 	private HttpServer Server;
 	private boolean Started = false;
+
 	private HashMap<String, ControllerMethodPair> Router;
-	
+	private SessionList sessionList;
+
 	private boolean resourcesEnabled = false;
 	private String resourcesDirectory = "";
 
+	// TODO: Support full rest functionality - POST, PUT, PATCH, GET, DELETE.
 	private enum RequestType { GET, POST }
 	private class ControllerMethodPair {
 		public Object GetInstance = null;
@@ -46,10 +51,10 @@ public class Server implements HttpHandler {
 		public Method Post = null;
 	}
 
-	public Server setResourcesEnabled(boolean v) { resourcesEnabled = v; return this; }
+	public Server  setResourcesEnabled(boolean v) { resourcesEnabled = v; return this; }
 	public boolean getResourcesEnabled() { return resourcesEnabled; }
-	public Server setResourcesDirectory(String v) { resourcesDirectory = v; return this; }
-	public String getResourcesDirectory() { return resourcesDirectory; }
+	public Server  setResourcesDirectory(String v) { resourcesDirectory = v; return this; }
+	public String  getResourcesDirectory() { return resourcesDirectory; }
 
 	/**
 	 * Create a new server
@@ -60,14 +65,19 @@ public class Server implements HttpHandler {
 	public Server(int Port, String ControllersPackage) throws Exception {
 		Router = new HashMap<>();
 		this.controllersPackage = ControllersPackage;
+		this.sessionList = new SessionList();
 			
+		Logger _TEMP = Reflections.log;
+		Reflections.log = null; 
 		SetupRouter();
+		Reflections.log = _TEMP;
+		
 		Server = HttpServer.create(new InetSocketAddress(Port), 0);
 	}
 	
 	private void SetupRouter() {
 		System.out.println("WFrameworkServer: Indexing Controllers and Methods.");
-		
+
 		Reflections reflections = new Reflections(new ConfigurationBuilder()
 			.setUrls(ClasspathHelper.forPackage(controllersPackage))
 			.setScanners(
@@ -228,6 +238,10 @@ public class Server implements HttpHandler {
 		return s.replaceAll("\\B\\w+(\\.[a-z])","$1");
 	}
 	
+	/**
+	 * Start the server
+	 * @return
+	 */
 	public Server start() {
 		if (Started) return this;
 		Started = true;
@@ -241,7 +255,8 @@ public class Server implements HttpHandler {
 	
 	@Override
 	public void handle(HttpExchange e) {
-		HttpRequest r = new HttpRequest(e);
+		
+		HttpRequest r = new HttpRequest(e, sessionList);
 		boolean isPost = e.getRequestMethod().equalsIgnoreCase("POST");
 		boolean requestStartsWithSlash = false;
 		String path = r.getRequestURI(false);
@@ -249,7 +264,7 @@ public class Server implements HttpHandler {
 
 		// FIXME: Display remote ip address and store it in the HttpRequest
 		System.out.println(
-			String.format("WFrameworkServer: %s %s", isPost ? "GET " : "POST", path));
+			String.format("WFrameworkServer: %s %s %s", e.getRemoteAddress().toString(), isPost ? "POST " : "GET", path));
 		
 		try {
 			// Check if we have the request in our router
@@ -346,7 +361,7 @@ public class Server implements HttpHandler {
 			String[] entry = param.split("=");
 			if (entry.length > 1) {
 				result.put(entry[0], URLDecoder.decode(entry[1], encoding));
-			}else{
+			} else {
 				result.put(entry[0], "");
 			}
 		}

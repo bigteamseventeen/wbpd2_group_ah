@@ -1,4 +1,4 @@
-package com.callumcarmicheal.wframe;
+package com.callumcarmicheal.wframe.ast;
 
 import java.util.HashMap;
 

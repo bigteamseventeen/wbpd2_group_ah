@@ -4,12 +4,10 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
 import javax.sql.PooledConnection;
-
-import com.callumcarmicheal.app.models.User;
-
 import org.sqlite.javax.SQLiteConnectionPoolDataSource;
+
+import com.bigteamseventeen.wpd2_ah.milestones.models.User;
 
 public class SqliteDBCon {
     private static SQLiteConnectionPoolDataSource dataSource;

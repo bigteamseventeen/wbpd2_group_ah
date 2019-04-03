@@ -9,8 +9,7 @@
             "request": "launch",
 
             "name": "Application",
-            "mainClass": "com.bigteamseventeen.g1.milestones.Main",
-            "projectName": "bts_g1_milestones",
+            "mainClass": "com.bigteamseventeen.wpd2_ah.milestones.Main",
             "windows": {
                 "cwd": "${workspaceFolder}/bin"
             }

@@ -1,5 +1,7 @@
 package com.callumcarmicheal.wframe;
 
+import com.callumcarmicheal.wframe.web.Session;
+import com.callumcarmicheal.wframe.web.SessionList;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.sun.net.httpserver.Headers;
@@ -14,6 +16,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HttpRequest {
@@ -23,12 +28,29 @@ public class HttpRequest {
 
 	private boolean sentResponse = false;
 	private ByteArrayDataOutput buffer;
+	private Session sessionState = null;
+	private SessionList sessionList = null;
 
+	/** ---- Public Properties ---- */
 	public HttpExchange Exchange;
+	/** ---- Public Properties ---- */
 
-	public HttpRequest() {}
-	public HttpRequest(HttpExchange httpExchange) {
+	public HttpRequest(HttpExchange httpExchange, SessionList sessions) {
+		this.sessionList = sessions;
+		
+		// Setup the httpExchange
 		Prepare(httpExchange);
+
+		// If we have a session
+		String sessionId = null; 
+		if ((sessionId = this.getRequestCookie(sessions.COOKIE_HEADER)) != null) {
+			if (sessions.exists(sessionId)) {
+				sessionState = sessions.get(sessionId);	
+				setSessionHeader(sessionState);
+			} else {
+			}
+		} else {
+		}
 	}
 	
 	protected void Prepare(HttpExchange httpExchange) {
@@ -461,5 +483,105 @@ public class HttpRequest {
 			
 		// Return the request uri
 		return _request_uri_query = Exchange.getRequestURI().toString();
+	}
+
+	/** Caching the request cookies */
+	private Map<String,String> _cookies = null;
+	private Map<String,String> _pubCookies = null;
+
+	/**
+	 * Get cookies from request
+	 * @return
+	 */
+	public Map<String,String> getRequestCookies() {
+		if (_cookies == null)
+			_cookies = parseCookies(Exchange.getRequestHeaders().get("Cookie"));
+
+		if (_pubCookies == null)
+			_pubCookies = Collections.unmodifiableMap(_cookies);
+
+		return _pubCookies;
+	}
+	
+
+	/**
+	 * Get a cookie from the request
+	 * @param cookieKey		THe cookie key
+	 * @return				The value or null if not found
+	 */
+	public String getRequestCookie(String cookieKey) {
+		if (_cookies == null)
+			_cookies = parseCookies(Exchange.getRequestHeaders().get("Cookie"));
+		return _cookies.get(cookieKey);
+	}
+
+	/**
+	 * Create a map from a cookie header string
+	 * @param cookieHeader	The header string containing the cookies
+	 * @return				A map containing the cookies
+	 */
+	private static Map<String, String> parseCookies(List<String> listOfCookies) {
+		// Cookies output
+		Map<String, String> result = new LinkedHashMap<String, String>();
+		
+		// If we have cookies
+		if (listOfCookies != null) {
+			// Loop the cookies
+			for (int i = 0; i < listOfCookies.size(); i++) {
+				// Split by equals sign
+				String[] parts = listOfCookies.get(i).split("=", 2);
+				String value = parts.length > 1 ? parts[1] : "";
+
+				// If we have more equals signs, escape them
+				if (value.length() >= 2 && value.startsWith("\"") && value.endsWith("\""))
+					value = value.substring(1, value.length() - 1);
+				
+				// Put the values into the cookies list
+				result.put(parts[0], value);
+			}
+		}
+
+		// Return the cookies
+		return result;
+	}
+
+	private boolean _setSessionHeader = false;
+
+	/**
+	 * Get or create session key
+	 * @return
+	 */
+	public Session session() {
+		// If we have a session
+		if (this.sessionState != null) {
+			if (!_setSessionHeader)
+				setSessionHeader(this.sessionState);
+			return this.sessionState;
+		}
+
+		// Create a new one
+		this.sessionState = this.sessionList.create();
+		if (this.sessionState != null) 
+			// Store the session in the response cookies
+			setSessionHeader(this.sessionState);
+
+		return this.sessionState;
+	}
+
+	private void setSessionHeader(Session session) {
+		// Store the session in the response cookies
+		Headers headers = Exchange.getResponseHeaders();
+
+		// Remove existing Session
+		if (headers.containsKey("Set-Cookie")) {
+			List<String> l = headers.get("Set-Cookie");
+
+			for (String s : l) 
+				if (s.startsWith(sessionList.COOKIE_HEADER + "=")) 
+					headers.remove(s);
+		}
+
+		headers.add("Set-Cookie", sessionList.COOKIE_HEADER + "=" + session.getSessionKey() + "; HttpOnly; SameSite=Strict; Expires=" + sessionList.getExpirationSeconds());
+		_setSessionHeader = true;
 	}
 }

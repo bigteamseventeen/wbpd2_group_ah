@@ -25,6 +25,20 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.jtwig</groupId>
+            <artifactId>jtwig-core</artifactId>
+            <version>5.87.0.RELEASE</version>
+        </dependency>
+
         <dependency>
             <groupId>net.jodah</groupId>
             <artifactId>expiringmap</artifactId>
@@ -120,5 +134,12 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        
+        <repository>
+            <id>jcenter</id>
+            <name>jcenter Repository</name>
+            <url>https://jcenter.bintray.com/</url>
+        </repository>
+
     </repositories>
 </project>

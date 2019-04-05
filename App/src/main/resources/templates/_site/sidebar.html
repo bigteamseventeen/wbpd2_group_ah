@@ -1,0 +1,30 @@
+<!-- Search Widget -->
+<div class="card my-4" style="width:100%;">
+    <h5 class="card-header">Search</h5>
+    <div class="card-body">
+        <form action="/search" method="post">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" minlength="2" maxlength="50" placeholder="Search for..." name="query">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit">Go</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Categories Widget -->
+<div class="card my-4" style="width:100%;">
+    <h5 class="card-header">Recent Planners</h5>
+    <div class="card-body">
+        <div class="row" style="margin-left:5px;margin-right:5px;">
+            <ul class="list-unstyled mb-0">
+                <li> <a href="topic?id={{ loop.index }}">Planner 1</a> </li>
+                <li> <a href="topic?id={{ loop.index }}">Planner 2</a> </li>
+                <li> <a href="topic?id={{ loop.index }}">Planner 3</a> </li>
+                <li> <a href="topic?id={{ loop.index }}">Planner 4</a> </li>
+                <li> <a href="topic?id={{ loop.index }}">Planner 5</a> </li>
+            </ul>
+        </div>
+    </div>
+</div>

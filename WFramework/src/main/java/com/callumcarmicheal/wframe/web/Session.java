@@ -37,6 +37,14 @@ public class Session implements Serializable {
         return (T)this.sessionValues.get(key);
     }
 
+    public void remove(String key) {
+        this.sessionValues.remove(key);
+    }
+
+    public <T extends Serializable> boolean remove(String key, T object) {
+        return this.sessionValues.remove(key, object);
+    }
+
     public boolean containsKey(String key) {
         return this.sessionValues.containsKey(key);
     }

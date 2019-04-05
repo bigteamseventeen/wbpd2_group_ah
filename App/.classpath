@@ -6,13 +6,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-
-	<classpathentry kind="lib" path="src/main/resources/lib/wframe-0.2.1-SNAPSHOT.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:src/main/resources/lib/wframe-0.2.1-SNAPSHOT-javadoc.jar" />
-		</attributes>
-	</classpathentry>
-
 	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>

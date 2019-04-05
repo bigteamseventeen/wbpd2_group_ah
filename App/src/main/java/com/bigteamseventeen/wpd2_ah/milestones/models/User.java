@@ -1,5 +1,6 @@
 package com.bigteamseventeen.wpd2_ah.milestones.models;
 
+import com.bigteamseventeen.wpd2_ah.milestones.SqliteDBCon;
 import com.callumcarmicheal.wframe.database.CInteger;
 import com.callumcarmicheal.wframe.database.CVarchar;
 import com.callumcarmicheal.wframe.database.DatabaseColumn;
@@ -7,6 +8,11 @@ import com.callumcarmicheal.wframe.database.DatabaseModel;
 import com.callumcarmicheal.wframe.database.querybuilder.QueryResults;
 import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery;
 import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery.QueryValueType;
+import com.callumcarmicheal.wframe.web.Session;
+
+import org.apache.log4j.Logger;
+
+import at.favre.lib.crypto.bcrypt.BCrypt;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,6 +21,9 @@ import java.util.LinkedHashMap;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class User extends DatabaseModel<User> {
+    final static Logger logger = Logger.getLogger(User.class);
+    final static String SESSION_ID_KEY = "USER_ID";
+
     // -----------------------------------------------------------
     // --                                                       --
     // ------------- Model Definition Attributes -----------------
@@ -77,7 +86,7 @@ public class User extends DatabaseModel<User> {
             if (query.Successful)
                 return query.Rows[0];
         } catch (SQLException e) {
-
+            logger.error("Failed to find a user by a username, SQL Exception", e);
             return null;
         }
 
@@ -93,7 +102,7 @@ public class User extends DatabaseModel<User> {
             String un = "";
 
             if (front) un+="%";
-            un+=username;
+                un+=username;
             if (back) un+="%";
 
             // Query the database
@@ -105,6 +114,7 @@ public class User extends DatabaseModel<User> {
             if (query.Successful)
                 return query.Rows[0];
         } catch (SQLException e) {
+            logger.error("Failed to find a user by an username like, SQL Exception", e);
             return null;
         }
 
@@ -122,12 +132,94 @@ public class User extends DatabaseModel<User> {
             if (query.Successful)
                 return query.Rows[0];
         } catch (SQLException e) {
+            logger.error("Failed to find a user by an email, SQL Exception", e);
             return null;
         }
 
         return null;
     }
+
+    /**
+     * Get a user from the session
+     * @param session
+     * @return
+     */
+    public static User GetSessionUser(Session session) {
+        // Check if we have a user in the session
+        int user_id = session.get(SESSION_ID_KEY, -1);
+
+        // We dont have a user 
+        if (user_id == -1)
+           return null;
+
+        // Our query results
+        QueryResults<User> query;
+        Connection con = null;
+
+        try {
+            // Get database
+            con = SqliteDBCon.GetConnection();
+
+            // Find the user by the id
+            query = User.where(con, "id", "=", user_id).execute();
+        } catch (SQLException e) {
+            logger.error("Failed to find a user by an id (session), SQL Exception", e);
+            return null;
+        } finally {
+            try { if (con != null && !con.isClosed()) con.close(); } catch (Exception e) {};
+        }
+        
+        // Check if we have a user
+        if (query.Length == 0) 
+            return null; 
+        
+        // Get the user
+        return query.first();
+    }
+
+    /**
+     * Checks if a session is authenticated
+     * @param session
+     * @return
+     */
+    public static boolean IsSessionAuthenticated(Session session) {
+        return GetSessionUser(session) != null;
+    }
+
+    /**
+     * Set the session to the current user
+     * @param session
+     */
+    public void authenticateSession(Session session) {
+        // Set SESSION_ID_KEY to the current user id
+        session.set(SESSION_ID_KEY, this.getId());
+    }
     
+    /**
+     * Remove a session from the current user
+     * @param session
+     */
+    public void logoutSession(Session session) {
+        // Remove the SESSION_ID_KEY from the session
+        if (session.containsKey(SESSION_ID_KEY))
+            session.remove(SESSION_ID_KEY);
+    }
+
+    // -----------------------------------------------------------
+    // --                                                       --
+    // ----------------------- Operations ------------------------ 
+    // --                                                       --
+    // -----------------------------------------------------------
+
+    public boolean checkPassword(String password) {
+        BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), getPassword());
+        return result.verified;
+    }
+
+    public User setPasswordEncrypted(String password) {
+        setPassword(BCrypt.withDefaults().hashToString(12, password.toCharArray()));
+        return this;
+    }
 
     // -----------------------------------------------------------
     // --                                                       --

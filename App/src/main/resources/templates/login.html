@@ -1,0 +1,49 @@
+{% extends "_site/authentication.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <h1>Miles</h1>
+    <p class="text-muted">You need to sign in to use this service, after you sign in or create an account you will gain access.</p>
+
+    {% if status is defined %}
+        <div class="alert alert-success" role="alert">
+            {% if status == 1 %}
+                Successfully registered account, please now login.
+            {% elseif status == 2 %}
+            {% else %}
+                Unknown error occured
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if error is defined %}
+        <div class="alert alert-danger" role="alert">
+            {% if error == 1 %}
+                The form request was malformed and is missing information
+            {% elseif error == 2 %}
+                The specified email was invalid
+            {% elseif error == 3 %}
+                The specified password was invalid    
+            {% else %}
+                Unknown error occured
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <form class="form-signin" method="post">
+        <img class="mb-4" src="/docs/4.3/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+        
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
+
+        <button class="btn btn-lg btn-primary btn-block" style="margin-top:15px;" type="submit">Sign in</button>
+    </form>
+
+    <a href="/register" style="float:left;margin-top:5px">Dont have an account? Lets create one...</a>
+
+    <p class="mt-5 mb-3 text-muted">Miles &copy;2019</p>
+{% endblock %}

@@ -216,15 +216,13 @@ public class Server implements HttpHandler {
 						cmp.GetInstance = inst;
 						cmp.Get = t.y;
 						
-						System.out.print("Registered route, GET  (" + t.x + ")");
-						System.out.println(" @ " + Package(t.y.getDeclaringClass().getTypeName()) + "." + t.y.getName());
+						System.out.println("Registered route, GET  (" + t.x + ") @ " + Package(t.y.getDeclaringClass().getTypeName()) + "." + t.y.getName());
 						break;
 					case POST:
 						cmp.PostInstance = inst;
 						cmp.Post = t.y;
 						
-						System.out.print("Registered route, POST (" + t.x + ")");
-						System.out.println(" @ " + Package(t.y.getDeclaringClass().getTypeName()) + "." + t.y.getName());
+						System.out.println("Registered route, POST (" + t.x + ") @ " + Package(t.y.getDeclaringClass().getTypeName()) + "." + t.y.getName());
 						break;
 				}
 				
@@ -264,7 +262,7 @@ public class Server implements HttpHandler {
 
 		// FIXME: Display remote ip address and store it in the HttpRequest
 		System.out.println(
-			String.format("WFrameworkServer: %s %s %s", e.getRemoteAddress().toString(), isPost ? "POST " : "GET", path));
+			String.format("WFrameworkServer: %s %s %s", e.getRemoteAddress().toString(), isPost ? "POST" : "GET ", path));
 		
 		try {
 			// Check if we have the request in our router
@@ -384,11 +382,13 @@ public class Server implements HttpHandler {
 	}
 	
 	public static String GetQueryString(HttpExchange Exchange) {
-		return Exchange.getRequestURI().getQuery();
+		// Check if the query does not exist, if so then return an empty string instead of null
+		String query;
+		return (query = Exchange.getRequestURI().getQuery()) == null ? "" : query;
 	}
 	
 	public static Map<String, String> ParseQuery(HttpExchange Exchange) {
-		String query = Exchange.getRequestURI().getQuery();
+		String query = GetQueryString(Exchange);
 		return ParseQuery(query);
 	}
 	

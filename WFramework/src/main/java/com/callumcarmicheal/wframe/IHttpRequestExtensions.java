@@ -1,5 +1,7 @@
 package com.callumcarmicheal.wframe;
 
+import java.io.IOException;
+
 public interface IHttpRequestExtensions {
 
     /**
@@ -15,7 +17,7 @@ public interface IHttpRequestExtensions {
      * @param message           The page message content 
      * @param httpResponseCode  The response code 
      */
-    public void SendMessagePage(HttpRequest request, String title, String message, int httpResponseCode);
+    public void SendMessagePage(HttpRequest request, String title, String message, int httpResponseCode) throws IOException;
     
     /**
      * Checks if the Exception Page is implemented if not HttpRequest.ThrowExceptionText is used.

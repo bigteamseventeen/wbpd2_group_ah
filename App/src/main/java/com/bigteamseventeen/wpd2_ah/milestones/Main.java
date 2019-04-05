@@ -3,6 +3,7 @@ package com.bigteamseventeen.wpd2_ah.milestones;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import com.callumcarmicheal.wframe.HttpRequest;
 import com.callumcarmicheal.wframe.Resource;
 import com.callumcarmicheal.wframe.Server;
 
@@ -27,28 +28,26 @@ public class Main {
         BasicConfigurator.configure();
 
         // Setup the database
-        if (SetupDatabase()) {
+        if (setupDatabase()) {
             logger.error("BigTeamSeventeen WPDB2 Group AH: Stopping application because SetupDatabase() failed.");
             System.exit(1);
         }
 
         // Start the server
-        if (SetupServer()) {
+        if (setupServer()) {
             logger.error("BigTeamSeventeen WPDB2 Group AH: Stopping application because SetupServer() failed.");
             System.exit(1);
         }
     }
 
-    public static boolean SetupDatabase() {
+    private static boolean setupDatabase() {
         logger.info("Connecting to database");
-        
         Connection DB;
 
         try {
             SqliteDBCon.InitializeDatabase();
-            DB = SqliteDBCon.GetConnection();
-
-            if (DB == null) {
+            
+            if ((DB = SqliteDBCon.GetConnection_s()) == null) {
                 logger.error("ERROR: Failed to connect to database.");
                 return true;
             }
@@ -69,14 +68,20 @@ public class Main {
         return false;
     }
 
-    public static boolean SetupServer() {
+    private static boolean setupServer() {
         try {
             // We are starting the server
             System.out.println("Starting server!");
-            new Server(PORT, CONTROLLERSPACKAGE).setResourcesEnabled(false)
-                    .setResourcesDirectory(Resource.getWorkingDirection())
-                    .start();
 
+            // Set our request extensions
+            HttpRequest.HttpExtensions = new RequestExtensions();
+
+            // Start the server
+            new Server(PORT, CONTROLLERSPACKAGE)
+                .setResourcesEnabled(true) // enable resources in /bin/public
+                    .setResourcesDirectory(Resource.getWorkingDirection() + "/public")
+                .start();
+            
             // We have started the server
             System.out.println("Server started on port: " + PORT + "!");
 

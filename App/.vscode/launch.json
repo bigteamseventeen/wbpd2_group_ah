@@ -6,10 +6,10 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Main",
             "request": "launch",
-
-            "name": "Application",
             "mainClass": "com.bigteamseventeen.wpd2_ah.milestones.Main",
+            "projectName": "bts_g1_milestones",
             "windows": {
                 "cwd": "${workspaceFolder}/bin"
             }

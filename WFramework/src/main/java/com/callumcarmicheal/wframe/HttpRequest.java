@@ -33,26 +33,27 @@ public class HttpRequest {
 
 	/** ---- Public Properties ---- */
 	public HttpExchange Exchange;
+
 	/** ---- Public Properties ---- */
 
 	public HttpRequest(HttpExchange httpExchange, SessionList sessions) {
 		this.sessionList = sessions;
-		
+
 		// Setup the httpExchange
 		Prepare(httpExchange);
 
 		// If we have a session
-		String sessionId = null; 
+		String sessionId = null;
 		if ((sessionId = this.getRequestCookie(sessions.COOKIE_HEADER)) != null) {
 			if (sessions.exists(sessionId)) {
-				sessionState = sessions.get(sessionId);	
+				sessionState = sessions.get(sessionId);
 				setSessionHeader(sessionState);
 			} else {
 			}
 		} else {
 		}
 	}
-	
+
 	protected void Prepare(HttpExchange httpExchange) {
 		this.Exchange = httpExchange;
 		this.buffer = ByteStreams.newDataOutput();
@@ -61,46 +62,62 @@ public class HttpRequest {
 	public boolean hasSentResponse() {
 		return sentResponse;
 	}
-	
+
 	// Write data into the buffer
 
 	/**
 	 * Append string to the output buffer
+	 * 
 	 * @param str
 	 */
-	public void Write(String str)   { buffer.write(str.getBytes()); }
+	public void Write(String str) {
+		buffer.write(str.getBytes());
+	}
+
 	/**
 	 * Append bytes to output buffer
+	 * 
 	 * @param bytes
 	 */
-	public void Write(byte[] bytes) { buffer.write(bytes); }
+	public void Write(byte[] bytes) {
+		buffer.write(bytes);
+	}
+
 	/**
 	 * Append integer to output buffer
+	 * 
 	 * @param i
 	 */
-	public void Write(int i)        { buffer.write(i); }
-	
-	/**
-	 * Redirect to another page
-	 * @param to 			The url to be redirected to
-	 * @throws IOException	
-	 */ 
-	public void Redirect(String to) throws IOException { Redirect(to, "Redirecting to " + to); }
+	public void Write(int i) {
+		buffer.write(i);
+	}
 
 	/**
 	 * Redirect to another page
-	 * @param to 			The url to be redirected to
-	 * @param why			Why the user is being redirected
-	 * @throws IOException	
-	 */ 
+	 * 
+	 * @param to The url to be redirected to
+	 * @throws IOException
+	 */
+	public void Redirect(String to) throws IOException {
+		Redirect(to, "Redirecting to " + to);
+	}
+
+	/**
+	 * Redirect to another page
+	 * 
+	 * @param to  The url to be redirected to
+	 * @param why Why the user is being redirected
+	 * @throws IOException
+	 */
 	public void Redirect(String to, String why) throws IOException {
 		Headers headers = Exchange.getResponseHeaders();
 		headers.add("Location", to);
 		Send(302, why);
 	}
-	
+
 	/**
 	 * Send the http response code with existing buffer
+	 * 
 	 * @param response
 	 * @throws IOException
 	 */
@@ -108,12 +125,13 @@ public class HttpRequest {
 		byte[] buf = buffer.toByteArray();
 		Send(response, buf);
 	}
-	
+
 	/**
 	 * Send the http response with specified bytes buffer
-	 * @param response		The http response code
-	 * @param buffer		Byte array to be sent to client
-	 * @throws IOException	
+	 * 
+	 * @param response The http response code
+	 * @param buffer   Byte array to be sent to client
+	 * @throws IOException
 	 */
 	public void Send(int response, byte[] buffer) throws IOException {
 		Exchange.sendResponseHeaders(response, buffer.length);
@@ -123,49 +141,54 @@ public class HttpRequest {
 
 		sentResponse = true;
 	}
-	
+
 	/**
 	 * Send current buffer with appended data and send OK (200)
-	 * @param data		Data to be appended to the buffered output
+	 * 
+	 * @param data Data to be appended to the buffered output
 	 * @throws IOException
 	 */
 	public void Send(byte[] buffer) throws IOException {
 		Send(200, buffer);
 	}
-	
+
 	/**
 	 * Send current buffer with appended data and send OK (200)
-	 * @param data		Data to be appended to the buffered output
+	 * 
+	 * @param data Data to be appended to the buffered output
 	 * @throws IOException
 	 */
 	public void Send(String data) throws IOException {
 		Write(data);
 		Send(200);
 	}
-	
+
 	/**
 	 * Send current buffer with appended data and Response
-	 * @param response	Http response code
-	 * @param data		Data to be appended to the buffered output
+	 * 
+	 * @param response Http response code
+	 * @param data     Data to be appended to the buffered output
 	 * @throws IOException
 	 */
 	public void Send(int response, String data) throws IOException {
 		Write(data);
 		Send(response);
 	}
-	
+
 	/**
 	 * Send current buffer with 200 (OK) http header
+	 * 
 	 * @throws IOException
 	 */
 	public void Send() throws IOException {
 		Send(200);
 	}
-	
+
 	/**
 	 * Send a exception page to the client with added user safe information
-	 * @param message	The message that is displayed to the end user and developer
-	 * @param exception	The exception
+	 * 
+	 * @param message   The message that is displayed to the end user and developer
+	 * @param exception The exception
 	 */
 	public void ThrowExceptionText(String message, Exception exception) {
 		ThrowExceptionText(message, message, exception);
@@ -173,9 +196,11 @@ public class HttpRequest {
 
 	/**
 	 * Send a exception page to the client with added user safe information
-	 * @param message	The message that is displayed to the end user and developer
-	 * @param exception	The exception
-	 * @param httpResponseCode	The http error code sent in the header
+	 * 
+	 * @param message          The message that is displayed to the end user and
+	 *                         developer
+	 * @param exception        The exception
+	 * @param httpResponseCode The http error code sent in the header
 	 */
 	public void ThrowExceptionText(String message, Exception exception, int httpResponseCode) {
 		ThrowExceptionText(message, message, exception, httpResponseCode);
@@ -183,9 +208,11 @@ public class HttpRequest {
 
 	/**
 	 * Send a exception page to the client with added user safe information
-	 * @param publicMessage	The message that is displayed to the end user
-	 * @param debugMessage	The debug message that is visible when the application is being debugged
-	 * @param exception		The exception
+	 * 
+	 * @param publicMessage The message that is displayed to the end user
+	 * @param debugMessage  The debug message that is visible when the application
+	 *                      is being debugged
+	 * @param exception     The exception
 	 */
 	public void ThrowExceptionText(String publicMessage, String debugMessage, Exception exception) {
 		ThrowExceptionText(publicMessage, debugMessage, exception, true, true, 500);
@@ -193,25 +220,33 @@ public class HttpRequest {
 
 	/**
 	 * Send a exception page to the client with added user safe information
-	 * @param publicMessage		The message that is displayed to the end user
-	 * @param debugMessage		The debug message that is visible when the application is being debugged
-	 * @param exception			The exception
-	 * @param httpResponseCode	The http error code sent in the header
+	 * 
+	 * @param publicMessage    The message that is displayed to the end user
+	 * @param debugMessage     The debug message that is visible when the
+	 *                         application is being debugged
+	 * @param exception        The exception
+	 * @param httpResponseCode The http error code sent in the header
 	 */
-	public void ThrowExceptionText(String publicMessage, String debugMessage, Exception exception, int httpResponseCode) {
+	public void ThrowExceptionText(String publicMessage, String debugMessage, Exception exception,
+			int httpResponseCode) {
 		ThrowExceptionText(publicMessage, debugMessage, exception, true, true, httpResponseCode);
 	}
 
 	/**
 	 * Send a exception page to the client with added user safe information
-	 * @param publicMessage			The message that is displayed to the end user
-	 * @param debugMessage			The debug message that is visible when the application is being debugged
-	 * @param exception				The exception
-	 * @param escapePublicMessage	If we are escaping the public message (set to false for HTML)
-	 * @param escapeDebugMessage	If we are escaping the debug message (set to false for HTML)
-	 * @param httpResponseCode		The http error code sent in the header
+	 * 
+	 * @param publicMessage       The message that is displayed to the end user
+	 * @param debugMessage        The debug message that is visible when the
+	 *                            application is being debugged
+	 * @param exception           The exception
+	 * @param escapePublicMessage If we are escaping the public message (set to
+	 *                            false for HTML)
+	 * @param escapeDebugMessage  If we are escaping the debug message (set to false
+	 *                            for HTML)
+	 * @param httpResponseCode    The http error code sent in the header
 	 */
-	public void ThrowExceptionText(String publicMessage, String debugMessage, Exception exception, boolean escapePublicMessage, boolean escapeDebugMessage, int httpResponseCode) {
+	public void ThrowExceptionText(String publicMessage, String debugMessage, Exception exception,
+			boolean escapePublicMessage, boolean escapeDebugMessage, int httpResponseCode) {
 		if (escapePublicMessage)
 			publicMessage = HtmlEscape.escapeHtml5(publicMessage);
 
@@ -222,39 +257,45 @@ public class HttpRequest {
 			Write("<h1>There was an error</h1><p>Im sorry there was a error loading resources.</p>");
 			Write("<br><p>Exception message : <b>" + exception.getMessage() + "</b></p>");
 			Write("<br><pre style=\"background:#ccc\">");
-			
+
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			exception.printStackTrace(pw);
 			Write(sw.toString());
-			
+
 			Write("</pre>");
 
-			try { Send(httpResponseCode); } catch (Exception e) { }
+			try {
+				Send(httpResponseCode);
+			} catch (Exception e) {
+			}
 		} else {
 			try {
-				Send(httpResponseCode, "<h1>There was an error</h1><p>Im sorry there was a error loading resources.</p>");
-			} catch (Exception e) { }
+				Send(httpResponseCode,
+						"<h1>There was an error</h1><p>Im sorry there was a error loading resources.</p>");
+			} catch (Exception e) {
+			}
 		}
 	}
 
 	/**
 	 * Throw an exception (attempt to use a page or fallback to a basic page)
+	 * 
 	 * @param exception
 	 */
 	public void ThrowException(Exception exception) {
 		exception.printStackTrace();
-		
+
 		// If the exception is an LoaderException (PEBBLE SUPPORT)
 		// assume that we could not load a file and assume its the exception template
 		if (exception instanceof LoaderException) {
 			// Clear the output buffer.
 			buffer = ByteStreams.newDataOutput();
-			
+
 			// Attempt to tell the browser something went wrong.
 			ThrowExceptionText("Im sorry there was a error loading resources.", exception);
 		}
-		
+
 		// We are just showing the page
 		else {
 			// Print the error
@@ -267,69 +308,75 @@ public class HttpRequest {
 			}
 
 			// Fallback to a text based error page
-			ThrowExceptionText("I'm sorry there was an error while processing your request.", exception);			
+			ThrowExceptionText("I'm sorry there was an error while processing your request.", exception);
 		}
 	}
-	
-	/** 
+
+	/**
 	 * Get a string map of the query string
+	 * 
 	 * @return A map containing the queries
 	 */
-	public Map<String,String> getQuery() {
+	public Map<String, String> getQuery() {
 		return Server.ParseQuery(this.Exchange);
 	}
-	
+
 	/**
 	 * Get the query string from the URI
+	 * 
 	 * @return
 	 */
 	public String getQueryString() {
 		return Server.GetQueryString(this.Exchange);
 	}
-	
+
 	/**
 	 * Get post body content as bytes
+	 * 
 	 * @return Byte array containg post body
 	 * @throws IOException
 	 */
 	public byte[] GetPostBytes() throws IOException {
 		Headers requestHeaders = Exchange.getRequestHeaders();
 		int contentLength = Integer.parseInt(requestHeaders.getFirst("Content-length"));
-		
+
 		InputStream is = Exchange.getRequestBody();
 		byte[] data = new byte[contentLength];
 		is.read(data);
-		
+
 		return data;
 	}
-	
+
 	/**
 	 * Get the post form as a string map
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
-	public Map<String,String> GetPostForm() throws IOException {
+	public Map<String, String> GetPostForm() throws IOException {
 		return Server.ParseQueryEncoding(new String(GetPostBytes()));
 	}
-	
+
 	/**
 	 * Clear the buffer and recreate the bytestream
 	 */
 	public void Clear() {
 		this.buffer = ByteStreams.newDataOutput();
 	}
-	
+
 	/**
 	 * Generate a html message page
+	 * 
 	 * @param title
 	 * @param message
 	 */
 	public void SendMessagePage(String title, String message) {
 		SendMessagePage(title, message, 200);
 	}
-	
+
 	/**
 	 * Generate a html message page
+	 * 
 	 * @param title
 	 * @param message
 	 * @param httpResponseCode The http response code
@@ -339,8 +386,11 @@ public class HttpRequest {
 
 		// Check if the SendMessagePage function is implemented
 		if (HttpExtensions != null && HttpExtensions.isSendMessagePageSupported()) {
-			HttpExtensions.SendMessagePage(this, title, message, httpResponseCode);
-			return;
+			try {
+				HttpExtensions.SendMessagePage(this, title, message, httpResponseCode);
+			} catch (IOException e) {
+				ThrowException(e);
+			} return;
 		}
 		
 		// Invoke the message page

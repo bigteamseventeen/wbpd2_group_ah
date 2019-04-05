@@ -38,16 +38,17 @@ public class QueryResults<T> {
         }
     }
 
+    public T first() {
+        if (this.Length == 0)
+            return null;
+        
+        return this.Rows[0];
+    }
+
     /**
      * Convert 
      */
     public String toString() {
-        // TODO: Implement ToString QueryResults
-        return "";
-
-        // if (Rows == null)
-        //     return "QueryResults {"
-
-        // return "QueryResults { Successful=" + Successful + ", Length=" + Length + ", Rows=" + Rows.toString() + "}";
+        return "QueryResults { Successful=" + Successful + ", Length=" + Length + ", Rows=" + Rows.toString() + "}";
     }
 }

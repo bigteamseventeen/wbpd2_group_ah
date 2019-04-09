@@ -5,6 +5,8 @@ import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery.QueryValue
 public abstract class DatabaseColumn<T> {
     protected QueryValueType dataHandlingMethod = QueryValueType.Bound;
 
+    protected boolean flagPrintInString = true;
+
     protected boolean primaryKey = false;
     protected boolean nullable = true;
     protected boolean autoincrements = false;
@@ -32,6 +34,9 @@ public abstract class DatabaseColumn<T> {
     public boolean getUnique() { return this.unique; }
     public T setUnique(boolean b) {  this.unique = b; return (T)this; }
     
+    public boolean getFlagPrintInString() { return this.flagPrintInString; }
+    public T setFlagPrintInString(boolean b) {  this.flagPrintInString = b; return (T)this; }
+
     public abstract String getColumnDefition();
 
     protected String getColumnAttributes() {

@@ -14,7 +14,8 @@ import com.google.common.cache.RemovalCause;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import net.jodah.expiringmap.*;
 
@@ -22,7 +23,8 @@ import net.jodah.expiringmap.*;
  * A session that expires after 4 hours of inactivity
  */
 public class SessionList {
-    protected final static Logger logger = Logger.getLogger(SessionList.class);
+    protected final static Logger logger = LogManager.getLogger();
+
     protected final static ExpirationPolicy POLICY = ExpirationPolicy.ACCESSED;
     protected final static int EXPIRATION_TIME = 4;
     protected final static TimeUnit EXPIRATION_UNIT = TimeUnit.HOURS;
@@ -105,7 +107,7 @@ public class SessionList {
     public Session create() {
         // Attempt to generate a random session 5 times then fail
         final int MAX_ATTEMPTS = 5; 
-
+        
         // Loop until we have outdone our max attempts
         for(int x = 0; x < MAX_ATTEMPTS; x++) {
             String sessionKey = randomString(SESSION_KEY_SIZE); // SESSION_KEY_SIZE characters

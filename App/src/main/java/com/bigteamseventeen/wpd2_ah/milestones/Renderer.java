@@ -13,14 +13,15 @@ public class Renderer {
     private User currentUser = null;
     public Renderer setUser(User v) { this.currentUser = v; return this; } 
 
-
     /**
      * Generate a page model
      * 
      * @return
      */
     private JtwigModel GeneratePageModel() {
-        return JtwigModel.newModel();
+        return JtwigModel.newModel()
+            .with("_user", currentUser)
+        ;
     }
 
     /**

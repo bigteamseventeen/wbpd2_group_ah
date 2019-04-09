@@ -1,7 +1,5 @@
 package com.callumcarmicheal.wframe.database;
 
-import com.callumcarmicheal.wframe.library.Tuple3;
-
 @SuppressWarnings("rawtypes")
 public class DatabaseColumnValue {
     public DatabaseColumn Column;
@@ -54,6 +52,6 @@ public class DatabaseColumnValue {
 
     @Override
     public String toString() {
-        return this.Value.toString();
+        return this.Column.name + "=" + this.Value.toString();
     }
 }

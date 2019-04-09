@@ -9,7 +9,8 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.callumcarmicheal.wframe.library.Tuple;
 import com.callumcarmicheal.wframe.library.Tuple3;
@@ -31,6 +32,9 @@ import java.util.concurrent.Executors;
 
 @SuppressWarnings("rawtypes")
 public class Server implements HttpHandler {
+    final static Logger logger = LogManager.getLogger();
+
+
 	private static final int __THREAD_COUNT = 4;
 	private String controllersPackage = null;
 	private HttpServer Server;
@@ -67,16 +71,17 @@ public class Server implements HttpHandler {
 		this.controllersPackage = ControllersPackage;
 		this.sessionList = new SessionList();
 			
-		Logger _TEMP = Reflections.log;
-		Reflections.log = null; 
+		// Temporarly disable the logger
+		// org.slf4j.Logger _TEMP = Reflections.log;
+		// Reflections.log = null;
 		SetupRouter();
-		Reflections.log = _TEMP;
+		// Reflections.log = _TEMP;
 		
 		Server = HttpServer.create(new InetSocketAddress(Port), 0);
 	}
 	
 	private void SetupRouter() {
-		System.out.println("WFrameworkServer: Indexing Controllers and Methods.");
+		logger.info("WFrameworkServer: Indexing Controllers and Methods.");
 
 		Reflections reflections = new Reflections(new ConfigurationBuilder()
 			.setUrls(ClasspathHelper.forPackage(controllersPackage))
@@ -100,9 +105,9 @@ public class Server implements HttpHandler {
 			String path = g.value();
 			
 			if (!Modifier.isPublic(m.getModifiers())) {
-				System.err.println("WFrameworkServer: ERROR Method needs to be public!");
-				System.err.println("    Route: GET " + path);
-				System.err.println("    at " + Package(m.toGenericString()));
+				logger.error("WFrameworkServer: ERROR Method needs to be public!");
+				logger.error("    Route: GET " + path);
+				logger.error("    at " + Package(m.toGenericString()));
 				System.exit(1);
 			}
 			
@@ -110,11 +115,12 @@ public class Server implements HttpHandler {
 				Tuple<RequestType,Method> rt = paths.get(path);
 				
 				if (rt.x == RequestType.GET) {
-					System.err.println("WFrameworkServer: WARNING Duplicate value's resolution");
-					System.err.println("    Request Type: GET");
-					System.err.println("    Methods are conflicting for value: " + path);
-					System.err.println("    Method 1: " + Package(m.toGenericString()));
-					System.err.println("    Method 2: " + Package(rt.y.toGenericString()));
+					
+					logger.error("WFrameworkServer: WARNING Duplicate value's resolution");
+					logger.error("    Request Type: GET");
+					logger.error("    Methods are conflicting for value: " + path);
+					logger.error("    Method 1: " + Package(m.toGenericString()));
+					logger.error("    Method 2: " + Package(rt.y.toGenericString()));
 					System.exit(1);
 				}
 			} else {
@@ -133,9 +139,9 @@ public class Server implements HttpHandler {
 			String path = p.value();
 			
 			if (!Modifier.isPublic(m.getModifiers())) {
-				System.err.println("WFrameworkServer: ERROR Method needs to be public!");
-				System.err.println("    Route: POST " + path);
-				System.err.println("    at " + m.toGenericString());
+				logger.error("WFrameworkServer: ERROR Method needs to be public!");
+				logger.error("    Route: POST " + path);
+				logger.error("    at " + m.toGenericString());
 				System.exit(1);
 			}
 			
@@ -143,11 +149,11 @@ public class Server implements HttpHandler {
 				Tuple<RequestType,Method> rt = paths.get(path);
 				
 				if (rt.x == RequestType.POST) {
-					System.err.println("WFrameworkServer: WARNING Duplicate value's resolution");
-					System.err.println("    Request Type: POST");
-					System.err.println("    Methods are conflicting for value: " + path);
-					System.err.println("    Method 1: " + Package(m.toGenericString()));
-					System.err.println("    Method 2: " + Package(rt.y.toGenericString()));
+					logger.error("WFrameworkServer: WARNING Duplicate value's resolution");
+					logger.error("    Request Type: POST");
+					logger.error("    Methods are conflicting for value: " + path);
+					logger.error("    Method 1: " + Package(m.toGenericString()));
+					logger.error("    Method 2: " + Package(rt.y.toGenericString()));
 					System.exit(1);
 				}
 			} else {
@@ -173,8 +179,8 @@ public class Server implements HttpHandler {
 					inst = (Object) ctor.newInstance(new Object[] {});
 					instances.put(k, inst);
 				} catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-					System.err.println("Failed to find constructor or create instance for controller class.");
-					System.err.println("    " + k.getCanonicalName());
+					logger.error("Failed to find constructor or create instance for controller class.");
+					logger.error("    " + k.getCanonicalName());
 					e.printStackTrace();
 					System.exit(1);
 				}
@@ -192,18 +198,18 @@ public class Server implements HttpHandler {
 					switch (t.z) {
 						case GET:
 							if (cmp.Get != null) {
-								System.err.println("WFrameworkServer: WARNING Duplicate method resolution");
-								System.err.println("    Methods are conflicting for value: " + t.x);
-								System.err.println("    Method 1: " + Package(cmp.Get.toGenericString()));
-								System.err.println("    Method 2: " + Package(t.y.toGenericString()));
+								logger.error("WFrameworkServer: WARNING Duplicate method resolution");
+								logger.error("    Methods are conflicting for value: " + t.x);
+								logger.error("    Method 1: " + Package(cmp.Get.toGenericString()));
+								logger.error("    Method 2: " + Package(t.y.toGenericString()));
 								System.exit(1);
 							} break;
 						case POST:
 							if (cmp.Post != null) {
-								System.err.println("WFrameworkServer: WARNING Duplicate method resolution");
-								System.err.println("    Methods are conflicting for value: " + t.x);
-								System.err.println("    Method 1: " + Package(cmp.Post.toGenericString()));
-						 		System.err.println("    Method 2: " + Package(t.y.toGenericString()));
+								logger.error("WFrameworkServer: WARNING Duplicate method resolution");
+								logger.error("    Methods are conflicting for value: " + t.x);
+								logger.error("    Method 1: " + Package(cmp.Post.toGenericString()));
+								logger.error("    Method 2: " + Package(t.y.toGenericString()));
 								System.exit(1);
 							} break;
 					}
@@ -216,13 +222,13 @@ public class Server implements HttpHandler {
 						cmp.GetInstance = inst;
 						cmp.Get = t.y;
 						
-						System.out.println("Registered route, GET  (" + t.x + ") @ " + Package(t.y.getDeclaringClass().getTypeName()) + "." + t.y.getName());
+						logger.info("Registered route, GET  (" + t.x + ") @ " + Package(t.y.getDeclaringClass().getTypeName()) + "." + t.y.getName());
 						break;
 					case POST:
 						cmp.PostInstance = inst;
 						cmp.Post = t.y;
 						
-						System.out.println("Registered route, POST (" + t.x + ") @ " + Package(t.y.getDeclaringClass().getTypeName()) + "." + t.y.getName());
+						logger.info("Registered route, POST (" + t.x + ") @ " + Package(t.y.getDeclaringClass().getTypeName()) + "." + t.y.getName());
 						break;
 				}
 				
@@ -250,18 +256,44 @@ public class Server implements HttpHandler {
 
 		return this;
 	}
+
+	/**
+	 * Stop the server
+	 * @return
+	 */
+	public void stop() {
+		// Check if we have not started
+		if (!Started) return;
+
+		// Stop the server
+		if (Server != null) 
+			Server.stop(0);
+	}
 	
 	@Override
 	public void handle(HttpExchange e) {
-		
-		HttpRequest r = new HttpRequest(e, sessionList);
-		boolean isPost = e.getRequestMethod().equalsIgnoreCase("POST");
+		HttpRequest r = null;
+		boolean isPost = false;
 		boolean requestStartsWithSlash = false;
-		String path = r.getRequestURI(false);
-		String request = r.getRequestURI(true);
+		String path = null;
+		String request = null;
+
+		try {
+			r = new HttpRequest(e, sessionList);
+			
+			isPost = e.getRequestMethod().equalsIgnoreCase("POST");
+			path = r.getRequestURI(false);
+			request = r.getRequestURI(true);
+		} catch (Exception ex) {
+			logger.error("WFrameworkServer: Failed to initialize request response", ex);
+
+			throw ex;
+//			return;
+		}
+		
 
 		// FIXME: Display remote ip address and store it in the HttpRequest
-		System.out.println(
+		logger.info(
 			String.format("WFrameworkServer: %s %s %s", e.getRemoteAddress().toString(), isPost ? "POST" : "GET ", path));
 		
 		try {

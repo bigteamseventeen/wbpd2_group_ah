@@ -6,5 +6,6 @@
         "**/.factorypath": true
     },
     "java.dependency.packagePresentation": "flat",
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "discord.enabled": true
 }

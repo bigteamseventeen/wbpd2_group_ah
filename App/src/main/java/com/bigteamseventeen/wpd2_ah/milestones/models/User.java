@@ -1,5 +1,9 @@
 package com.bigteamseventeen.wpd2_ah.milestones.models;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+
 import com.bigteamseventeen.wpd2_ah.milestones.SqliteDBCon;
 import com.callumcarmicheal.wframe.database.CInteger;
 import com.callumcarmicheal.wframe.database.CVarchar;
@@ -10,18 +14,14 @@ import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery;
 import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery.QueryValueType;
 import com.callumcarmicheal.wframe.web.Session;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.LinkedHashMap;
-
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class User extends DatabaseModel<User> {
-    final static Logger logger = Logger.getLogger(User.class);
+    final static Logger logger = LogManager.getLogger();
     final static String SESSION_ID_KEY = "USER_ID";
 
     // -----------------------------------------------------------
@@ -32,6 +32,10 @@ public class User extends DatabaseModel<User> {
     // Creating these for each instance would be taxing so we want to cache them
     private static LinkedHashMap<String, DatabaseColumn> _ColumnsDefinition = new LinkedHashMap<>();
     private static CInteger _PrimaryKey;
+
+    @Override public String getModelName() {
+        return "User";
+    }
 
     /**
      * Create a instance of the user model
@@ -48,7 +52,7 @@ public class User extends DatabaseModel<User> {
     public static boolean Initialize(Connection c) {
         _addColumn( _PrimaryKey = new CInteger("id").setPrimaryKey(true) );
         _addColumn( new CVarchar("username").setUnique(true) );
-        _addColumn( new CVarchar("password") );
+        _addColumn( new CVarchar("password").setFlagPrintInString(false) );
         _addColumn( new CVarchar("email", 320).setUnique(true) );
         _addColumn( new CInteger("isAdmin") );
         _addColumn( new CInteger("isBanned") );
@@ -259,20 +263,23 @@ public class User extends DatabaseModel<User> {
         values.get("isAdmin").Value = isAdmin; return this;
     }
     
-    public int isAdmin() {
+    public int getAdmin() {
         return (int) values.get("isAdmin").Value;
+    }
+
+    public boolean isAdmin() {
+        return ((int)values.get("isAdmin").Value) == 1;
     }
 
     public User setBanned(int banned) {
         values.get("isBanned").Value = banned; return this;
     }
     
-    public int isBanned() {
+    public int getBanned() {
         return (int) values.get("isBanned").Value;
     }
 
-    @Override
-    public String toString() {
-        return values.toString();
+    public boolean isBanned() {
+        return ((int) values.get("isBanned").Value) == 1;
     }
 }

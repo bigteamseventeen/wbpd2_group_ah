@@ -18,8 +18,13 @@ import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery;
 import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery.QueryValueType;
 import com.callumcarmicheal.wframe.library.Tuple;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 @SuppressWarnings("rawtypes")
 public abstract class DatabaseModel<T> {
+    final static Logger logger = LogManager.getLogger();
+
     private boolean exists = false;
     private boolean deleted = false;
 
@@ -29,7 +34,11 @@ public abstract class DatabaseModel<T> {
     protected LinkedHashMap<String, DatabaseColumn> columns = new LinkedHashMap<>();
     protected HashMap<String, DatabaseColumnValue> values = new LinkedHashMap<>();
 
-    
+    /**
+     * The name of the model that is displayed in toString
+     * @return
+     */
+    public abstract String getModelName();
 
     /**
      * Initializes a instance of the database model
@@ -112,8 +121,7 @@ public abstract class DatabaseModel<T> {
             return true;
         } catch (SQLException ex) {
             // Print the basic sql information
-            System.err.println("Failed to create table for " + table);
-            System.err.println("  Sql: \n" + sql);
+            logger.error("Failed to create table for " + table + ", SQL = " + sql, ex);
 
             // Print the exception information
             ex.printStackTrace();
@@ -141,7 +149,7 @@ public abstract class DatabaseModel<T> {
         // Generate the SQL statement
         String sql = String.format("SELECT * FROM %s", modelClass.orm_getTable());
 
-        //System.out.println("SQL:    " + sql);
+        //logger.debug("SQL for All:    " + sql);
 
         Connection con = modelClass.getConnection();
         Statement stmt = null;
@@ -226,10 +234,11 @@ public abstract class DatabaseModel<T> {
             if (values.keySet().contains(col)) {
                 DatabaseColumnValue store = values.get(col);
                 store.Value = rs.getObject(col);
-                // System.out.println(col + ": " + store.Value);
+                // logger.debug(col + ": " + store.Value);
             }
         }
     }
+    
 
     public DatabaseColumn orm_getPrimaryKey() {
         return primaryKey;
@@ -315,8 +324,8 @@ public abstract class DatabaseModel<T> {
         // Get the query
         sql = sqlGenerate.y;
         
-        //System.out.println("SQL:  " + sql);
-        //System.out.println("BIND: " + stmt_bind);
+        //logger.debug("SQL:  " + sql);
+        //logger.debug("BIND: " + stmt_bind);
 
         // Query Statement
         Statement stmt;
@@ -344,7 +353,8 @@ public abstract class DatabaseModel<T> {
             updatedRows = stmt.executeUpdate(sql);
         }
 
-        System.out.println("Updated rows: " + updatedRows);
+        
+        logger.debug("Updated rows: " + updatedRows);
 
         // If we have changed any rows
         if (updatedRows > 0 && !exists) {
@@ -360,7 +370,7 @@ public abstract class DatabaseModel<T> {
                 getPrimaryKey().Value = rs.getObject(1);
                 exists = true;
                 deleted = false;
-                System.out.println("Inserted row with new ID: " + getPrimaryKey().Value);
+                logger.debug("Inserted row with new ID: " + getPrimaryKey().Value);
             }
 
             rs.close();
@@ -554,5 +564,33 @@ public abstract class DatabaseModel<T> {
         
         // Return the sql
         return new Tuple<>(true, sql);
+    }
+
+    
+    /**
+     * Displays all Columns that have FLag PrintInString
+     * @return
+     */
+    @Override public String toString() {
+        StringBuilder sb = new StringBuilder()
+            .append(getModelName())
+            .append(" {");
+
+        String prefix = "";
+        int x = 0;
+
+        for (String key : values.keySet()) {
+            DatabaseColumnValue col = values.get(key);
+            x++;
+
+            if (col.Column.getFlagPrintInString()) {
+                sb.append(prefix);
+                sb.append(col);
+                prefix = ", ";
+            }
+        }
+
+        String f = sb.substring(0, sb.length() - 2) + "}";
+        return f;
     }
 }

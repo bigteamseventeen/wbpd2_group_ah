@@ -53,8 +53,9 @@ public class Session implements Serializable {
         return this.sessionValues.containsValue(value);
     }
 
-    public <T extends Serializable> void set(String key, T value) {
+    public <T extends Serializable> T set(String key, T value) {
         this.sessionValues.put(key, value);
+        return value;
     }
 
     public String getSessionKey() {

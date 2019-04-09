@@ -6,14 +6,11 @@
     "configurations": [
         {
             "type": "java",
+            "name": "SimpleDebugApp",
             "request": "launch",
-
-            "name": "WFramework Development",
-            "mainClass": "com.callumcarmicheal.app.Main",
-            "projectName": "wframework",
-            "windows": {
-                "cwd": "${workspaceFolder}/bin"
-            }
-        }
+            "mainClass": "com.callumcarmicheal.wframe.testing.SimpleDebugApp",
+            "projectName": "wframe",
+            "console": "integratedTerminal"
+        },
     ]
 }

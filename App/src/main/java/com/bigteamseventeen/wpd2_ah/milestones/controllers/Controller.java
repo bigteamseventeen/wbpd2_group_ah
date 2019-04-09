@@ -1,14 +1,9 @@
 package com.bigteamseventeen.wpd2_ah.milestones.controllers;
 
 import java.io.IOException;
-import java.util.Map;
 
-import com.bigteamseventeen.wpd2_ah.milestones.Renderer;
 import com.bigteamseventeen.wpd2_ah.milestones.models.User;
 import com.callumcarmicheal.wframe.HttpRequest;
-
-import org.jtwig.JtwigModel;
-import org.jtwig.JtwigTemplate;
 
 class Controller {
     /**

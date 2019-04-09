@@ -3,8 +3,6 @@ package com.bigteamseventeen.wpd2_ah.milestones.controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.bigteamseventeen.wpd2_ah.milestones.Renderer;
@@ -13,10 +11,8 @@ import com.bigteamseventeen.wpd2_ah.milestones.models.User;
 import com.callumcarmicheal.wframe.GetRequest;
 import com.callumcarmicheal.wframe.HttpRequest;
 import com.callumcarmicheal.wframe.PostRequest;
-import com.callumcarmicheal.wframe.database.exceptions.MissingColumnValueException;
 import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery.QueryValueType;
 import com.google.common.collect.ImmutableMap;
-import com.sun.net.httpserver.Headers;
 
 public class AuthenticationController extends Controller {
     @GetRequest("/logout")

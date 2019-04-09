@@ -6,13 +6,14 @@
     "configurations": [
         {
             "type": "java",
-            "name": "CodeLens (Launch) - Main",
+            "name": "Main App",
             "request": "launch",
             "mainClass": "com.bigteamseventeen.wpd2_ah.milestones.Main",
             "projectName": "bts_g1_milestones",
             "windows": {
                 "cwd": "${workspaceFolder}/bin"
-            }
+            },
+            "console": "integratedTerminal"
         }
     ]
 }

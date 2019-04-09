@@ -32,6 +32,13 @@ public interface IHttpRequestExtensions {
      */
     public void ThrowExceptionPage(Exception exception);
 
+    /**
+     * Show a exception page
+     * @param publicMessage         The message that can be safely shown the end the user
+     * @param debugMessage          A message that is intended for developers (if the project is debugging)
+     * @param exception             The exception that has been thrown
+     */
+	public void ThrowExceptionPage(String publicMessage, String debugMessage, Exception exception);
 
     /**
      * Show a exception page
@@ -43,5 +50,4 @@ public interface IHttpRequestExtensions {
      * @param httpResponseCode      The http response code returned in the header
      */
     public void ThrowExceptionPage(String publicMessage, String debugMessage, Exception exception, boolean escapePublicMessage, boolean escapeDebugMessage, int httpResponseCode);
-
 }

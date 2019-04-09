@@ -146,8 +146,8 @@ public class SDWhereQuery<T> {
         // Generate the SQL statement
         String sql = generateSqlQuery();
 
-        //System.out.println("SQL:    " + sql);
-        //System.out.println("Params: " + this.boundParameters);
+        //logger.debug("SQL:    " + sql);
+        //logger.debug("Params: " + this.boundParameters);
 
         Connection con = modelClass.getConnection();
         Statement stmt = null;

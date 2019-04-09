@@ -1,7 +1,6 @@
 package com.bigteamseventeen.wpd2_ah.milestones.controllers;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import com.bigteamseventeen.wpd2_ah.milestones.Renderer;
@@ -9,7 +8,6 @@ import com.bigteamseventeen.wpd2_ah.milestones.models.User;
 import com.callumcarmicheal.wframe.GetRequest;
 import com.callumcarmicheal.wframe.HttpRequest;
 import com.google.common.collect.ImmutableMap;
-import com.sun.net.httpserver.Headers;
 
 public class HomeController extends Controller {
     @GetRequest("/")
@@ -22,7 +20,8 @@ public class HomeController extends Controller {
         // request.Send(501, "Not implemented, sorry " + user.getUsername());
 
         // Render the test
-        new Renderer().render(request, "home", 200, ImmutableMap.<String,Object>builder()
+        new Renderer().setUser(user)
+            .render(request, "home", 200, ImmutableMap.<String,Object>builder()
             .build());
     }
 

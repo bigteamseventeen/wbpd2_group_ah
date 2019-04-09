@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console  name="termConsole">
+            <PatternLayout noConsoleNoAnsi="false" pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console >
+
+        <File name="applicationLog" fileName="logs/wframe.log"
+              immediateFlush="true" append="true">
+            <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - {%msg}%n"/>
+        </File>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="org.apache.log4j.xml" level="info"/>
+
+        <Root level="all">
+            <AppenderRef ref="applicationLog" level="info"/>
+            <AppenderRef ref="termConsole" level="all"/>
+        </Root>
+
+        <Logger name="console" level="all">
+            <AppenderRef ref="termConsole"/>
+        </Logger>
+    </Loggers>
+</Configuration>

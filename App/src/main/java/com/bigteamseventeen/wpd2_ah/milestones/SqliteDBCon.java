@@ -1,13 +1,13 @@
 package com.bigteamseventeen.wpd2_ah.milestones;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+
 import javax.sql.PooledConnection;
-import org.sqlite.javax.SQLiteConnectionPoolDataSource;
 
 import com.bigteamseventeen.wpd2_ah.milestones.models.User;
+
+import org.sqlite.javax.SQLiteConnectionPoolDataSource;
 
 public class SqliteDBCon {
     private static SQLiteConnectionPoolDataSource dataSource;

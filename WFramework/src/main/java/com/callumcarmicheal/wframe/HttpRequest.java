@@ -7,21 +7,20 @@ import com.google.common.io.ByteStreams;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.unbescape.html.HtmlEscape;
-
-import com.mitchellbosecke.pebble.error.LoaderException;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HttpRequest {
+    final static Logger logger = LogManager.getLogger();	
+
 	/** ---- Settings ---- */
 	public static IHttpRequestExtensions HttpExtensions = null;
 	/** ---- Settings ---- */
@@ -33,7 +32,6 @@ public class HttpRequest {
 
 	/** ---- Public Properties ---- */
 	public HttpExchange Exchange;
-
 	/** ---- Public Properties ---- */
 
 	public HttpRequest(HttpExchange httpExchange, SessionList sessions) {
@@ -45,12 +43,16 @@ public class HttpRequest {
 		// If we have a session
 		String sessionId = null;
 		if ((sessionId = this.getRequestCookie(sessions.COOKIE_HEADER)) != null) {
+			logger.trace("HttpRequest: Found session id - " + sessionId);
 			if (sessions.exists(sessionId)) {
+				logger.trace("HttpRequest: §a Session exists setting session header");
 				sessionState = sessions.get(sessionId);
 				setSessionHeader(sessionState);
-			} else {
+			} else { /**/ 
+				logger.trace("HttpRequest: §c Session does not exist!");				
 			}
-		} else {
+		} else { /**/
+			logger.trace("HttpRequest: §c Session cookie not found!");				
 		}
 	}
 
@@ -145,7 +147,7 @@ public class HttpRequest {
 	/**
 	 * Send current buffer with appended data and send OK (200)
 	 * 
-	 * @param data Data to be appended to the buffered output
+	 * @param buffer Data to be appended to the buffered output
 	 * @throws IOException
 	 */
 	public void Send(byte[] buffer) throws IOException {
@@ -267,14 +269,12 @@ public class HttpRequest {
 
 			try {
 				Send(httpResponseCode);
-			} catch (Exception e) {
-			}
+			} catch (Exception e) { }
 		} else {
 			try {
 				Send(httpResponseCode,
 						"<h1>There was an error</h1><p>Im sorry there was a error loading resources.</p>");
-			} catch (Exception e) {
-			}
+			} catch (Exception e) { }
 		}
 	}
 
@@ -284,32 +284,47 @@ public class HttpRequest {
 	 * @param exception
 	 */
 	public void ThrowException(Exception exception) {
+		// Print the error
 		exception.printStackTrace();
 
-		// If the exception is an LoaderException (PEBBLE SUPPORT)
-		// assume that we could not load a file and assume its the exception template
-		if (exception instanceof LoaderException) {
-			// Clear the output buffer.
-			buffer = ByteStreams.newDataOutput();
-
-			// Attempt to tell the browser something went wrong.
-			ThrowExceptionText("Im sorry there was a error loading resources.", exception);
+		// If we can call the exception page then invoke it
+		if (HttpExtensions != null && HttpExtensions.isThrowExceptionPageSupported()) {
+			HttpExtensions.ThrowExceptionPage(exception);
+			return;
 		}
 
-		// We are just showing the page
-		else {
-			// Print the error
-			exception.printStackTrace();
+		// Fallback to a text based error page
+		ThrowExceptionText("I'm sorry there was an error while processing your request.", exception);
+	}
 
-			// If we can call the exception page then invoke it
-			if (HttpExtensions != null && HttpExtensions.isThrowExceptionPageSupported()) {
-				HttpExtensions.ThrowExceptionPage(exception);
-				return;
-			}
+	
+	/**
+	 * Send a exception page to the client with added user safe information
+	 * 
+	 * @param publicMessage       The message that is displayed to the end user
+	 * @param exception           The exception
+	 */
+	public void ThrowException(String publicMessage, Exception exception) {
+		ThrowException(publicMessage, publicMessage, exception);
+	}
 
-			// Fallback to a text based error page
-			ThrowExceptionText("I'm sorry there was an error while processing your request.", exception);
+	/**
+	 * Send a exception page to the client with added user safe information
+	 * 
+	 * @param publicMessage       The message that is displayed to the end user
+	 * @param debugMessage        The debug message that is visible when the
+	 *                            application is being debugged
+	 * @param exception           The exception
+	 */
+	public void ThrowException(String publicMessage, String debugMessage, Exception exception) {
+		// If we can call the exception page then invoke it
+		if (HttpExtensions != null && HttpExtensions.isThrowExceptionPageSupported()) {
+			HttpExtensions.ThrowExceptionPage(publicMessage, debugMessage, exception);
+			return;
 		}
+
+		// Forward to text page
+		ThrowExceptionText(publicMessage, debugMessage, exception);
 	}
 
 	/**
@@ -544,31 +559,53 @@ public class HttpRequest {
 	 * @return
 	 */
 	public Map<String,String> getRequestCookies() {
-		if (_cookies == null)
-			_cookies = parseCookies(Exchange.getRequestHeaders().get("Cookie"));
+		// Check if we have cached the cookies
+		if (_cookies == null) {
+			// Get the request cookies (can be a list of multiples)
+			List<String> cookiesList = new ArrayList<>();
+			List<String> headerCookies = Exchange.getRequestHeaders().get("Cookie");
 
+			if (headerCookies != null) {
+				// Loop request
+				for (String s : headerCookies)
+					// Split the cookies
+					for (String c : s.split(";"))
+						// Add the parsed cookie
+						cookiesList.add(c.trim());
+
+				// Set the cookies
+				_cookies = parseCookies(cookiesList);
+			}
+			else {
+				// We dont have any cookies so just set the cookie list to empty
+				_cookies = new HashMap<>();
+			}
+		}
+
+		// If we have not cached out cookies then cache them
 		if (_pubCookies == null)
 			_pubCookies = Collections.unmodifiableMap(_cookies);
 
+		// Return the non modifably list
 		return _pubCookies;
 	}
 	
-
 	/**
 	 * Get a cookie from the request
 	 * @param cookieKey		THe cookie key
 	 * @return				The value or null if not found
 	 */
 	public String getRequestCookie(String cookieKey) {
+		// Have we cached the cookies
 		if (_cookies == null)
-			_cookies = parseCookies(Exchange.getRequestHeaders().get("Cookie"));
+			getRequestCookies(); // Parse cookies then get cookieKey
 		return _cookies.get(cookieKey);
 	}
 
 	/**
 	 * Create a map from a cookie header string
-	 * @param cookieHeader	The header string containing the cookies
-	 * @return				A map containing the cookies
+	 * @param listOfCookies The header string containing the cookies
+	 * @return				 A map containing the cookies
 	 */
 	private static Map<String, String> parseCookies(List<String> listOfCookies) {
 		// Cookies output
@@ -631,7 +668,7 @@ public class HttpRequest {
 					headers.remove(s);
 		}
 
-		headers.add("Set-Cookie", sessionList.COOKIE_HEADER + "=" + session.getSessionKey() + "; HttpOnly; SameSite=Strict; Expires=" + sessionList.getExpirationSeconds());
+		headers.add("Set-Cookie", sessionList.COOKIE_HEADER + "=" + session.getSessionKey() + "; HttpOnly; Path=/; SameSite=Strict; Expires=" + sessionList.getExpirationSeconds());
 		_setSessionHeader = true;
 	}
 }

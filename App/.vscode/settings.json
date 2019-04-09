@@ -5,6 +5,18 @@
         "**/.settings": true,
         "**/.factorypath": true
     },
+    
     "java.dependency.packagePresentation": "flat",
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+
+    "workbench.colorTheme": "Lime Theme",
+    "discord.workspaceElapsedTime": true,
+
+    "files.associations": {
+        "*.html": "twig"
+    },
+
+    "emmet.includeLanguages": {
+        "twig": "html"
+    },
 }

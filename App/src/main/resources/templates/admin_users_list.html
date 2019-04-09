@@ -14,11 +14,13 @@
     </h4>
 
     <ul>
-        {% for user in users %}
-            {{user}}
+        {% if users.length == 0 %}
+            No users found
         {% else %}
-            no users found!
-        {% endfor %}
+            {% for user in users %}
+                {{user}}
+            {% endfor %}
+        {% endif %}
     </ul>
 
     <div class="card sb-card" style="margin-bottom: 10px">

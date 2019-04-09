@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 public class Main {
     // Package class that will contain all the controllers
     private static final String CONTROLLERSPACKAGE = "com.bigteamseventeen.wpd2_ah.milestones.controllers";
-    private static final int PORT = 9000; // Web Server port
+    private static final int PORT = 8080; // Web Server port
 
     final static Logger logger = LogManager.getLogger();
 

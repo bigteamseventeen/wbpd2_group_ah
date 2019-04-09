@@ -11,13 +11,43 @@ import com.callumcarmicheal.wframe.GetRequest;
 import com.callumcarmicheal.wframe.HttpRequest;
 import com.google.common.collect.ImmutableMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class AdminController extends Controller {
+    final static Logger logger = LogManager.getLogger();
     
     @GetRequest("/admin/users")
     public void listUsers(HttpRequest request) throws IOException {
         // Redirect the user to the respected page
         User user; // If user == null then a redirect has happened
         if ((user = getUserOrLogin(request)) == null) return;
+
+        
+        // Get the connection and users
+        Connection con = null;
+
+        try {
+            logger.info("Connection Status for user model: \n" + (user.getConnection().isClosed() ? "Closed" : "Open"));
+        } catch (SQLException e) {
+            logger.info("Connection Status for user model: \n" + "SQL EXCEPTION");
+
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+
+        // Get the users and close the connection
+        try                     { 
+            con = SqliteDBCon.GetConnection(); 
+            user.setConnection(con);
+            user.setAdmin(1);
+            user.save_s();
+            logger.info("Updated users infromation to admin: \n" + user);
+            logger.info("Connection Status for user model: \n" + (user.getConnection().isClosed() ? "Closed" : "Open"));
+        } 
+        catch(SQLException ex)  { request.throwException("Failed to update user information in database", ex); } 
+        finally                 {  try { if (con != null && !con.isClosed()) con.close(); } catch (Exception ex) {} }
 
         // Check if the user is an admin
         if (!user.isAdmin()) {
@@ -26,12 +56,12 @@ public class AdminController extends Controller {
         }
 
         // Get the connection and users
-        Connection con = null;
+        // Connection con = null;
         User[] users = null;
         
         // Get the users and close the connection
         try                     { con = SqliteDBCon.GetConnection(); users = User.All(con); } 
-        catch(SQLException ex)  { request.ThrowException("Failed to recieve all users from database", ex); } 
+        catch(SQLException ex)  { request.throwException("Failed to recieve all users from database", ex); } 
         finally                 {  try { if (con != null && !con.isClosed()) con.close(); } catch (Exception ex) {} }
 
         // Render the page

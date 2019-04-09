@@ -331,7 +331,7 @@ public class Server implements HttpHandler {
 			handleFileResource(r, request);
 		} catch (Exception ex) {
 			// Attempt to send the message
-			try { r.ThrowException(ex); }
+			try { r.throwException(ex); }
 			catch (Exception ignored) { }
 		}
 	}

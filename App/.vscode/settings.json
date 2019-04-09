@@ -9,7 +9,7 @@
     "java.dependency.packagePresentation": "flat",
     "java.configuration.updateBuildConfiguration": "automatic",
 
-    "workbench.colorTheme": "Lime Theme",
+    "workbench.colorTheme": "Activate SCARLET protocol (beta)",
     "discord.workspaceElapsedTime": true,
 
     "files.associations": {
@@ -19,4 +19,11 @@
     "emmet.includeLanguages": {
         "twig": "html"
     },
+    "sqltools.connections": [
+        {
+            "database": "C:\\Users\\callu\\OneDrive\\Documents\\Edu\\GCU - Uni\\Web Platform Development 2\\wbpd2_mmc\\App\\bin\\application.db",
+            "dialect": "SQLite",
+            "name": "Local Testing Db"
+        }
+    ],
 }

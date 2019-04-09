@@ -28,20 +28,23 @@ public interface IHttpRequestExtensions {
 
     /**
      * Show a exception page
+     * @param request           The http request
      * @param exception The exception that has been thrown
      */
-    public void ThrowExceptionPage(Exception exception);
+    public void ThrowExceptionPage(HttpRequest request, Exception exception);
 
     /**
      * Show a exception page
+     * @param request           The http request
      * @param publicMessage         The message that can be safely shown the end the user
      * @param debugMessage          A message that is intended for developers (if the project is debugging)
      * @param exception             The exception that has been thrown
      */
-	public void ThrowExceptionPage(String publicMessage, String debugMessage, Exception exception);
+	public void ThrowExceptionPage(HttpRequest request, String publicMessage, String debugMessage, Exception exception);
 
     /**
      * Show a exception page
+     * @param request           The http request
      * @param publicMessage         The message that can be safely shown the end the user
      * @param debugMessage          A message that is intended for developers (if the project is debugging)
      * @param exception             The exception that has been thrown
@@ -49,5 +52,5 @@ public interface IHttpRequestExtensions {
      * @param escapeDebugMessage    If we are escaping the string (if false we have html)
      * @param httpResponseCode      The http response code returned in the header
      */
-    public void ThrowExceptionPage(String publicMessage, String debugMessage, Exception exception, boolean escapePublicMessage, boolean escapeDebugMessage, int httpResponseCode);
+    public void ThrowExceptionPage(HttpRequest request, String publicMessage, String debugMessage, Exception exception, boolean escapePublicMessage, boolean escapeDebugMessage, int httpResponseCode);
 }

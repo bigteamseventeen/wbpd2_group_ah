@@ -192,8 +192,8 @@ public class HttpRequest {
 	 * @param message   The message that is displayed to the end user and developer
 	 * @param exception The exception
 	 */
-	public void ThrowExceptionText(String message, Exception exception) {
-		ThrowExceptionText(message, message, exception);
+	public void throwExceptionText(String message, Exception exception) {
+		throwExceptionText(message, message, exception);
 	}
 
 	/**
@@ -204,8 +204,8 @@ public class HttpRequest {
 	 * @param exception        The exception
 	 * @param httpResponseCode The http error code sent in the header
 	 */
-	public void ThrowExceptionText(String message, Exception exception, int httpResponseCode) {
-		ThrowExceptionText(message, message, exception, httpResponseCode);
+	public void throwExceptionText(String message, Exception exception, int httpResponseCode) {
+		throwExceptionText(message, message, exception, httpResponseCode);
 	}
 
 	/**
@@ -216,8 +216,8 @@ public class HttpRequest {
 	 *                      is being debugged
 	 * @param exception     The exception
 	 */
-	public void ThrowExceptionText(String publicMessage, String debugMessage, Exception exception) {
-		ThrowExceptionText(publicMessage, debugMessage, exception, true, true, 500);
+	public void throwExceptionText(String publicMessage, String debugMessage, Exception exception) {
+		throwExceptionText(publicMessage, debugMessage, exception, true, true, 500);
 	}
 
 	/**
@@ -229,9 +229,9 @@ public class HttpRequest {
 	 * @param exception        The exception
 	 * @param httpResponseCode The http error code sent in the header
 	 */
-	public void ThrowExceptionText(String publicMessage, String debugMessage, Exception exception,
+	public void throwExceptionText(String publicMessage, String debugMessage, Exception exception,
 			int httpResponseCode) {
-		ThrowExceptionText(publicMessage, debugMessage, exception, true, true, httpResponseCode);
+		throwExceptionText(publicMessage, debugMessage, exception, true, true, httpResponseCode);
 	}
 
 	/**
@@ -247,7 +247,7 @@ public class HttpRequest {
 	 *                            for HTML)
 	 * @param httpResponseCode    The http error code sent in the header
 	 */
-	public void ThrowExceptionText(String publicMessage, String debugMessage, Exception exception,
+	public void throwExceptionText(String publicMessage, String debugMessage, Exception exception,
 			boolean escapePublicMessage, boolean escapeDebugMessage, int httpResponseCode) {
 		if (escapePublicMessage)
 			publicMessage = HtmlEscape.escapeHtml5(publicMessage);
@@ -278,23 +278,25 @@ public class HttpRequest {
 		}
 	}
 
+	// TODO: add some throwException methods that allow status codes (500, 403 etc).
+
 	/**
 	 * Throw an exception (attempt to use a page or fallback to a basic page)
 	 * 
 	 * @param exception
 	 */
-	public void ThrowException(Exception exception) {
+	public void throwException(Exception exception) {
 		// Print the error
 		exception.printStackTrace();
 
 		// If we can call the exception page then invoke it
 		if (HttpExtensions != null && HttpExtensions.isThrowExceptionPageSupported()) {
-			HttpExtensions.ThrowExceptionPage(exception);
+			HttpExtensions.ThrowExceptionPage(this, exception);
 			return;
 		}
 
 		// Fallback to a text based error page
-		ThrowExceptionText("I'm sorry there was an error while processing your request.", exception);
+		throwExceptionText("I'm sorry there was an error while processing your request.", exception);
 	}
 
 	
@@ -304,8 +306,8 @@ public class HttpRequest {
 	 * @param publicMessage       The message that is displayed to the end user
 	 * @param exception           The exception
 	 */
-	public void ThrowException(String publicMessage, Exception exception) {
-		ThrowException(publicMessage, publicMessage, exception);
+	public void throwException(String publicMessage, Exception exception) {
+		throwException(publicMessage, publicMessage, exception);
 	}
 
 	/**
@@ -316,15 +318,15 @@ public class HttpRequest {
 	 *                            application is being debugged
 	 * @param exception           The exception
 	 */
-	public void ThrowException(String publicMessage, String debugMessage, Exception exception) {
+	public void throwException(String publicMessage, String debugMessage, Exception exception) {
 		// If we can call the exception page then invoke it
 		if (HttpExtensions != null && HttpExtensions.isThrowExceptionPageSupported()) {
-			HttpExtensions.ThrowExceptionPage(publicMessage, debugMessage, exception);
+			HttpExtensions.ThrowExceptionPage(this, publicMessage, debugMessage, exception);
 			return;
 		}
 
 		// Forward to text page
-		ThrowExceptionText(publicMessage, debugMessage, exception);
+		throwExceptionText(publicMessage, debugMessage, exception);
 	}
 
 	/**
@@ -404,7 +406,7 @@ public class HttpRequest {
 			try {
 				HttpExtensions.SendMessagePage(this, title, message, httpResponseCode);
 			} catch (IOException e) {
-				ThrowException(e);
+				throwException(e);
 			} return;
 		}
 		

@@ -10,6 +10,7 @@ import org.jtwig.JtwigModel;
 import org.jtwig.JtwigTemplate;
 
 public class Renderer {
+    private static ViewUtility viewUtility = new ViewUtility();
     private User currentUser = null;
     public Renderer setUser(User v) { this.currentUser = v; return this; } 
 
@@ -20,6 +21,7 @@ public class Renderer {
      */
     private JtwigModel GeneratePageModel() {
         return JtwigModel.newModel()
+            .with("_util", viewUtility)
             .with("_user", currentUser)
         ;
     }

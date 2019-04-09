@@ -27,14 +27,7 @@ public class HomeController extends Controller {
 
     @GetRequest("/test")
     public void test(HttpRequest request) throws IOException {
-        int x = request.session().get("inc", 0) + 1;
-        request.session().set("inc", x);
-
-        Map<String,String> cookies = request.getRequestCookies();
-
-        for(Map.Entry<String,String> m : cookies.entrySet()) 
-            request.Write(m.getKey() + " = " + m.getValue() + "\n");
-        
-        request.Send("Hello World :) - " + x);
+        // request.throwException("publicMessage", "debugMessage", new Exception("Exception message"));
+        request.SendMessagePage("test message", "message content", 200);
     }
 }

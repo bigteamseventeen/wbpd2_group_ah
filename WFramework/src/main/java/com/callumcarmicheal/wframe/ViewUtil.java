@@ -5,14 +5,35 @@ import org.unbescape.html.HtmlEscape;
 
 public class ViewUtil {
 
-    public String E(String e) {
-        return HtmlEscape.escapeHtml5(e);
+    /**
+     * Escape string to html safe
+     * @param str String to escape
+     * @return
+     */
+    public String ESC(String str) {
+        return HtmlEscape.escapeHtml5(str);
     }
-    public String UE(String e) { return HtmlEscape.unescapeHtml(e); }
-    public int I(Long l) { return Ints.checkedCast(l); }
+
+    /**
+     * Unescape html string
+     * @param str String to unescape
+     * @return
+     */
+    public String UESC(String str) { return HtmlEscape.unescapeHtml(str); }
+    /**
+     * Convert long to int
+     * @param l
+     * @return
+     */
+    public int L2I(Long l) { return Ints.checkedCast(l); }
     
-    public String GenerateColorFromString(String x) {
-        int i = x.hashCode();
+    /**
+     * Generate a color from a string
+     * @param str
+     * @return A hex color generated using string's hashcode
+     */
+    public String GenColFromStr(String str) {
+        int i = str.hashCode();
         String c = Integer.toHexString(i & 0x00FFFFFF)
                 .toUpperCase();
 

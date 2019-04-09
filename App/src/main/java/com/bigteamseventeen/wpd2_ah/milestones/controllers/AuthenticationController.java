@@ -93,7 +93,7 @@ public class AuthenticationController extends Controller {
             con = SqliteDBCon.GetConnection();
             user = User.FindEmail(con, email);
         } catch (SQLException ex) {
-            request.ThrowException(ex);
+            request.throwException(ex);
             return;
         } finally {
             // Close the connection
@@ -196,7 +196,7 @@ public class AuthenticationController extends Controller {
                 .setBanned(0)
                 .save_s();
         } catch(SQLException ex) {
-            request.ThrowException(ex);
+            request.throwException(ex);
             return;
         } finally {
             // Close the connection

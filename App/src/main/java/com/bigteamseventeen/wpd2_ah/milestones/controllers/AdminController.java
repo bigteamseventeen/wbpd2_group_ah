@@ -22,7 +22,6 @@ public class AdminController extends Controller {
         // Redirect the user to the respected page
         User user; // If user == null then a redirect has happened
         if ((user = getUserOrLogin(request)) == null) return;
-
         
         // Get the connection and users
         Connection con = null;
@@ -37,8 +36,8 @@ public class AdminController extends Controller {
         }
 
 
-        // Get the users and close the connection
-        try                     { 
+        // Get the users and close the connection 
+        try { 
             con = SqliteDBCon.GetConnection(); 
             user.setConnection(con);
             user.setAdmin(1);

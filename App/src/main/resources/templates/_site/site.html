@@ -20,26 +20,28 @@
     {% block navbar %}{% include "navbar.html" %}{% endblock %}
 
     <!-- Page Content -->
-    <div class="container">
-        {% block container %}
-            <div class="row">
-                <!-- Post Content Column -->
-                <div class="col-md-8" id="page_content">
-                    <div style="margin-top:20px;">
-                        {% block content %}{% endblock %}
+    {%block fullcontent %}
+        <div class="container">
+            {% block container %}
+                <div class="row">
+                    <!-- Post Content Column -->
+                    <div class="col-md-8" id="page_content">
+                        <div style="margin-top:20px;">
+                            {% block content %}{% endblock %}
+                        </div>
+                    </div>
+                    
+                    <!-- Sidebar Widgets Column -->
+                    <div class="col-md-4">
+                        {% block sidebar %}
+                            {% include "sidebar.html" %}
+                        {% endblock %}
                     </div>
                 </div>
-
-                <!-- Sidebar Widgets Column -->
-                <div class="col-md-4">
-                    {% block sidebar %}
-                        {% include "sidebar.html" %}
-                    {% endblock %}
-                </div>
-            </div>
-            <!-- /.row -->
-        {% endblock %}
-    </div>
+                <!-- /.row -->
+            {% endblock %}
+        </div>
+    {% endblock %}
     <!-- /.container -->
 
     <!-- Footer -->

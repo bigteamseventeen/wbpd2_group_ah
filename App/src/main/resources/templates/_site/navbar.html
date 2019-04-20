@@ -6,25 +6,34 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="/">List</a>
-                </li>
+                {% if user == null %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/loging">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">Register</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/home">My Planners</a>
+                    </li>
 
-                <li class="nav-item active">
-                    <a class="nav-link" href="/">Planners</a>
-                </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/planners">Planners</a>
+                    </li>
 
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Username
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Action</a>
-                        <a class="dropdown-item" href="#">Another action</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/logout">Logout</a>
-                    </div>
-                </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProfile" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ _user.getUsername() }}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownProfile">
+                            <a class="dropdown-item" href="/profile">My Profile</a>
+                            <a class="dropdown-item" href="/planners/shared">Shared Planners</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/logout">Logout</a>
+                        </div>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>

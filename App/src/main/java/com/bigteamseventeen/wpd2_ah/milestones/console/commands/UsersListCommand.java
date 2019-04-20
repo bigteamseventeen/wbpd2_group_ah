@@ -12,7 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class UsersListCommand implements IConsoleCommand {
-    Logger logger = LogManager.getLogger();
+    static final Logger logger = LogManager.getLogger();
 
     @Override public String getCommand() {
         return "users/list";

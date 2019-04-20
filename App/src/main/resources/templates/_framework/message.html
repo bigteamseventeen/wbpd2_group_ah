@@ -1,9 +1,46 @@
 {% extends "../_site/site.html" %}
 {% block title %}{{messageTitle}}{% endblock %}
 
-{% block content %}
-    <div style="margin-top:20px;">
+{% block fullcontent %}
+    <div class="container" style="margin-top: 15px;">
         <h4>{{ messageTitle }}</h4>
         <p class="mb-0"> {{ messageText }}</p>
+
+        {% if _util.isDebugging() %}
+            {% if exception != null %}
+                <div class="card" style="margin-top:20px;">
+                    <div class="card-header">
+                        <span class="text-danger italic">{{exception.getClass().getSimpleName()}}</span> 
+                        was thrown.
+                    </div>
+                    <div class="card-header">
+                        <span class="text-muted">{{debugMessage}}</span> 
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{exception.getMessage()}}</h4>
+                        <pre><code>{{stacktrace}}</code></pre>
+                    </div>
+                    {# <div class="card-footer text-muted"> Footer </div> #}
+                </div>
+            {% endif %}
+        {% else %}
+            <p class="mb-1"> If you feel that this is a error that should not of happened or have any concern's, please contact the website owner.</p>
+        {% endif %}
     </div>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}
+
+{% block head %}
+    {{parent()}}
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/vs.min.css" />
+    <style> .italic { font-style: italic; } </style>
+{% endblock %}
+
+{% block scripts %}
+    {{parent()}}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script> 
+    <script>hljs.initHighlightingOnLoad();</script>
 {% endblock %}

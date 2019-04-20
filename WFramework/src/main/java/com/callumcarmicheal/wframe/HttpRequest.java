@@ -258,13 +258,12 @@ public class HttpRequest {
 		if (Server.IsDebugging()) {
 			Write("<h1>There was an error</h1><p>Im sorry there was a error loading resources.</p>");
 			Write("<br><p>Exception message : <b>" + exception.getMessage() + "</b></p>");
-			Write("<br><pre style=\"background:#ccc\">");
+			Write("<br><pre style=\"background:#000;color:#fff;\">");
 
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			exception.printStackTrace(pw);
 			Write(sw.toString());
-
 			Write("</pre>");
 
 			try {
@@ -574,7 +573,6 @@ public class HttpRequest {
 					for (String c : s.split(";"))
 						// Add the parsed cookie
 						cookiesList.add(c.trim());
-
 				// Set the cookies
 				_cookies = parseCookies(cookiesList);
 			}

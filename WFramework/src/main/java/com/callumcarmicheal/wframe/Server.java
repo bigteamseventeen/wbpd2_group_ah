@@ -67,20 +67,26 @@ public class Server implements HttpHandler {
 	 * @param ControllersPackage The package structure that will be searched for the controller's and get, post methods.
 	 */
 	public Server(int Port, String ControllersPackage) throws Exception {
-		Router = new HashMap<>();
+		// Set our controllers package
 		this.controllersPackage = ControllersPackage;
+
+		// Create our session cache
 		this.sessionList = new SessionList();
 			
 		// Temporarly disable the logger
-		// org.slf4j.Logger _TEMP = Reflections.log;
-		// Reflections.log = null;
-		SetupRouter();
-		// Reflections.log = _TEMP;
+		ReloadRouter();
 		
+		// Setup our http server
 		Server = HttpServer.create(new InetSocketAddress(Port), 0);
 	}
 	
-	private void SetupRouter() {
+	/**
+	 * Rescans for any changed method's and reindexes the available web requests
+	 */
+	public void ReloadRouter() {
+		// Reset the router hashmap
+		Router = new HashMap<>();
+
 		logger.info("WFrameworkServer: Indexing Controllers and Methods.");
 
 		Reflections reflections = new Reflections(new ConfigurationBuilder()
@@ -238,8 +244,13 @@ public class Server implements HttpHandler {
 		}
 	}
 	
-	String Package(String s){
-		return s.replaceAll("\\B\\w+(\\.[a-z])","$1");
+	/**
+	 * Generate a compressed abbreviated package name from a long package.
+	 * @param Package The package to abbreviate
+	 * @return An abbreviated package
+	 */
+	String Package(String Package){
+		return Package.replaceAll("\\B\\w+(\\.[a-z])","$1");
 	}
 	
 	/**
@@ -286,21 +297,19 @@ public class Server implements HttpHandler {
 			request = r.getRequestURI(true);
 		} catch (Exception ex) {
 			logger.error("WFrameworkServer: Failed to initialize request response", ex);
-
 			throw ex;
-//			return;
 		}
 		
 
-		// FIXME: Display remote ip address and store it in the HttpRequest
+		// Log the request
 		logger.info(
-			String.format("WFrameworkServer: %s %s %s", e.getRemoteAddress().toString(), isPost ? "POST" : "GET ", path));
+			String.format("WFrameworkServer: %s %-6s %s", e.getRemoteAddress().toString(), e.getRequestMethod(), path));
 		
 		try {
 			// Check if we have the request in our router
 			if (Router.containsKey(request) ||
 					(requestStartsWithSlash = (request.startsWith("/") && Router.containsKey(request.substring(1))))) {
-				
+				// Get the controller pair
 				ControllerMethodPair cmp;
 				
 				if (requestStartsWithSlash)
@@ -336,18 +345,24 @@ public class Server implements HttpHandler {
 		}
 	}
 	
-	private void handleFileResource(HttpRequest r, String request) throws IOException {
+	/**
+	 * Handle the resource request
+	 * @param request 				Http request
+	 * @param requestedResource		Requested file resource
+	 * @throws IOException
+	 */
+	private void handleFileResource(HttpRequest request, String requestedResource) throws IOException {
 		if (!resourcesEnabled){
-			display404(r);
+			display404(request);
 			return;
 		}
 
 		// Get the resource without the leading /
-		String resource = request.startsWith("/") ? request.substring(1) : request;
+		String resource = requestedResource.startsWith("/") ? requestedResource.substring(1) : requestedResource;
 		
 		// Protect against traversal attacks
 		if (Resource.IsUnsafePath(resource)) {
-			display404(r);
+			display404(request);
 			return;
 		}
 		
@@ -363,35 +378,36 @@ public class Server implements HttpHandler {
 //			if (!f.exists()) { /*This is used for debugging purposes only*/ }
 			
 			// Display a generic message
-			display404(r);
+			display404(request);
 			return;
 		}
 		
 		// We can now output the file to the request
-		r.SendFile(200, f);
+		request.SendFile(200, f);
 	}
 	
+	/**
+	 * Display the 404 error page
+	 * @param r
+	 */
 	private void display404(HttpRequest r) {
 		r.SendMessagePage("Resource not found",
 			"The requested resource could not be found or the request was malformed",
 			404);
 	}
 	
+	/**
+	 * Parse a query string ?x=1
+	 * @param query	
+	 * @return
+	 */
 	public static Map<String,String> ParseQuery(String query) {
-		return ParseQuery(query,true);
-	}
-	
-	public static Map<String,String> ParseQueryEncoding(String query) throws UnsupportedEncodingException {
-		return ParseQueryEncoding(query, "UTF-8");
-	}
-	
-	public static Map<String,String> ParseQueryEncoding(String query, String encoding) throws UnsupportedEncodingException {
 		Map<String, String> result = new HashMap<>();
 		for (String param : query.split("&")) {
 			String[] entry = param.split("=");
 			if (entry.length > 1) {
-				result.put(entry[0], URLDecoder.decode(entry[1], encoding));
-			} else {
+				result.put(entry[0], entry[1]);
+			}else{
 				result.put(entry[0], "");
 			}
 		}
@@ -399,13 +415,28 @@ public class Server implements HttpHandler {
 		return result;
 	}
 	
-	public static Map<String, String> ParseQuery(String query, boolean decode) {
+	/**
+	 * Parse a query string ?x=1 with a specific encoding
+	 * @param query	
+	 * @return
+	 */
+	public static Map<String,String> ParseQueryEncoding(String query) throws UnsupportedEncodingException {
+		return ParseQueryEncoding(query, "UTF-8");
+	}
+	
+	/**
+	 * Parse a query string ?x=1 with a specific encoding
+	 * @param query	
+	 * @param encoding	The wanted encoding to be used, for example UTF-8
+	 * @return
+	 */
+	public static Map<String,String> ParseQueryEncoding(String query, String encoding) throws UnsupportedEncodingException {
 		Map<String, String> result = new HashMap<>();
 		for (String param : query.split("&")) {
 			String[] entry = param.split("=");
 			if (entry.length > 1) {
-				result.put(entry[0], entry[1]);
-			}else{
+				result.put(entry[0], URLDecoder.decode(entry[1], encoding));
+			} else {
 				result.put(entry[0], "");
 			}
 		}
@@ -424,11 +455,21 @@ public class Server implements HttpHandler {
 		return ParseQuery(query);
 	}
 	
+	/**
+	 * Is the JVM currently being debugged
+	 * @return
+	 */
 	public static boolean IsDebugging() {
 		return java.lang.management.ManagementFactory.getRuntimeMXBean().
-				getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
+			getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
 	}
 	
+	/**
+	 * Parse the body content request
+	 * @param query
+	 * @param parameters
+	 * @throws UnsupportedEncodingException
+	 */
 	public static void ParseDataQuery(String query, Map<String, Object> parameters)
 			throws UnsupportedEncodingException {
 		

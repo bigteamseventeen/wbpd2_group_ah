@@ -1,7 +1,6 @@
 package com.bigteamseventeen.wpd2_ah.milestones.controllers;
 
 import java.io.IOException;
-import java.util.Map;
 
 import com.bigteamseventeen.wpd2_ah.milestones.Renderer;
 import com.bigteamseventeen.wpd2_ah.milestones.models.User;
@@ -27,7 +26,6 @@ public class HomeController extends Controller {
 
     @GetRequest("/test")
     public void test(HttpRequest request) throws IOException {
-        // request.throwException("publicMessage", "debugMessage", new Exception("Exception message"));
-        request.SendMessagePage("test message", "message content", 200);
+        request.throwException( "There was an parsing the request information.", "Failed to load user session information.", new IOException("Index out of range.") );
     }
 }

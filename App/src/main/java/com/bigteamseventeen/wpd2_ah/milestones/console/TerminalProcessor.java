@@ -68,6 +68,9 @@ public class TerminalProcessor extends SimpleTerminalConsole {
         // CTRL+C was pressed or recieved SIG_INT
         if (Main.getServer() != null)
             Main.getServer().stop();
+
+        // Exit the system
+        System.exit(0);
     }
 
     /**

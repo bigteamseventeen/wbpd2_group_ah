@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import com.bigteamseventeen.wpd2_ah.milestones.console.TerminalProcessor;
 import com.bigteamseventeen.wpd2_ah.milestones.console.commands.ExitCommand;
 import com.bigteamseventeen.wpd2_ah.milestones.console.commands.HelpCommand;
+import com.bigteamseventeen.wpd2_ah.milestones.console.commands.ReloadServerCommand;
 import com.bigteamseventeen.wpd2_ah.milestones.console.commands.UsersListCommand;
 import com.callumcarmicheal.wframe.HttpRequest;
 import com.callumcarmicheal.wframe.Resource;
@@ -16,8 +17,8 @@ import org.apache.logging.log4j.Logger;
 
 public class Main {
     // Package class that will contain all the controllers
-    private static final String CONTROLLERSPACKAGE = "com.bigteamseventeen.wpd2_ah.milestones.controllers";
-    private static final int PORT = 8080; // Web Server port
+    static final String CONTROLLERSPACKAGE = "com.bigteamseventeen.wpd2_ah.milestones.controllers";
+    static final int PORT = 8080; // Web Server port
 
     final static Logger logger = LogManager.getLogger();
 
@@ -61,7 +62,8 @@ public class Main {
         console = new TerminalProcessor()
             .registerCommand(new ExitCommand())
             .registerCommand(new HelpCommand())
-            .registerCommand(new UsersListCommand());
+            .registerCommand(new UsersListCommand())
+            .registerCommand(new ReloadServerCommand());
 
         // No need to exit
         return false;

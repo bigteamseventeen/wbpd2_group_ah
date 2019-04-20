@@ -7,15 +7,15 @@ import com.bigteamseventeen.wpd2_ah.milestones.console.TerminalProcessor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ExitCommand implements IConsoleCommand {
-    final static Logger logger = LogManager.getLogger();
+public class ReloadServerCommand implements IConsoleCommand {
+    static final Logger logger = LogManager.getLogger();
 
     @Override public String getCommand() {
-        return "exit";
+        return "server/reload";
     }
 
     @Override public String getDescription() {
-        return "Exist the application";
+        return "Tell's the server to rescan for any changed web path's and discover new";
     }
 
     @Override public String getParameterHint() {
@@ -23,9 +23,7 @@ public class ExitCommand implements IConsoleCommand {
     }
 
     @Override public void process(TerminalProcessor processor, String[] args) {
-        logger.warn("§cUser shutdown command recieved§r, Server shutting down...");
-
-        // Shutdown the processor
-        processor.shutdown();
+        logger.info("ReloadServerCommand: Reloading all route's.");
+        Main.getServer().ReloadRouter();
     }
 }

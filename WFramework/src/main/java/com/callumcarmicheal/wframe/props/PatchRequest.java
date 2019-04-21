@@ -1,10 +1,11 @@
-package com.callumcarmicheal.wframe;
+package com.callumcarmicheal.wframe.props;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 // create a custom Annotation
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PostRequest {
+public @interface PatchRequest {
 	String value();
+	String __RequestType() default "PATCH";
 }

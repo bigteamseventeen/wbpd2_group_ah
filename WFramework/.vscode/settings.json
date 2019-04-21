@@ -5,7 +5,10 @@
         "**/.settings": true,
         "**/.factorypath": true
     },
+
+    "discord.enabled": true,
+
     "java.dependency.packagePresentation": "flat",
     "java.configuration.updateBuildConfiguration": "automatic",
-    "discord.enabled": true
+    "java.debug.settings.forceBuildBeforeLaunch": false
 }

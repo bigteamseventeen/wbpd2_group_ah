@@ -17,10 +17,13 @@ import com.callumcarmicheal.wframe.library.Tuple3;
 import com.callumcarmicheal.wframe.HttpRequest;
 import com.callumcarmicheal.wframe.Resource;
 import com.callumcarmicheal.wframe.web.SessionList;
+import com.callumcarmicheal.wframe.props.GetRequest;
+import com.callumcarmicheal.wframe.props.PostRequest;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,13 +35,13 @@ import java.util.concurrent.Executors;
 
 @SuppressWarnings("rawtypes")
 public class Server implements HttpHandler {
-    final static Logger logger = LogManager.getLogger();
+	final static Logger logger = LogManager.getLogger();
 
-
-	private static final int __THREAD_COUNT = 4;
-	private String controllersPackage = null;
-	private HttpServer Server;
-	private boolean Started = false;
+	protected static final int __THREAD_COUNT = 4;
+	protected String controllersPackage = null;
+	protected HttpServer Server;
+	protected boolean Started = false;
+	protected RequestReflection reflectionEngine = null;
 
 	private HashMap<String, ControllerMethodPair> Router;
 	private SessionList sessionList;
@@ -47,7 +50,10 @@ public class Server implements HttpHandler {
 	private String resourcesDirectory = "";
 
 	// TODO: Support full rest functionality - POST, PUT, PATCH, GET, DELETE.
-	private enum RequestType { GET, POST }
+	private enum RequestType {
+		GET, POST
+	}
+
 	private class ControllerMethodPair {
 		public Object GetInstance = null;
 		public Method Get = null;
@@ -55,16 +61,30 @@ public class Server implements HttpHandler {
 		public Method Post = null;
 	}
 
-	public Server  setResourcesEnabled(boolean v) { resourcesEnabled = v; return this; }
-	public boolean getResourcesEnabled() { return resourcesEnabled; }
-	public Server  setResourcesDirectory(String v) { resourcesDirectory = v; return this; }
-	public String  getResourcesDirectory() { return resourcesDirectory; }
+	public Server setResourcesEnabled(boolean v) {
+		resourcesEnabled = v;
+		return this;
+	}
+
+	public boolean getResourcesEnabled() {
+		return resourcesEnabled;
+	}
+
+	public Server setResourcesDirectory(String v) {
+		resourcesDirectory = v;
+		return this;
+	}
+
+	public String getResourcesDirectory() {
+		return resourcesDirectory;
+	}
 
 	/**
 	 * Create a new server
 	 * 
-	 * @param Port The port that the server will bind to
-	 * @param ControllersPackage The package structure that will be searched for the controller's and get, post methods.
+	 * @param Port               The port that the server will bind to
+	 * @param ControllersPackage The package structure that will be searched for the
+	 *                           controller's and get, post methods.
 	 */
 	public Server(int Port, String ControllersPackage) throws Exception {
 		// Set our controllers package
@@ -72,18 +92,31 @@ public class Server implements HttpHandler {
 
 		// Create our session cache
 		this.sessionList = new SessionList();
-			
+
 		// Temporarly disable the logger
+		reflectionEngine = new RequestReflection(this);
 		ReloadRouter();
-		
+
 		// Setup our http server
 		Server = HttpServer.create(new InetSocketAddress(Port), 0);
 	}
-	
+
+	private @interface ValueAnnotation {
+		public String value();
+	}
+
+	public void ReloadRouter() {
+		
+	}
+
+	void handleBasicAnnotationRequest(Reflections reflectionEngine, final Class<? extends Annotation> annotation) {
+		Set<Method> methods = reflectionEngine.getMethodsAnnotatedWith(annotation);
+	}
+
 	/**
 	 * Rescans for any changed method's and reindexes the available web requests
 	 */
-	public void ReloadRouter() {
+	public void __ReloadRouter() {
 		// Reset the router hashmap
 		Router = new HashMap<>();
 
@@ -100,7 +133,7 @@ public class Server implements HttpHandler {
 		Set<Method> getMethods = reflections.getMethodsAnnotatedWith(GetRequest.class);
 		Set<Method> postMethods = reflections.getMethodsAnnotatedWith(PostRequest.class);
 		HashMap<String, Tuple<RequestType, Method>> paths
-				= new HashMap<>();
+			= new HashMap<>();
 		HashMap<Class, ArrayList<Tuple3<String, Method, RequestType>>> classes = new HashMap<>();
 		HashMap<Class, Object> instances = new HashMap<>();
 
@@ -250,7 +283,7 @@ public class Server implements HttpHandler {
 	 * @return An abbreviated package
 	 */
 	String Package(String Package){
-		return Package.replaceAll("\\B\\w+(\\.[a-z])","$1");
+		return RequestReflection.Package(Package);
 	}
 	
 	/**
@@ -320,14 +353,14 @@ public class Server implements HttpHandler {
 				if (isPost) {
 					if (cmp.Post == null || cmp.PostInstance == null) {
 						// The post request does not exist or cannot be processed
-						display404(r);
+						display404(r, request);
 					} else {
 						cmp.Post.invoke(cmp.PostInstance, r);
 					}
 				} else {
 					if (cmp.Get == null || cmp.GetInstance == null) {
 						// The post request does not exist or cannot be processed
-						display404(r);
+						display404(r, request);
 					} else {
 						cmp.Get.invoke(cmp.GetInstance, r);
 					}
@@ -353,7 +386,7 @@ public class Server implements HttpHandler {
 	 */
 	private void handleFileResource(HttpRequest request, String requestedResource) throws IOException {
 		if (!resourcesEnabled){
-			display404(request);
+			display404(request, requestedResource);
 			return;
 		}
 
@@ -362,7 +395,7 @@ public class Server implements HttpHandler {
 		
 		// Protect against traversal attacks
 		if (Resource.IsUnsafePath(resource)) {
-			display404(request);
+			display404(request, requestedResource);
 			return;
 		}
 		
@@ -378,7 +411,7 @@ public class Server implements HttpHandler {
 //			if (!f.exists()) { /*This is used for debugging purposes only*/ }
 			
 			// Display a generic message
-			display404(request);
+			display404(request, requestedResource);
 			return;
 		}
 		
@@ -391,10 +424,24 @@ public class Server implements HttpHandler {
 	 * @param r
 	 */
 	private void display404(HttpRequest r) {
+		logger.info("WFrameworkServer: Could not find requested resource.");
 		r.SendMessagePage("Resource not found",
 			"The requested resource could not be found or the request was malformed",
 			404);
 	}
+
+	/**
+	 * Display the 404 error page
+	 * @param r
+	 * @param requestedResource
+	 */
+	private void display404(HttpRequest r, String requestedResource) {
+		logger.info("WFrameworkServer: Could not find requested resource. Requested Resource: " + requestedResource);
+		r.SendMessagePage("Resource not found",
+			"The requested resource could not be found or the request was malformed",
+			404);
+	}
+	
 	
 	/**
 	 * Parse a query string ?x=1

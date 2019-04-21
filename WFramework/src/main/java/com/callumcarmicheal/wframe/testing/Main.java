@@ -8,14 +8,15 @@ import com.callumcarmicheal.wframe.HttpRequest;
 import com.callumcarmicheal.wframe.Server;
 import com.callumcarmicheal.wframe.web.Session;
 
-public class SimpleDebugApp {
+public class Main {
     public static void main(String[] args) throws Exception {
+        System.out.println("Main called!");
         Server server = new Server(9000, "com.callumcarmicheal.wframe.testing");
-        server.start();
+        server.start();     
     }
 
-    @GetRequest("/")
-    public void getIndexPage(HttpRequest request) throws IOException {
+    @GetRequest("/newIndex")
+    public void getNewIndexPage(HttpRequest request) throws IOException {
         Map<String,String> cookies = request.getRequestCookies();
         Session s = request.session();
 

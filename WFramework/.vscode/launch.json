@@ -6,11 +6,28 @@
     "configurations": [
         {
             "type": "java",
-            "name": "SimpleDebugApp",
+            "name": "Main<wframe>",
+            "request": "launch",
+            "mainClass": "com.callumcarmicheal.wframe.testing.Main",
+            "projectName": "wframe",
+            "preLaunchTask": "compile",
+            "stopOnEntry": false,
+
+            "windows":     { "cwd": "${workspaceFolder}/bin" },
+            "console":     "internalConsole"
+        },
+
+        {
+            "type": "java",
+            "name": "SimpleDebugApp<wframe>",
             "request": "launch",
             "mainClass": "com.callumcarmicheal.wframe.testing.SimpleDebugApp",
             "projectName": "wframe",
-            "console": "integratedTerminal"
-        },
+            "preLaunchTask": "compile",
+            "stopOnEntry": false,
+
+            "windows":     { "cwd": "${workspaceFolder}/bin" },
+            "console":     "internalConsole"
+        }
     ]
 }

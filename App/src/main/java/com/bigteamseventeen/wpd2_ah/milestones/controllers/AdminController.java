@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import com.bigteamseventeen.wpd2_ah.milestones.Renderer;
 import com.bigteamseventeen.wpd2_ah.milestones.SqliteDBCon;
 import com.bigteamseventeen.wpd2_ah.milestones.models.User;
-import com.callumcarmicheal.wframe.GetRequest;
+import com.callumcarmicheal.wframe.props.GetRequest;
 import com.callumcarmicheal.wframe.HttpRequest;
 import com.google.common.collect.ImmutableMap;
 

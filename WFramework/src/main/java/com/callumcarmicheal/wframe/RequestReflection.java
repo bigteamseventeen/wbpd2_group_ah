@@ -44,6 +44,10 @@ public class RequestReflection {
     HashMap<Method, Object> classInstances = new HashMap<>();
     HashMap<String, HashMap<String, Method>> routeList = new HashMap<>();
 
+    /**
+     * Setup a reflection engine
+     * @param server
+     */
     public RequestReflection(Server server) {
         this.server = server;
     }
@@ -63,7 +67,7 @@ public class RequestReflection {
      * 
      * @throws RequestPathConfliction
      */
-    public void Begin() throws RequestPathConfliction {
+    public void scanForRequests() throws RequestPathConfliction {
         // Setup the reflection engine
         logger.info("WFrameworkServer: Indexing Controllers and Methods.");
         reflections = new Reflections(
@@ -71,8 +75,10 @@ public class RequestReflection {
                     .setUrls(ClasspathHelper
                     .forPackage(server.controllersPackage))
                     .setScanners(
-                        new SubTypesScanner(false), new TypeAnnotationsScanner(), new MethodAnnotationsScanner()));
-
+                        new SubTypesScanner(false), 
+                        new TypeAnnotationsScanner(), 
+                        new MethodAnnotationsScanner()));
+        
         // Parse the basic request annotations
         this.parseRequestAnnotations(new Class[] {
             DeleteRequest.class,    GetRequest.class,       HeadRequest.class, 
@@ -133,7 +139,7 @@ public class RequestReflection {
 
                 // Try to call the value() method to get the request type
                 try {
-                    requestType = (String) valueMethod.invoke(annotation);
+                    requestType = ((String) valueMethod.invoke(annotation)).toUpperCase();
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     logger.error(
                             "Skipping web path method because of attribute exception. (Request Type invoke)\nMethod: "
@@ -148,13 +154,13 @@ public class RequestReflection {
             }
 
             // We now have the path
-            logger.info("Request found " + requestType.toUpperCase() + " - " + requestPath);
-
+            logger.info("Discovered route " + requestType + " - " + requestPath);
             HashMap<String, Method> requestMethods;
 
             // Set or get the request Methods routing
-            if (!routeList.containsKey(requestPath))
+            if (!routeList.containsKey(requestPath)) {
                 routeList.put(requestPath, requestMethods = new HashMap<>());
+            }
             else {
                 requestMethods = routeList.get(requestPath);
 
@@ -170,6 +176,15 @@ public class RequestReflection {
     }
 
     /**
+     * Remove leading slashes from the path
+     * @param request
+     * @return
+     */
+    private String cleanRequestPath(String request) {
+        return request.startsWith("/") ? request.replaceAll("^/+", "") : request;
+    }
+
+    /**
      * Check if we have the request
      * 
      * @param requestType The request type
@@ -177,6 +192,9 @@ public class RequestReflection {
      * @return
      */
     public boolean hasRequest(String requestType, String requestPath) {
+        requestType = requestType.toUpperCase();
+        requestPath = cleanRequestPath(requestPath);
+
         // Check if we dont have the path
         if (!routeList.containsKey(requestPath))
             return false;
@@ -193,14 +211,18 @@ public class RequestReflection {
     /**
      * Execute a request
      * 
-     * @param request     The web request
-     * @param requestType The request type
-     * @param requestPath The request path
-     * @return
+     * @param request       The web request
+     * @param requestType   The request type
+     * @param requestPath   The request path
+     * @return              If the request was successful
      * @throws RequestControllerConstructorInvalid
      */
     public boolean executeRequest(HttpRequest request, String requestType, String requestPath)
             throws RequestControllerConstructorInvalid {
+        //
+        requestType = requestType.toUpperCase();
+        requestPath = cleanRequestPath(requestPath);
+
         // Check if we dont have the request
         if (!this.hasRequest(requestType, requestPath))
             return false;

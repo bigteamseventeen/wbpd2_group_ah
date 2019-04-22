@@ -16,6 +16,8 @@ import com.callumcarmicheal.wframe.library.Tuple;
 import com.callumcarmicheal.wframe.library.Tuple3;
 import com.callumcarmicheal.wframe.HttpRequest;
 import com.callumcarmicheal.wframe.Resource;
+import com.callumcarmicheal.wframe.exception.RequestControllerConstructorInvalid;
+import com.callumcarmicheal.wframe.exception.RequestPathConfliction;
 import com.callumcarmicheal.wframe.web.SessionList;
 import com.callumcarmicheal.wframe.props.GetRequest;
 import com.callumcarmicheal.wframe.props.PostRequest;
@@ -43,23 +45,9 @@ public class Server implements HttpHandler {
 	protected boolean Started = false;
 	protected RequestReflection reflectionEngine = null;
 
-	private HashMap<String, ControllerMethodPair> Router;
 	private SessionList sessionList;
-
 	private boolean resourcesEnabled = false;
 	private String resourcesDirectory = "";
-
-	// TODO: Support full rest functionality - POST, PUT, PATCH, GET, DELETE.
-	private enum RequestType {
-		GET, POST
-	}
-
-	private class ControllerMethodPair {
-		public Object GetInstance = null;
-		public Method Get = null;
-		public Object PostInstance = null;
-		public Method Post = null;
-	}
 
 	public Server setResourcesEnabled(boolean v) {
 		resourcesEnabled = v;
@@ -86,7 +74,7 @@ public class Server implements HttpHandler {
 	 * @param ControllersPackage The package structure that will be searched for the
 	 *                           controller's and get, post methods.
 	 */
-	public Server(int Port, String ControllersPackage) throws Exception {
+	public Server(int Port, String ControllersPackage) throws RequestPathConfliction, IOException {
 		// Set our controllers package
 		this.controllersPackage = ControllersPackage;
 
@@ -95,188 +83,20 @@ public class Server implements HttpHandler {
 
 		// Temporarly disable the logger
 		reflectionEngine = new RequestReflection(this);
-		ReloadRouter();
+		scanForRequests();
 
 		// Setup our http server
 		Server = HttpServer.create(new InetSocketAddress(Port), 0);
 	}
 
-	private @interface ValueAnnotation {
-		public String value();
-	}
-
-	public void ReloadRouter() {
-		
-	}
-
-	void handleBasicAnnotationRequest(Reflections reflectionEngine, final Class<? extends Annotation> annotation) {
-		Set<Method> methods = reflectionEngine.getMethodsAnnotatedWith(annotation);
-	}
-
 	/**
-	 * Rescans for any changed method's and reindexes the available web requests
+	 * Scan for all requests
+	 * @throws RequestPathConfliction
 	 */
-	public void __ReloadRouter() {
-		// Reset the router hashmap
-		Router = new HashMap<>();
-
-		logger.info("WFrameworkServer: Indexing Controllers and Methods.");
-
-		Reflections reflections = new Reflections(new ConfigurationBuilder()
-			.setUrls(ClasspathHelper.forPackage(controllersPackage))
-			.setScanners(
-				new SubTypesScanner(false),
-				new TypeAnnotationsScanner(),
-				new MethodAnnotationsScanner()
-			));
-		
-		Set<Method> getMethods = reflections.getMethodsAnnotatedWith(GetRequest.class);
-		Set<Method> postMethods = reflections.getMethodsAnnotatedWith(PostRequest.class);
-		HashMap<String, Tuple<RequestType, Method>> paths
-			= new HashMap<>();
-		HashMap<Class, ArrayList<Tuple3<String, Method, RequestType>>> classes = new HashMap<>();
-		HashMap<Class, Object> instances = new HashMap<>();
-
-		// Loop Router
-		for (Method m : getMethods) {
-			Class c = m.getDeclaringClass();
-			GetRequest g = m.getAnnotation(GetRequest.class);
-			String path = g.value();
-			
-			if (!Modifier.isPublic(m.getModifiers())) {
-				logger.error("WFrameworkServer: ERROR Method needs to be public!");
-				logger.error("    Route: GET " + path);
-				logger.error("    at " + Package(m.toGenericString()));
-				System.exit(1);
-			}
-			
-			if (paths.containsKey(path)) {
-				Tuple<RequestType,Method> rt = paths.get(path);
-				
-				if (rt.x == RequestType.GET) {
-					
-					logger.error("WFrameworkServer: WARNING Duplicate value's resolution");
-					logger.error("    Request Type: GET");
-					logger.error("    Methods are conflicting for value: " + path);
-					logger.error("    Method 1: " + Package(m.toGenericString()));
-					logger.error("    Method 2: " + Package(rt.y.toGenericString()));
-					System.exit(1);
-				}
-			} else {
-				paths.put(path, new Tuple<>(RequestType.GET, m));
-			}
-			
-			if (!classes.containsKey(c))
-				classes.put(c, new ArrayList< Tuple3<String, Method, RequestType> >());
-			
-			classes.get(c).add(new Tuple3<>(path, m, RequestType.GET));
-		}
-		
-		for (Method m : postMethods) {
-			Class c = m.getDeclaringClass();
-			PostRequest p = m.getAnnotation(PostRequest.class);
-			String path = p.value();
-			
-			if (!Modifier.isPublic(m.getModifiers())) {
-				logger.error("WFrameworkServer: ERROR Method needs to be public!");
-				logger.error("    Route: POST " + path);
-				logger.error("    at " + m.toGenericString());
-				System.exit(1);
-			}
-			
-			if (paths.containsKey(path)) {
-				Tuple<RequestType,Method> rt = paths.get(path);
-				
-				if (rt.x == RequestType.POST) {
-					logger.error("WFrameworkServer: WARNING Duplicate value's resolution");
-					logger.error("    Request Type: POST");
-					logger.error("    Methods are conflicting for value: " + path);
-					logger.error("    Method 1: " + Package(m.toGenericString()));
-					logger.error("    Method 2: " + Package(rt.y.toGenericString()));
-					System.exit(1);
-				}
-			} else {
-				paths.put(path, new Tuple<>(RequestType.POST, m));
-			}
-			
-			if (!classes.containsKey(c)) {
-				classes.put(c, new ArrayList< Tuple3<String, Method, RequestType> >());
-			}
-			
-			classes.get(c).add(new Tuple3<>(path, m, RequestType.POST));
-		}
-	
-		// We are now generate value controller list.
-		for (Class k : classes.keySet()) {
-			ArrayList<Tuple3<String,Method,RequestType>> v = classes.get(k);
-			
-			Object inst = null;
-			
-			if (!instances.containsKey(k)) {
-				try {
-					Constructor<?> ctor = k.getDeclaredConstructor();
-					inst = (Object) ctor.newInstance(new Object[] {});
-					instances.put(k, inst);
-				} catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-					logger.error("Failed to find constructor or create instance for controller class.");
-					logger.error("    " + k.getCanonicalName());
-					e.printStackTrace();
-					System.exit(1);
-				}
-			}
-			
-			if (inst == null)
-				inst = instances.get(k);
-			
-			for (Tuple3<String,Method,RequestType> t : v) {
-				ControllerMethodPair cmp;
-				boolean existingInst = Router.containsKey(t.x);
-				
-				if (existingInst) {
-					cmp = Router.get(t.x);
-					switch (t.z) {
-						case GET:
-							if (cmp.Get != null) {
-								logger.error("WFrameworkServer: WARNING Duplicate method resolution");
-								logger.error("    Methods are conflicting for value: " + t.x);
-								logger.error("    Method 1: " + Package(cmp.Get.toGenericString()));
-								logger.error("    Method 2: " + Package(t.y.toGenericString()));
-								System.exit(1);
-							} break;
-						case POST:
-							if (cmp.Post != null) {
-								logger.error("WFrameworkServer: WARNING Duplicate method resolution");
-								logger.error("    Methods are conflicting for value: " + t.x);
-								logger.error("    Method 1: " + Package(cmp.Post.toGenericString()));
-								logger.error("    Method 2: " + Package(t.y.toGenericString()));
-								System.exit(1);
-							} break;
-					}
-				} else {
-					cmp = new ControllerMethodPair();
-				}
-				
-				switch (t.z) {
-					case GET:
-						cmp.GetInstance = inst;
-						cmp.Get = t.y;
-						
-						logger.info("Registered route, GET  (" + t.x + ") @ " + Package(t.y.getDeclaringClass().getTypeName()) + "." + t.y.getName());
-						break;
-					case POST:
-						cmp.PostInstance = inst;
-						cmp.Post = t.y;
-						
-						logger.info("Registered route, POST (" + t.x + ") @ " + Package(t.y.getDeclaringClass().getTypeName()) + "." + t.y.getName());
-						break;
-				}
-				
-				if (!existingInst)
-					Router.put(t.x, cmp);
-			}
-		}
+	public void scanForRequests() throws RequestPathConfliction {
+		reflectionEngine.scanForRequests();
 	}
-	
+
 	/**
 	 * Generate a compressed abbreviated package name from a long package.
 	 * @param Package The package to abbreviate
@@ -335,46 +155,28 @@ public class Server implements HttpHandler {
 		
 
 		// Log the request
+		String requestType = e.getRemoteAddress().toString().toUpperCase();
 		logger.info(
-			String.format("WFrameworkServer: %s %-6s %s", e.getRemoteAddress().toString(), e.getRequestMethod(), path));
+			String.format("WFrameworkServer: %s %-6s %s", requestType, e.getRequestMethod(), path));
 		
 		try {
-			// Check if we have the request in our router
-			if (Router.containsKey(request) ||
-					(requestStartsWithSlash = (request.startsWith("/") && Router.containsKey(request.substring(1))))) {
-				// Get the controller pair
-				ControllerMethodPair cmp;
-				
-				if (requestStartsWithSlash)
-					 cmp = Router.get(request.substring(1));
-				else cmp = Router.get(request);
-				
-				// Check if we are invoking the Get or Post request
-				if (isPost) {
-					if (cmp.Post == null || cmp.PostInstance == null) {
-						// The post request does not exist or cannot be processed
-						display404(r, request);
-					} else {
-						cmp.Post.invoke(cmp.PostInstance, r);
-					}
-				} else {
-					if (cmp.Get == null || cmp.GetInstance == null) {
-						// The post request does not exist or cannot be processed
-						display404(r, request);
-					} else {
-						cmp.Get.invoke(cmp.GetInstance, r);
-					}
-				}
-				
+			if (this.reflectionEngine.hasRequest(requestType, path)) {
+				this.reflectionEngine.executeRequest(r, requestType, path);
 				return;
 			}
 			
 			// We did not have the request and pass the information to our resource loader
 			handleFileResource(r, request);
-		} catch (Exception ex) {
+		} catch (IOException ex) {
 			// Attempt to send the message
 			try { r.throwException(ex); }
 			catch (Exception ignored) { }
+		} catch (RequestControllerConstructorInvalid ex) {
+			// Attempt to send the message
+			try { 
+				r.throwException("Failed to initiate server request. Please try again later.", 
+					"A constructor has failed to be initialized on the controller for: " + requestType + " " + path, ex.baseException); 
+			} catch (Exception ignored) { }
 		}
 	}
 	

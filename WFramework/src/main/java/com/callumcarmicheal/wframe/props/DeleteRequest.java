@@ -7,5 +7,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DeleteRequest {
 	String value();
-	String __RequestType() default "DELETE";
+	String requestType() default "DELETE";
 }

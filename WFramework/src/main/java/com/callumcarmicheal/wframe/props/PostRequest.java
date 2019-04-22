@@ -7,5 +7,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PostRequest {
 	String value();
-	String __RequestType() default "POST";
+	String requestType() default "POST";
 }

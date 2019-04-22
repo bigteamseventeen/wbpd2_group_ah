@@ -7,5 +7,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PutRequest {
 	String value();
-	String __RequestType() default "PUT";
+	String requestType() default "PUT";
 }

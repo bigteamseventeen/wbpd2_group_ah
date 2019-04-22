@@ -7,5 +7,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HeadRequest {
 	String value();
-	String __RequestType() default "HEAD";
+	String requestType() default "HEAD";
 }

@@ -7,5 +7,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PatchRequest {
 	String value();
-	String __RequestType() default "PATCH";
+	String requestType() default "PATCH";
 }

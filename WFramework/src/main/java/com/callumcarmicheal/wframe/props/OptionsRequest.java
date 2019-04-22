@@ -7,5 +7,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OptionsRequest {
 	String value();
-	String __RequestType() default "OPTIONS";
+	String requestType() default "OPTIONS";
 }

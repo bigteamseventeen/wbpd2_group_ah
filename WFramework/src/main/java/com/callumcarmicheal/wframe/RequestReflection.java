@@ -67,17 +67,18 @@ public class RequestReflection {
         // Setup the reflection engine
         logger.info("WFrameworkServer: Indexing Controllers and Methods.");
         reflections = new Reflections(
-                new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage(server.controllersPackage)).setScanners(
+                new ConfigurationBuilder()
+                    .setUrls(ClasspathHelper
+                    .forPackage(server.controllersPackage))
+                    .setScanners(
                         new SubTypesScanner(false), new TypeAnnotationsScanner(), new MethodAnnotationsScanner()));
 
         // Parse the basic request annotations
-        this.parseBasicRequestAnnotation(new Class[] {
-            DeleteRequest.class,  GetRequest.class,   HeadRequest.class, 
-            OptionsRequest.class, PatchRequest.class, PostRequest.class, 
-            PutRequest.class
+        this.parseRequestAnnotations(new Class[] {
+            DeleteRequest.class,    GetRequest.class,       HeadRequest.class, 
+            OptionsRequest.class,   PatchRequest.class,     PostRequest.class, 
+            PutRequest.class,       WebRequest.class
         });
-
-        // TODO: Parse WebRequest annotation's
     }
 
      /**
@@ -86,11 +87,11 @@ public class RequestReflection {
      * @param annotationClass
      * @throws RequestPathConfliction
      */
-    private void parseBasicRequestAnnotation(Class<? extends Annotation> annotationClass[])
+    private void parseRequestAnnotations(Class<? extends Annotation> annotationClasses[])
             throws RequestPathConfliction {
-        for(Class<? extends Annotation> ann : annotationClass) {
-            parseBasicRequestAnnotation(ann);
-        }
+        // Loop the annotation classes
+        for(Class<? extends Annotation> ann : annotationClasses)
+            this.parseRequestAnnotation(ann);
     }
 
     /**
@@ -99,7 +100,7 @@ public class RequestReflection {
      * @param annotationClass
      * @throws RequestPathConfliction
      */
-    private void parseBasicRequestAnnotation(Class<? extends Annotation> annotationClass)
+    private void parseRequestAnnotation(Class<? extends Annotation> annotationClass)
             throws RequestPathConfliction {
         Set<Method> methodsList = reflections.getMethodsAnnotatedWith(annotationClass);
         for (Method method : methodsList) {
@@ -128,7 +129,7 @@ public class RequestReflection {
 
             // Try to get the value method and get the request type
             try {
-                Method valueMethod = annotation.getClass().getMethod("__RequestType");
+                Method valueMethod = annotation.getClass().getMethod("requestType");
 
                 // Try to call the value() method to get the request type
                 try {

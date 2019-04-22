@@ -7,5 +7,5 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface GetRequest {
 	String value();
-	String __RequestType() default "GET";
+	String requestType() default "GET";
 }

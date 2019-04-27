@@ -11,7 +11,7 @@
                 Successfully registered account, please now login.
             {% elseif status == 2 %}
             {% else %}
-                Unknown error occured
+                Unknown success code
             {% endif %}
         </div>
     {% endif %}
@@ -24,8 +24,10 @@
                 The specified email was invalid
             {% elseif error == 3 %}
                 The specified password was invalid    
+            {% elseif error == 4 %}
+                User is banned, please contact an admin to unban the account or get more information    
             {% else %}
-                Unknown error occured
+                Unknown error code
             {% endif %}
         </div>
     {% endif %}

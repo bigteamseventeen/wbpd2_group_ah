@@ -41,8 +41,8 @@ public class RequestReflection {
     private Reflections reflections;
 
     //
-    HashMap<Method, Object> classInstances = new HashMap<>();
-    HashMap<String, HashMap<String, Method>> routeList = new HashMap<>();
+    HashMap<Method, Object> classInstances;
+    HashMap<String, HashMap<String, Method>> routeList;
 
     /**
      * Setup a reflection engine
@@ -68,6 +68,10 @@ public class RequestReflection {
      * @throws RequestPathConfliction
      */
     public void scanForRequests() throws RequestPathConfliction {
+        // Recreate the lists
+        classInstances = new HashMap<>();
+        routeList = new HashMap<>();
+        
         // Setup the reflection engine
         logger.info("WFrameworkServer: Indexing Controllers and Methods.");
         reflections = new Reflections(
@@ -121,7 +125,7 @@ public class RequestReflection {
 
                 // Try to call the value() method to get the path
                 try {
-                    requestPath = (String) valueMethod.invoke(annotation);
+                    requestPath = cleanRequestPath((String) valueMethod.invoke(annotation));
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     logger.error("Skipping web path method because of attribute exception. (Path invoke)\nMethod: "
                             + Package(method.toGenericString()), e);
@@ -154,24 +158,25 @@ public class RequestReflection {
             }
 
             // We now have the path
-            logger.info("Discovered route " + requestType + " - " + requestPath);
+            logger.info("Discovered route " + requestType + " /" + requestPath + " @ " + Package(method.toGenericString()));
             HashMap<String, Method> requestMethods;
 
             // Set or get the request Methods routing
             if (!routeList.containsKey(requestPath)) {
                 routeList.put(requestPath, requestMethods = new HashMap<>());
             }
-            else {
-                requestMethods = routeList.get(requestPath);
+            
 
-                // Check if the request already exists for the request
-                if (requestMethods.containsKey(requestType))
-                    throw new RequestPathConfliction(requestType, requestPath,
-                            routeList.get(requestPath).get(requestType), method);
-            }
+            // Check if the request already exists for the request
+            requestMethods = routeList.get(requestPath);
+
+            if (requestMethods.containsKey(requestType))
+                throw new RequestPathConfliction(requestType, requestPath,
+                        routeList.get(requestPath).get(requestType), method);
+            
 
             // Add the method to the request methods.
-            requestMethods.put(requestPath, method);
+            requestMethods.put(requestType, method);
         }
     }
 
@@ -181,6 +186,8 @@ public class RequestReflection {
      * @return
      */
     private String cleanRequestPath(String request) {
+        int i = 0;
+        request = request.substring(0, (i = request.indexOf("?")) == -1 ? request.length() : i);
         return request.startsWith("/") ? request.replaceAll("^/+", "") : request;
     }
 
@@ -202,10 +209,10 @@ public class RequestReflection {
         // Check if we have the request type
         HashMap<String, Method> rm = null;
         if (((rm = routeList.get(requestPath)) != null) && rm.containsKey(requestType))
-            return false;
+            return true;
 
         // We have the request!
-        return true;
+        return false;
     }
 
     /**
@@ -234,7 +241,7 @@ public class RequestReflection {
         // Create an instance
         if ((instance = classInstances.get(webRequestMethod)) == null) {
             try {
-                Constructor<?> ctor = webRequestMethod.getClass().getDeclaredConstructor();
+                Constructor<?> ctor = webRequestMethod.getDeclaringClass().getDeclaredConstructor();
                 instance = (Object) ctor.newInstance(new Object[] {});
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
                     | InvocationTargetException e) {
@@ -245,13 +252,15 @@ public class RequestReflection {
         }
 
         // Try to invoke the method
-        try { webRequestMethod.invoke(instance, request); } 
+        try { 
+            webRequestMethod.invoke(instance, request); 
+        } 
         catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            logger.error("Failed to invoke web request for " + requestType + " " + requestPath + " @ " + Package(webRequestMethod.toGenericString()), e);
+            logger.error("Failed to invoke web request for " + requestType + " /" + requestPath + " @ " + Package(webRequestMethod.toGenericString()), e);
 
             if (request != null) {
                 request.throwException("A exception was thrown in the server.", 
-                    "Failed to invoke web request for " + requestType + " " + requestPath + 
+                    "Failed to invoke web request for " + requestType + " /" + requestPath + 
                         " @ " + Package(webRequestMethod.toGenericString()), e);
             }
 

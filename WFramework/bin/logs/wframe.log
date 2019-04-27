@@ -169,3 +169,164 @@ java.lang.IllegalArgumentException: object is not an instance of declaring class
 2019-04-21 05:32:16.776 [main] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: Indexing Controllers and Methods.
 2019-04-21 05:32:16.984 [main] INFO  com.callumcarmicheal.wframe.Server - Request found GET - /newIndex
 2019-04-21 05:32:16.984 [main] INFO  com.callumcarmicheal.wframe.Server - Request found GET - /
+2019-04-23 00:29:26.155 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - WFrameworkServer: Indexing Controllers and Methods.
+2019-04-23 00:29:26.404 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - Discovered route GET - /newIndex @ public void c.c.w.testing.M.getNewIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+2019-04-23 00:29:26.405 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - Discovered route GET - / @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+2019-04-23 00:30:09.555 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60379 GET    /
+2019-04-23 00:30:09.886 [pool-2-thread-2] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60380 GET    /
+2019-04-23 00:30:14.942 [pool-2-thread-3] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60381 GET    /
+2019-04-23 00:30:22.729 [pool-2-thread-4] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60382 GET    /
+2019-04-23 00:30:30.781 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60384 GET    /
+2019-04-23 00:30:32.170 [pool-2-thread-2] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60385 GET    /
+2019-04-23 00:30:53.344 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60384 GET    /
+2019-04-23 00:31:21.028 [pool-2-thread-2] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60385 GET    /
+2019-04-23 00:31:52.844 [pool-2-thread-3] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60401 GET    /
+2019-04-23 00:32:08.544 [pool-2-thread-4] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60405 GET    /
+2019-04-23 00:33:02.791 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - WFrameworkServer: Indexing Controllers and Methods.
+2019-04-23 00:33:03.044 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - Discovered route GET - / @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+2019-04-23 00:33:13.588 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60425 GET    /
+2019-04-23 00:33:36.612 [pool-2-thread-2] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60430 GET    /
+2019-04-23 00:35:19.935 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - WFrameworkServer: Indexing Controllers and Methods.
+2019-04-23 00:35:20.154 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - Discovered route GET - / @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+2019-04-23 00:35:24.140 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60456 GET    /
+2019-04-23 00:35:41.079 [pool-2-thread-2] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60461 GET    /
+2019-04-23 00:36:20.827 [pool-2-thread-3] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60468 GET    /
+2019-04-23 00:36:41.128 [pool-2-thread-3] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60468 GET    /
+2019-04-23 00:36:49.344 [pool-2-thread-4] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60476 GET    /
+2019-04-23 00:38:12.841 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - WFrameworkServer: Indexing Controllers and Methods.
+2019-04-23 00:38:13.074 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - Discovered route GET - / @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+2019-04-23 00:38:26.730 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60519 GET    /
+2019-04-23 00:40:35.123 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - WFrameworkServer: Indexing Controllers and Methods.
+2019-04-23 00:40:35.343 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - Discovered route GET / @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+2019-04-23 00:40:41.613 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60566 GET    /
+2019-04-23 00:41:19.244 [pool-2-thread-2] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60580 GET    /
+2019-04-23 00:42:14.753 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - WFrameworkServer: Indexing Controllers and Methods.
+2019-04-23 00:42:14.996 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - Discovered route GET / @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+2019-04-23 00:43:08.065 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - WFrameworkServer: Indexing Controllers and Methods.
+2019-04-23 00:43:08.270 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - Discovered route GET / @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+2019-04-23 00:44:01.340 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60626 GET    /
+2019-04-23 00:45:59.882 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - WFrameworkServer: Indexing Controllers and Methods.
+2019-04-23 00:46:00.150 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - Discovered route GET / @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+2019-04-23 00:46:23.805 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60675 GET    /
+2019-04-23 00:47:26.013 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - WFrameworkServer: Indexing Controllers and Methods.
+2019-04-23 00:47:26.208 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - Discovered route GET / @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+2019-04-23 00:47:58.650 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60696 GET    /
+2019-04-23 00:51:15.164 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - WFrameworkServer: Indexing Controllers and Methods.
+2019-04-23 00:51:15.385 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - Discovered route GET / @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+2019-04-23 00:51:23.956 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60754 GET    /
+2019-04-23 00:52:49.674 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - WFrameworkServer: Indexing Controllers and Methods.
+2019-04-23 00:52:49.885 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - Discovered route GET / @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+2019-04-23 00:52:52.526 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60774 GET    /
+2019-04-23 00:52:53.340 [pool-2-thread-2] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60776 GET    /
+2019-04-23 00:52:55.872 [pool-2-thread-3] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60777 GET    /
+2019-04-23 00:53:02.978 [pool-2-thread-4] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60777 GET    /favicon.ico
+2019-04-23 00:53:12.055 [pool-2-thread-1] ERROR com.callumcarmicheal.wframe.RequestReflection - Failed to invoke web request for GET  @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_201]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_201]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_201]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_201]
+	at com.callumcarmicheal.wframe.RequestReflection.executeRequest(RequestReflection.java:255) [classes/:?]
+	at com.callumcarmicheal.wframe.Server.handle(Server.java:160) [classes/:?]
+	at com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:79) [?:1.8.0_201]
+	at sun.net.httpserver.AuthFilter.doFilter(AuthFilter.java:83) [?:1.8.0_201]
+	at com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:82) [?:1.8.0_201]
+	at sun.net.httpserver.ServerImpl$Exchange$LinkHandler.handle(ServerImpl.java:675) [?:1.8.0_201]
+	at com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:79) [?:1.8.0_201]
+	at sun.net.httpserver.ServerImpl$Exchange.run(ServerImpl.java:647) [?:1.8.0_201]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_201]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_201]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_201]
+Caused by: java.io.IOException: An established connection was aborted by the software in your host machine
+	at sun.nio.ch.SocketDispatcher.write0(Native Method) ~[?:1.8.0_201]
+	at sun.nio.ch.SocketDispatcher.write(SocketDispatcher.java:51) ~[?:1.8.0_201]
+	at sun.nio.ch.IOUtil.writeFromNativeBuffer(IOUtil.java:93) ~[?:1.8.0_201]
+	at sun.nio.ch.IOUtil.write(IOUtil.java:65) ~[?:1.8.0_201]
+	at sun.nio.ch.SocketChannelImpl.write(SocketChannelImpl.java:471) ~[?:1.8.0_201]
+	at sun.net.httpserver.Request$WriteStream.write(Request.java:391) ~[?:1.8.0_201]
+	at sun.net.httpserver.FixedLengthOutputStream.write(FixedLengthOutputStream.java:78) ~[?:1.8.0_201]
+	at java.io.FilterOutputStream.write(FilterOutputStream.java:97) ~[?:1.8.0_201]
+	at sun.net.httpserver.PlaceholderOutputStream.write(ExchangeImpl.java:439) ~[?:1.8.0_201]
+	at com.callumcarmicheal.wframe.HttpRequest.Send(HttpRequest.java:141) ~[classes/:?]
+	at com.callumcarmicheal.wframe.HttpRequest.Send(HttpRequest.java:128) ~[classes/:?]
+	at com.callumcarmicheal.wframe.HttpRequest.Send(HttpRequest.java:165) ~[classes/:?]
+	at com.callumcarmicheal.wframe.testing.SimpleDebugApp.getIndexPage(SimpleDebugApp.java:29) ~[classes/:?]
+	... 15 more
+2019-04-23 00:53:15.797 [pool-2-thread-2] ERROR com.callumcarmicheal.wframe.RequestReflection - Failed to invoke web request for GET  @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_201]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_201]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_201]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_201]
+	at com.callumcarmicheal.wframe.RequestReflection.executeRequest(RequestReflection.java:255) [classes/:?]
+	at com.callumcarmicheal.wframe.Server.handle(Server.java:160) [classes/:?]
+	at com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:79) [?:1.8.0_201]
+	at sun.net.httpserver.AuthFilter.doFilter(AuthFilter.java:83) [?:1.8.0_201]
+	at com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:82) [?:1.8.0_201]
+	at sun.net.httpserver.ServerImpl$Exchange$LinkHandler.handle(ServerImpl.java:675) [?:1.8.0_201]
+	at com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:79) [?:1.8.0_201]
+	at sun.net.httpserver.ServerImpl$Exchange.run(ServerImpl.java:647) [?:1.8.0_201]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_201]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_201]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_201]
+Caused by: java.io.IOException: An established connection was aborted by the software in your host machine
+	at sun.nio.ch.SocketDispatcher.write0(Native Method) ~[?:1.8.0_201]
+	at sun.nio.ch.SocketDispatcher.write(SocketDispatcher.java:51) ~[?:1.8.0_201]
+	at sun.nio.ch.IOUtil.writeFromNativeBuffer(IOUtil.java:93) ~[?:1.8.0_201]
+	at sun.nio.ch.IOUtil.write(IOUtil.java:65) ~[?:1.8.0_201]
+	at sun.nio.ch.SocketChannelImpl.write(SocketChannelImpl.java:471) ~[?:1.8.0_201]
+	at sun.net.httpserver.Request$WriteStream.write(Request.java:391) ~[?:1.8.0_201]
+	at sun.net.httpserver.FixedLengthOutputStream.write(FixedLengthOutputStream.java:78) ~[?:1.8.0_201]
+	at java.io.FilterOutputStream.write(FilterOutputStream.java:97) ~[?:1.8.0_201]
+	at sun.net.httpserver.PlaceholderOutputStream.write(ExchangeImpl.java:439) ~[?:1.8.0_201]
+	at com.callumcarmicheal.wframe.HttpRequest.Send(HttpRequest.java:141) ~[classes/:?]
+	at com.callumcarmicheal.wframe.HttpRequest.Send(HttpRequest.java:128) ~[classes/:?]
+	at com.callumcarmicheal.wframe.HttpRequest.Send(HttpRequest.java:165) ~[classes/:?]
+	at com.callumcarmicheal.wframe.testing.SimpleDebugApp.getIndexPage(SimpleDebugApp.java:29) ~[classes/:?]
+	... 15 more
+2019-04-23 00:53:46.753 [pool-2-thread-3] ERROR com.callumcarmicheal.wframe.RequestReflection - Failed to invoke web request for GET  @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_201]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_201]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_201]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_201]
+	at com.callumcarmicheal.wframe.RequestReflection.executeRequest(RequestReflection.java:255) [classes/:?]
+	at com.callumcarmicheal.wframe.Server.handle(Server.java:160) [classes/:?]
+	at com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:79) [?:1.8.0_201]
+	at sun.net.httpserver.AuthFilter.doFilter(AuthFilter.java:83) [?:1.8.0_201]
+	at com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:82) [?:1.8.0_201]
+	at sun.net.httpserver.ServerImpl$Exchange$LinkHandler.handle(ServerImpl.java:675) [?:1.8.0_201]
+	at com.sun.net.httpserver.Filter$Chain.doFilter(Filter.java:79) [?:1.8.0_201]
+	at sun.net.httpserver.ServerImpl$Exchange.run(ServerImpl.java:647) [?:1.8.0_201]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149) [?:1.8.0_201]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624) [?:1.8.0_201]
+	at java.lang.Thread.run(Thread.java:748) [?:1.8.0_201]
+Caused by: java.io.IOException: headers already sent
+	at sun.net.httpserver.ExchangeImpl.sendResponseHeaders(ExchangeImpl.java:204) ~[?:1.8.0_201]
+	at sun.net.httpserver.HttpExchangeImpl.sendResponseHeaders(HttpExchangeImpl.java:86) ~[?:1.8.0_201]
+	at com.callumcarmicheal.wframe.HttpRequest.Send(HttpRequest.java:139) ~[classes/:?]
+	at com.callumcarmicheal.wframe.HttpRequest.Send(HttpRequest.java:128) ~[classes/:?]
+	at com.callumcarmicheal.wframe.HttpRequest.Send(HttpRequest.java:165) ~[classes/:?]
+	at com.callumcarmicheal.wframe.testing.SimpleDebugApp.getIndexPage(SimpleDebugApp.java:29) ~[classes/:?]
+	... 15 more
+2019-04-23 00:54:36.588 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - WFrameworkServer: Indexing Controllers and Methods.
+2019-04-23 00:54:36.789 [main] INFO  com.callumcarmicheal.wframe.RequestReflection - Discovered route GET / @ public void c.c.w.testing.S.getIndexPage(c.c.wframe.HttpRequest) throws j.io.IOException
+2019-04-23 00:54:40.477 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:44.765 [pool-2-thread-2] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /favicon.ico
+2019-04-23 00:54:44.766 [pool-2-thread-2] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: Could not find requested resource. Requested Resource: /favicon.ico
+2019-04-23 00:54:45.783 [pool-2-thread-3] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:46.484 [pool-2-thread-4] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:46.963 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:47.333 [pool-2-thread-2] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:47.596 [pool-2-thread-3] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:47.832 [pool-2-thread-4] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:48.058 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:48.277 [pool-2-thread-2] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:48.463 [pool-2-thread-3] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:48.701 [pool-2-thread-4] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:48.927 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:49.136 [pool-2-thread-2] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:49.341 [pool-2-thread-3] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:49.538 [pool-2-thread-4] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:49.723 [pool-2-thread-1] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /
+2019-04-23 00:54:49.884 [pool-2-thread-2] INFO  com.callumcarmicheal.wframe.Server - WFrameworkServer: /0:0:0:0:0:0:0:1:60833 GET    /

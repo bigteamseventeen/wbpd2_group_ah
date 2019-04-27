@@ -14,6 +14,8 @@ public class SimpleDebugApp {
         server.start();
     }
 
+    public SimpleDebugApp() {}
+
     @GetRequest("/")
     public void getIndexPage(HttpRequest request) throws IOException {
         Map<String,String> cookies = request.getRequestCookies();

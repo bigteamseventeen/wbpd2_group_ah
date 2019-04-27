@@ -37,6 +37,18 @@ class Controller {
             return null;
         }
 
+        // Check if the user is banned
+        else if (user.isBanned()) {
+            // Logout of the session
+            user.logoutSession(request.session());
+
+            // Send redirect to login
+            request.Redirect("/login?error=4", "Redirecting to authentication page");
+
+            // We dont have a user 
+            return null;
+        }
+
         // We have the user
         return user;
     }

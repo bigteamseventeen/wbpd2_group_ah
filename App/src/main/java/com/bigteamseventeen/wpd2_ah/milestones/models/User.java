@@ -79,6 +79,24 @@ public class User extends DatabaseModel<User> {
         return All(new User(con));
     }
 
+    public static User Get(Connection connection, int id) {
+        try {
+            // Query the database
+            QueryResults<User> query = 
+                where(connection, "id", "=", id, QueryValueType.Bound)
+                    .setLimit(1)
+                    .execute();
+
+            if (query.Successful)
+                return query.Rows[0];
+        } catch (SQLException e) {
+            logger.error("Failed to find a user by id, SQL Exception", e);
+            return null;
+        }
+
+        return null;
+    }
+
     public static User Find(Connection connection, String username) {
         try {
             // Query the database
@@ -268,6 +286,10 @@ public class User extends DatabaseModel<User> {
     }
 
     public boolean isAdmin() {
+        // If the account is banned then the user can't be an admin
+        if (this.isBanned())
+            return false;
+
         return ((int)values.get("isAdmin").Value) == 1;
     }
 
@@ -281,5 +303,14 @@ public class User extends DatabaseModel<User> {
 
     public boolean isBanned() {
         return ((int) values.get("isBanned").Value) == 1;
+    }
+
+    public String getStatusText() {
+        if (this.isBanned())
+            return "Banned";
+        if (this.isAdmin())
+            return "Admin";
+
+        return "User";
     }
 }

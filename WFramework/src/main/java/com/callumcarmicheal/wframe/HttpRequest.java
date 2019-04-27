@@ -43,16 +43,20 @@ public class HttpRequest {
 		// If we have a session
 		String sessionId = null;
 		if ((sessionId = this.getRequestCookie(sessions.COOKIE_HEADER)) != null) {
-			logger.trace("HttpRequest: Found session id - " + sessionId);
+			// logger.trace("HttpRequest: Found session id - " + sessionId);
 			if (sessions.exists(sessionId)) {
-				logger.trace("HttpRequest: §a Session exists setting session header");
+				// logger.trace("HttpRequest: §a Session exists setting session header");
 				sessionState = sessions.get(sessionId);
 				setSessionHeader(sessionState);
+
+				Session sesh = this.session();
+				sesh.clearFlash();
+				sesh.invalidateFlash();
 			} else { /**/ 
-				logger.trace("HttpRequest: §c Session does not exist!");				
+				// logger.trace("HttpRequest: §c Session does not exist!");				
 			}
 		} else { /**/
-			logger.trace("HttpRequest: §c Session cookie not found!");				
+			// logger.trace("HttpRequest: §c Session cookie not found!");				
 		}
 	}
 
@@ -276,8 +280,6 @@ public class HttpRequest {
 			} catch (Exception e) { }
 		}
 	}
-
-	// TODO: add some throwException methods that allow status codes (500, 403 etc).
 
 	/**
 	 * Throw an exception (attempt to use a page or fallback to a basic page)

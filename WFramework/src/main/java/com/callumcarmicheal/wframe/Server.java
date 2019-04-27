@@ -137,15 +137,11 @@ public class Server implements HttpHandler {
 	@Override
 	public void handle(HttpExchange e) {
 		HttpRequest r = null;
-		boolean isPost = false;
-		boolean requestStartsWithSlash = false;
 		String path = null;
 		String request = null;
 
 		try {
 			r = new HttpRequest(e, sessionList);
-			
-			isPost = e.getRequestMethod().equalsIgnoreCase("POST");
 			path = r.getRequestURI(false);
 			request = r.getRequestURI(true);
 		} catch (Exception ex) {
@@ -155,9 +151,9 @@ public class Server implements HttpHandler {
 		
 
 		// Log the request
-		String requestType = e.getRemoteAddress().toString().toUpperCase();
+		String requestType = e.getRequestMethod().toUpperCase();
 		logger.info(
-			String.format("WFrameworkServer: %s %-6s %s", requestType, e.getRequestMethod(), path));
+			String.format("WFrameworkServer: %s %-6s %s", e.getRemoteAddress().toString(), requestType, path));
 		
 		try {
 			if (this.reflectionEngine.hasRequest(requestType, path)) {
@@ -168,10 +164,14 @@ public class Server implements HttpHandler {
 			// We did not have the request and pass the information to our resource loader
 			handleFileResource(r, request);
 		} catch (IOException ex) {
+			int x = 0;
+
 			// Attempt to send the message
 			try { r.throwException(ex); }
 			catch (Exception ignored) { }
 		} catch (RequestControllerConstructorInvalid ex) {
+			int x = 0;
+
 			// Attempt to send the message
 			try { 
 				r.throwException("Failed to initiate server request. Please try again later.", 

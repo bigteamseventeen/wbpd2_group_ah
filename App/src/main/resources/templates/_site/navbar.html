@@ -6,7 +6,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
-                {% if user == null %}
+                {% if _user == null %}
                     <li class="nav-item">
                         <a class="nav-link" href="/loging">Login</a>
                     </li>
@@ -21,6 +21,17 @@
                     <li class="nav-item active">
                         <a class="nav-link" href="/planners">Planners</a>
                     </li>
+
+                    {% if _user.isAdmin() %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProfile" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Administration
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownProfile">
+                                <a class="dropdown-item" href="/admin/users">Users</a>
+                            </div>
+                        </li>
+                    {% endif %}
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProfile" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

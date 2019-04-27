@@ -1,0 +1,88 @@
+{% extends "../_site/site.html" %}
+
+{% block content %}
+    <h4 style="margin-bottom:20px;"> Users </h4>
+
+    {% if error is defined %}
+        <div class="alert alert-danger" role="alert">
+            {% if error == 1 %}
+                Request was missing some required properties.
+            {% elseif error == 2 %}
+                User could not be found
+            {% else %}
+                Unknown error code
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if users is empty %}
+        EMPTY!
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">
+                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <th scope="row">{{user.getId()}}</th>
+                        <td>{{user.getUsername()}}</td>
+                        <td>{{user.getEmail()}}</td>
+                        <td>{{user.getStatusText()}}</td>
+                        <td> 
+                            {% if user.isAdmin() == false %}
+                                <button type="admin" userId="{{user.getId()}}" value="1" class="btn btn-info formSetAccountInformation">Grant Admin</button>
+                            {% else %}
+                                <button type="admin" userId="{{user.getId()}}" value="0" class="btn btn-danger formSetAccountInformation">Revoke Admin</button>                            
+                            {% endif %}
+
+                            {% if user.isBanned() == false %}
+                                <button type="ban" userId="{{user.getId()}}" value="1" class="btn btn-info formSetAccountInformation">Ban</button>
+                            {% else %}
+                                <button type="ban" userId="{{user.getId()}}" value="0" class="btn btn-danger formSetAccountInformation">Unban</button>                                
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    {{parent()}}
+    <script>
+        $(".formSetAccountInformation").on('click', function() {
+            let $this = $(this);
+
+            let type = $this.attr("type");
+            let userId = $this.attr("userId");
+            let value = $this.attr("value");
+
+            let url = "";
+            if (type == "admin") {
+                url = "/admin/users/admin";
+            } else if (type == "ban") {
+                url = "/admin/users/ban";
+            }
+
+            let form = $(
+                '<form action="' + url + '" method="post" style="display:none">' +
+                    '<input type="number" name="user_id" value="' + userId + '" />' +
+                    '<input type="number" name="state" value="' + value + '" />' +
+                '</form>');
+            $('body').append(form);
+
+            // console.log(form);
+            form.submit();
+        });
+    </script>
+{% endblock %}

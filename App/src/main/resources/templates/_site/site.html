@@ -12,6 +12,9 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.css" 
             integrity="sha256-Nfu23DiRqsrx/6B6vsI0T9vEVKq1M6KgO8+TV363g3s=" 
             crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css" 
+            integrity="sha256-JDBcnYeV19J14isGd3EtnsCQK05d8PczJ5+fvEvBJvI=" 
+            crossorigin="anonymous" />
 
         <title>{% block title %}Home{% endblock %} | Miles</title>
     {% endblock %}
@@ -69,6 +72,13 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/holder/2.9.6/holder.min.js"
                 integrity="sha256-yF/YjmNnXHBdym5nuQyBNU62sCUN9Hx5awMkApzhZR0="
                 crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js" 
+                integrity="sha256-tW5LzEC7QjhG0CiAvxlseMTs2qJS7u3DRPauDjFJ3zo=" 
+                crossorigin="anonymous"></script>
+
+        <script>
+            $.fn.datepicker.defaults.format = "dd/mm/yyyy";
+        </script>
     {% endblock %}
 
     <style>

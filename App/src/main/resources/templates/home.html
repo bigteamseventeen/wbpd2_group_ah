@@ -19,7 +19,7 @@
         {% for p in planners %}
             <div class="card sb-card" style="margin-bottom: 10px">
                 <div class="card-body">
-                    <a href="/planner/view?id={{p.getId()}}">{{p.getTitle()}}</a>
+                    <a href="/planner/view?id={{p.getId()}}"><h4>{{p.getTitle()}}</h4></a>
                     <p class="mb-0">{{p.getDescription()}}</p>
                 </div>
             </div>

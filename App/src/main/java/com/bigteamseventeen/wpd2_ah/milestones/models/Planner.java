@@ -35,7 +35,7 @@ public class Planner extends DatabaseModel<Planner> {
     }
 
     /**
-     * Create a instance of the user model
+     * Create a instance of the model
      */
     public Planner(Connection c) { 
         // Setup the model instance settings
@@ -127,23 +127,21 @@ public class Planner extends DatabaseModel<Planner> {
     public Milestone[] milestones(Connection connection) {
         try {
             QueryResults<Milestone> query = 
-                Milestone.where(connection, "projectId", "=", this.getId())
+                Milestone.where(connection, "planner", "=", this.getId())
                     .setOrderBy("due")
                     .setOrderByType(SQLOrderType.ASC)
                     .execute();
 
-    
             // Get the milestones
             Milestone[] ms;
             if (query.Successful)
-                ms = query.Rows;
-            ms = new Milestone[0];
+                 ms = query.Rows;
+            else ms = new Milestone[0];
             
             // Cache the milestones
-            this.cache_Milestones = ms;
-            return ms;
+            return this.cache_Milestones = ms;
         } catch(SQLException ex) {
-            logger.error("Failed to load milestones from database (project_milestones_mtm).", ex);
+            logger.error("Failed to load milestones from database.", ex);
             return new Milestone[0];
         }
     }

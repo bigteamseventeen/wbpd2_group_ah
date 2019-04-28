@@ -2,6 +2,7 @@ package com.bigteamseventeen.wpd2_ah.milestones.models;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.LinkedHashMap;
 
 import com.callumcarmicheal.wframe.database.*;
@@ -29,26 +30,38 @@ public class Milestone extends DatabaseModel<Milestone> {
         return "Milestone";
     }
 
-    /**
-     * Create a instance of the user model
-     */
     public Milestone(Connection c) { 
         // Setup the model instance settings
         super("milestones", _ColumnsDefinition, _PrimaryKey, c);
     }
 
+    /**
+     * Create a instance of the model
+     */
+    public Milestone(Connection c, int plannerId) { 
+        this(c);
+        setPlannerId(plannerId);
+    }
+
+    /**
+     * Create a instance of the model
+     */
+    public Milestone(Connection c, Planner planner) { 
+        this(c, planner.getId());
+    }
+
+ 
     private static void _addColumn(DatabaseColumn db) {
         _ColumnsDefinition.put(db.getName(), db); 
     }
 
     public static boolean Initialize(Connection c) {
         _addColumn( _PrimaryKey = new CInteger("id").setPrimaryKey(true) );
-        _addColumn( new CInteger("projectId") );
+        _addColumn( new CInteger("planner") );
         _addColumn( new CVarchar("name", 250) );
         _addColumn( new CVarchar("description", 500) );
         _addColumn( new CDate("due") );
         _addColumn( new CDate("completed") );
-
 
         Milestone model = new Milestone(c);
         return model.CreateTable(true);
@@ -96,20 +109,69 @@ public class Milestone extends DatabaseModel<Milestone> {
     // --                                                       --
     // -----------------------------------------------------------
 
-    public String getStrDueDate() {
-        return "";
-    }
-
-    public String getStrCompletionDate() {
-        return "-";
-    }
-
+    /**
+     * Check if the milestone is incomplete
+     * @return
+     */
     public boolean isIncomplete() {
         return false;
     }
 
+    /**
+     * Check if the milestone is overdue
+     * @return
+     */
     public boolean isOverdue() {
-        return false;
+        return true;
+    }
+
+    /**
+     * Check if the milestone is completed
+     * @return
+     */
+    public boolean isCompleted() {
+        return true;
+    }
+
+    /**
+     * Check if the user can modify this milestone
+     * @param connection
+     * @param user
+     * @return
+     */
+    public boolean userCanEdit(Connection connection, User user) {
+        // Get the planner
+        Planner planner;
+        if ((planner = getPlanner(connection)) == null) 
+            return false;
+
+        // Check if author id == user id
+        return planner.getAuthorId() == user.getId();
+    }
+
+    /**
+     * Get the planner
+     * @param connection
+     * @return
+     */
+    public Planner getPlanner(Connection connection) {
+        return Planner.Get(connection, getId());
+    }
+
+    /**
+     * Get the due date as a Date object
+     * @return
+     */
+    public Date getDateDue() {
+        return null;
+    }
+
+    /**
+     * Get the completiond ate as a date object
+     * @return
+     */
+    public Date getDateCompleted() {
+        return null;
     }
 
     // -----------------------------------------------------------
@@ -121,12 +183,12 @@ public class Milestone extends DatabaseModel<Milestone> {
         return (int) values.get("id").Value;
     }
 
-    public Milestone setProjectId(int projectId) {
-        values.get("projectId").Value = projectId; return this;
+    public Milestone setPlannerId(int planner) {
+        values.get("planner").Value = planner; return this;
     }
     
-    public int getProjectId() {
-        return (int) values.get("projectId").Value;
+    public int getPlannerId() {
+        return (int) values.get("planner").Value;
     }
 
     public Milestone setName(String name) {

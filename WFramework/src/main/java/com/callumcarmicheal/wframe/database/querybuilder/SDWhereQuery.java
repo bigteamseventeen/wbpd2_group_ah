@@ -15,11 +15,15 @@ import com.callumcarmicheal.wframe.database.DatabaseModel;
 import com.callumcarmicheal.wframe.database.Helper;
 import com.callumcarmicheal.wframe.database.Helper.SQLOrderType;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Single Dimension Where Query
  */
 @SuppressWarnings("rawtypes")
 public class SDWhereQuery<T> {
+    final static Logger logger = LogManager.getLogger();
 
     // Model and queries
     DatabaseModel<T> modelClass;
@@ -146,8 +150,8 @@ public class SDWhereQuery<T> {
         // Generate the SQL statement
         String sql = generateSqlQuery();
 
-        //logger.debug("SQL:    " + sql);
-        //logger.debug("Params: " + this.boundParameters);
+        // logger.debug("SQL:    " + sql);
+        // logger.debug("Params: " + this.boundParameters);
 
         Connection con = modelClass.getConnection();
         Statement stmt = null;
@@ -184,8 +188,11 @@ public class SDWhereQuery<T> {
             T instance = (T)Helper.NewModelInstance(modelClass);
 
             // Error handling
-            if (instance == null)
+            if (instance == null) {
+                queryResults.Length--;
+                logger.error("SDWhereQuery.execute(): Instance == null");
                 continue;
+            }
 
             DatabaseModel<T> dmInstance = (DatabaseModel<T>)instance;
             dmInstance.orm_parseResultSet(resultSet);

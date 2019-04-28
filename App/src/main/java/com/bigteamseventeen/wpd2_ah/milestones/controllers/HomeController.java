@@ -31,7 +31,7 @@ public class HomeController extends Controller {
         try {
             // Get connection and planners
             con = SqliteDBCon.GetConnection();
-            planners = Planner.All(con);
+            planners = Planner.AllFor(con, user);
         } catch (SQLException ex) {
             request.throwException("Failed to load planners.", ex);
             return;

@@ -76,6 +76,24 @@ public class Planner extends DatabaseModel<Planner> {
         return All(new Planner(con));
     }
 
+    public static Planner[] AllFor(Connection con, User user) {
+        return AllFor(con, user.getId());
+    }
+
+    public static Planner[] AllFor(Connection con, int userId) {
+        try {
+            // Query the database
+            QueryResults<Planner> query = 
+                where(con, "author", "=", userId, QueryValueType.Bound)
+                    .execute();
+
+            return query.Rows;
+        } catch (SQLException e) {
+            logger.error("Failed to find milestone by id, SQL Exception", e);
+            return new Planner[0];
+        }        
+    }
+
     public static Planner Get(Connection connection, int id) {
         try {
             // Query the database

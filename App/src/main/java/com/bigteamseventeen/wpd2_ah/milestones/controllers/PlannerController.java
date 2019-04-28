@@ -76,7 +76,7 @@ public class PlannerController extends Controller {
                 .save();
             
             // Redirect home
-            request.Redirect("/home");
+            request.Redirect("/");
         } catch (SQLException | MissingColumnValueException ex) {
             // Throw the error
             request.throwException(ex);

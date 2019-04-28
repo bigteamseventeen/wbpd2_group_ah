@@ -20,7 +20,7 @@
 		"scope": "java",
 		"prefix": "modprop",
 		"body": [
-			"public User set${Property}(${Datatype} ${Column}) {",
+			"public $TM_FILENAME_BASE set${Property}(${Datatype} ${Column}) {",
 			"\tvalues.get(\"${Column}\").Value = ${Column}; return this;",
 			"}",
 			"",

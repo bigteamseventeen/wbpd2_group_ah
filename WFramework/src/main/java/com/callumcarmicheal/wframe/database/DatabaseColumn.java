@@ -8,7 +8,7 @@ public abstract class DatabaseColumn<T> {
     protected boolean flagPrintInString = true;
 
     protected boolean primaryKey = false;
-    protected boolean nullable = true;
+    protected boolean nullable = false;
     protected boolean autoincrements = false;
     protected boolean unique  = false;
 

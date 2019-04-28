@@ -32,7 +32,7 @@ public class SDWhereQuery<T> {
     // Sql attributes
     private int attr_limit = 0;
     private int attr_offset = 0;
-    private SQLOrderType attr_order_type = SQLOrderType.DESC;
+    private SQLOrderType attr_order_type = SQLOrderType.ASC;
     private String attr_order_column = "";
 
     /**

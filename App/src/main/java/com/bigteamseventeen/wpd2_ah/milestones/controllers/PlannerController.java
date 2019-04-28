@@ -123,8 +123,12 @@ public class PlannerController extends Controller {
                     .execute();
 
             // Get the first item in the query
-            if (dbQuery.Successful)
+            if (dbQuery.Successful) {
                 planner = dbQuery.first();
+
+                // Load the milestones
+                planner.milestones(con);
+            }
         } catch (SQLException ex) {
             // Throw the error
             request.throwException(ex);
@@ -143,7 +147,7 @@ public class PlannerController extends Controller {
         // Render the page
         new Renderer().setUser(user)
             .render(request, "planner/view", 200, HashBuilder.<String,Object>builder()
-                .put("edit", false)
+                .put("edit", true)
                 .put("planner", planner)
             .build());
     }

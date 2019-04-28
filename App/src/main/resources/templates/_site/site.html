@@ -8,6 +8,7 @@
         <script defer src="https://use.fontawesome.com/releases/v5.0.2/js/all.js" crossorigin="anonymous"></script>
 
 
+        <link rel="stylesheet" href="/site.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.css" 
             integrity="sha256-Nfu23DiRqsrx/6B6vsI0T9vEVKq1M6KgO8+TV363g3s=" 
             crossorigin="anonymous" />
@@ -21,32 +22,34 @@
     {% block navbar %}{% include "navbar.html" %}{% endblock %}
 
     <!-- Page Content -->
-    {%block fullcontent %}
-        <div class="container">
-            {% block container %}
-                <div class="row">
-                    <!-- Post Content Column -->
-                    <div class="col-md-8" id="page_content">
-                        <div style="margin-top:20px;">
-                            {% block content %}{% endblock %}
+    <div style="margin-bottom: 50px;">
+        {%block fullcontent %}
+            <div class="container">
+                {% block container %}
+                    <div class="row">
+                        <!-- Post Content Column -->
+                        <div class="col-md-8" id="page_content">
+                            <div style="margin-top:20px;">
+                                {% block content %}{% endblock %}
+                            </div>
+                        </div>
+                        
+                        <!-- Sidebar Widgets Column -->
+                        <div class="col-md-4">
+                            {% block sidebar %}
+                                {% include "sidebar.html" %}
+                            {% endblock %}
                         </div>
                     </div>
-                    
-                    <!-- Sidebar Widgets Column -->
-                    <div class="col-md-4">
-                        {% block sidebar %}
-                            {% include "sidebar.html" %}
-                        {% endblock %}
-                    </div>
-                </div>
-                <!-- /.row -->
-            {% endblock %}
-        </div>
-    {% endblock %}
+                    <!-- /.row -->
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </div>
     <!-- /.container -->
 
     <!-- Footer -->
-    <footer class="py-5 bg-dark" style="margin-top:40px;">
+    <footer class="py-5 bg-dark footer" style="padding: 0px !important;">
         <div class="container">
             <p class="m-0 text-center text-white">Copyright &copy; Miles 2019</p>
         </div>

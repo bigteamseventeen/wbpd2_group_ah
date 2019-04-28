@@ -62,17 +62,21 @@ public class PlannerController extends Controller {
             }
         }
 
+        // Create a database connection
         Connection con = null;
         try {
+            // Connect to the database
             con = SqliteDBCon.GetConnection();
 
+            // Create a new project
             new Planner(con)
                 .setAuthorId(user.getId())
                 .setTitle(post.get("title"))
                 .setDescription(post.get("description"))
                 .save();
-
-            request.Redirect("/");
+            
+            // Redirect home
+            request.Redirect("/home");
         } catch (SQLException | MissingColumnValueException ex) {
             // Throw the error
             request.throwException(ex);

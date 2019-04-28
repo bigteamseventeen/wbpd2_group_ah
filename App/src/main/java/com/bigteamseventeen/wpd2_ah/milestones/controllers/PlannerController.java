@@ -94,7 +94,6 @@ public class PlannerController extends Controller {
         if ((user = getUserOrLogin(request)) == null) return;
         
         Map<String,String> query = request.getQuery();
-        boolean canEdit = false;
         int plannerId = -1;
 
         // Check if we had any errors        
@@ -155,4 +154,173 @@ public class PlannerController extends Controller {
                 .put("planner", planner)
             .build());
     }
+
+
+    @GetRequest("/planner/edit")
+    public void viewPlannerEditPage(HttpRequest request) throws IOException {
+        // Redirect the user to the respected page
+        User user; // If user == null then a redirect has happened
+        if ((user = getUserOrLogin(request)) == null) return;
+
+        Map<String,String> query = request.getQuery();
+        int plannerId = -1;
+        int errorId = -1;
+
+        // Check if we had any errors        
+        if (query.containsKey("id")) {
+            try {
+                plannerId = Integer.parseInt(query.get("id").trim());
+
+                if (query.containsKey("error")) 
+                    errorId = Integer.parseInt(query.get("error").trim());
+                
+            } catch (NumberFormatException nfe) { 
+                plannerId = -1;
+            }
+
+            try {
+                if (query.containsKey("error")) 
+                    errorId = Integer.parseInt(query.get("error").trim());
+            } catch (NumberFormatException nfe) { 
+                errorId = -1;
+            }
+        }
+
+        // We failed to get the planner id from the query
+        if (plannerId == -1) {
+            request.SendMessagePage("Could not find planner", "The planner id specified does not exist", 400);
+            return;
+        }
+
+        // Try to find the planner
+        Connection con = null;
+        Planner planner = null;
+        try {
+            // Get the db and run the query
+            con = SqliteDBCon.GetConnection();
+
+            // Find planner by id and check if the author is the current user
+            QueryResults<Planner> dbQuery = Planner
+                .where(con, "id", "=", plannerId)
+                .andWhere("author", "=", user.getId())
+                    .setLimit(1)
+                    .execute();
+
+            // Get the first item in the query
+            if (dbQuery.Successful) {
+                planner = dbQuery.first();
+            }
+        } catch (SQLException ex) {
+            // Throw the error
+            request.throwException(ex);
+            return;
+        } finally {
+            // Close the database connection
+            try { if (con != null && con.isClosed()) con.close(); } catch(Exception e) {}
+        }
+
+        // Check if the planner exists
+        if (planner == null) {
+            request.SendMessagePage("Could not find planner", "The planner id specified does not exist", 400);
+            return;
+        }
+
+        // Render the page
+        new Renderer().setUser(user)
+            .render(request, "planner/edit", 200, HashBuilder.<String,Object>builder()
+                .put("planner", planner)
+            .build());
+    }
+
+    @PostRequest("/planner/edit")
+    public void editPlanner(HttpRequest request) throws IOException {
+        // Redirect the user to the respected page
+        User user; // If user == null then a redirect has happened
+        if ((user = getUserOrLogin(request)) == null) return;
+
+        Map<String,String> post = request.GetPostForm();
+        Map<String,String> query = request.getQuery();
+        int plannerId = -1;
+
+        // Check if we had any errors        
+        if (query.containsKey("id")) {
+            try {
+                plannerId = Integer.parseInt(query.get("id").trim());
+            } catch (NumberFormatException nfe) { 
+                plannerId = -1;
+            }
+        }
+
+        // We failed to get the planner id from the query
+        if (plannerId == -1) {
+            request.SendMessagePage("Could not find planner", "The planner id specified does not exist", 400);
+            return;
+        }
+
+        // Error checking
+        String[] requiredKeys = new String[] { "title", "description" };
+        for (String input : requiredKeys) {
+            if (!post.containsKey(input)) {
+                
+                // Display error message
+                request.Redirect("/planner/edit?id=" + plannerId + "&error=1" );
+                return;
+            }
+        }
+
+        // Try to find the planner
+        Connection con = null;
+        Planner planner = null;
+        try {
+            // Get the db and run the query
+            con = SqliteDBCon.GetConnection();
+
+            // Find planner by id and check if the author is the current user
+            QueryResults<Planner> dbQuery = Planner
+                .where(con, "id", "=", plannerId)
+                .andWhere("author", "=", user.getId())
+                    .setLimit(1)
+                    .execute();
+
+            // Get the first item in the query
+            if (dbQuery.Successful) 
+                planner = dbQuery.first();
+        } catch (SQLException ex) {
+            // Throw the error
+            request.throwException(ex);
+            return;
+        } finally {
+            // Close the database connection
+            try { if (con != null && con.isClosed()) con.close(); } catch(Exception e) {}
+        }
+
+        // Check if the planner exists
+        if (planner == null) {
+            request.SendMessagePage("Could not find planner", "The planner id specified does not exist", 400);
+            return;
+        }
+
+        // Update the model
+        con = null;
+        try {
+            // Get the db and run the query
+            con = SqliteDBCon.GetConnection();
+
+            // Update our fields
+            planner.setConnection(con);
+            planner.setTitle(post.get("title").trim());
+            planner.setDescription(post.get("description").trim());
+            planner.save();
+
+            request.Redirect("/planner/view?id=" + plannerId );
+        } catch (SQLException | MissingColumnValueException ex) {
+            // Throw the error
+            request.throwException(ex);
+            return;
+        } finally {
+            // Close the database connection
+            try { if (con != null && con.isClosed()) con.close(); } catch(Exception e) {}
+        }
+    }
+
 }

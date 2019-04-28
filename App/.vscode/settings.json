@@ -24,6 +24,11 @@
             "database": "C:\\Users\\callu\\OneDrive\\Documents\\Edu\\GCU - Uni\\Web Platform Development 2\\wbpd2_mmc\\App\\bin\\application.db",
             "dialect": "SQLite",
             "name": "Local Testing Db"
+        },
+        {
+            "database": "C:\\Users\\Marky\\Desktop\\web\\wbpd2_group_ah\\App\\bin\\application.db",
+            "dialect": "SQLite",
+            "name": "Local Testing DB (Mark)"
         }
     ],
 }

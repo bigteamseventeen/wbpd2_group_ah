@@ -30,7 +30,7 @@ public class Project extends DatabaseModel<Project> {
     private static CInteger _PrimaryKey;
 
     @Override public String getModelName() {
-        return "Project";
+        return "Planner";
     }
 
     /**
@@ -38,7 +38,7 @@ public class Project extends DatabaseModel<Project> {
      */
     public Project(Connection c) { 
         // Setup the model instance settings
-        super("project", _ColumnsDefinition, _PrimaryKey, c);
+        super("planner", _ColumnsDefinition, _PrimaryKey, c);
     }
 
     private static void _addColumn(DatabaseColumn db) {

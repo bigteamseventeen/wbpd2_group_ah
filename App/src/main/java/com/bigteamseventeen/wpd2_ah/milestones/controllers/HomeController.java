@@ -18,7 +18,7 @@ public class HomeController extends Controller {
         // We are logged in
         // request.Send(501, "Not implemented, sorry " + user.getUsername());
 
-        // Render the test
+        // Render the Page
         new Renderer().setUser(user)
             .render(request, "home", 200, ImmutableMap.<String,Object>builder()
             .build());

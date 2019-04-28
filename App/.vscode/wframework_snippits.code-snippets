@@ -29,5 +29,17 @@
 			"}"
 		],
 		"description": "Generate getter and setter for model property"
+	},
+
+	"New Web Request": {
+
+		"scope": "java",
+		"prefix": "webreq",
+		"body": [
+			"@${Req}Request(${path})",
+			"public void ${functionName}(HttpRequest request) throws IOException {",
+			"}",
+		],
+		"description": "Generate getter and setter for model property"
 	}
 }

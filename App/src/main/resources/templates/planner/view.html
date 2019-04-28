@@ -1,0 +1,94 @@
+{% extends "../_site/site.html" %}
+
+{% block content %}
+    {% if edit == true %}
+        <h4 style="margin-bottom:20px;">
+            Modify Planner
+            <div class="float-right">
+                <a href="/planner/edit?id={{planner.getId()}}">
+                    <button class="btn btn-outline-primary">
+                        <i class="far fa-edit"></i>
+                        Edit
+                    </button>
+                </a>
+            </div>
+        </h4>
+    {% endif %}
+
+    <div class="card sb-card" style="margin-bottom: 30px">
+        <div class="card-body">
+            <p>{{planner.getTitle()}}</p>
+            <p class="mb-0">{{planner.getDescription()}}</p>
+        </div>
+    </div>
+
+
+    <h4 style="margin-bottom:30px;">
+        Milestones
+        {% if edit == true %}
+            <div class="float-right">
+                <a href="/planner/milestones/add?id={{planner.getId()}}">
+                    <button class="btn btn-outline-primary">
+                        <i class="fas fa-plus"></i>
+                        Add
+                    </button>
+                </a>
+            </div>
+        {% endif %}
+    </h4>
+
+    <p class="text-muted">Click on the milestone name to see the description</p>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-inverse table-hover table-responsive" style="width:100%">
+            <thead class="thead-default">
+                <tr>
+                    <th>Name</th>
+                    <th>Due Date</th>
+                    <th>Completion Date</th>
+                    <th width="50"></th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for m in planner.milestones() %}
+                        <tr class="table-warning">
+                            <td scope="row" data-description="{{m.getDescription()}}"><a href="#">{{m.getTitle()}}</d></td>
+                            <td>{{m.getStrDueDate()}}</td>
+                            <td>{{m.getStrCompletionDate()}}</td>
+                            <td> 
+                                {% if edit == true %}
+                                    <a href="#">
+                                        <button class="btn btn-sm btn-outline-primary"> <i class="far fa-edit"></i></button>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                    <tr class="table-warning">
+                        <td scope="row"><a href="#">Documentation</a></td>
+                        <td>3rd Apr</td>
+                        <td>4th Apr</td>
+                        <td> 
+                            <a href="#">
+                                <button class="btn btn-sm btn-outline-primary"> <i class="far fa-edit"></i></button>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td scope="row">Implementation</td>
+                        <td>12th Apr</td>
+                        <td>12th Apr</td>
+                        <td> 
+                            <a href="#">
+                                <button class="btn btn-sm btn-outline-primary"> <i class="far fa-edit"></i></button>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+        </table>
+    </div>
+
+
+    <h4 style="margin-bottom:30px;">Incomplete Milestones</h4>
+    <style> .table-responsive { display: table; } </style>
+{% endblock %}

@@ -17,7 +17,8 @@ import com.callumcarmicheal.wframe.database.querybuilder.SDWhereQuery.QueryValue
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Project extends DatabaseModel<Project> {
+@SuppressWarnings({"rawtypes", "unchecked"})
+public class Planner extends DatabaseModel<Planner> {
     final static Logger logger = LogManager.getLogger();
 
     // -----------------------------------------------------------
@@ -36,7 +37,7 @@ public class Project extends DatabaseModel<Project> {
     /**
      * Create a instance of the user model
      */
-    public Project(Connection c) { 
+    public Planner(Connection c) { 
         // Setup the model instance settings
         super("planner", _ColumnsDefinition, _PrimaryKey, c);
     }
@@ -51,17 +52,18 @@ public class Project extends DatabaseModel<Project> {
         _addColumn( new CInteger("author") );
         _addColumn( new CVarchar("title") );
         _addColumn( new CVarchar("description", 250) );
+        _addColumn( new CVarchar("share").setNullable(true).setUnique(true) );
 
-        Project model = new Project(c);
+        Planner model = new Planner(c);
         return model.CreateTable(true);
     }
 
-    public static SDWhereQuery<Project> where(Connection connection, String column, String comparison, Object value) {
-        return where(new Project(connection), column, comparison, value);
+    public static SDWhereQuery<Planner> where(Connection connection, String column, String comparison, Object value) {
+        return where(new Planner(connection), column, comparison, value);
     }
 
-    public static SDWhereQuery<Project> where(Connection connection, String column, String comparison, Object value, QueryValueType qvt) {
-        return where(new Project(connection), column, comparison, value, qvt);
+    public static SDWhereQuery<Planner> where(Connection connection, String column, String comparison, Object value, QueryValueType qvt) {
+        return where(new Planner(connection), column, comparison, value, qvt);
     }
 
     // -----------------------------------------------------------
@@ -70,14 +72,14 @@ public class Project extends DatabaseModel<Project> {
     // --                                                       --
     // -----------------------------------------------------------
 
-    public static Project[] All(Connection con) {
-        return All(new Project(con));
+    public static Planner[] All(Connection con) {
+        return All(new Planner(con));
     }
 
-    public static Project Get(Connection connection, int id) {
+    public static Planner Get(Connection connection, int id) {
         try {
             // Query the database
-            QueryResults<Project> query = 
+            QueryResults<Planner> query = 
                 where(connection, "id", "=", id, QueryValueType.Bound)
                     .setLimit(1)
                     .execute();
@@ -98,6 +100,12 @@ public class Project extends DatabaseModel<Project> {
     // --                                                       --
     // -----------------------------------------------------------
 
+    private Milestone[] cache_Milestones = null;
+    public Milestone[] milestones() {
+        // Return the milestone cache
+        return cache_Milestones;
+    }
+
     public Milestone[] milestones(Connection connection) {
         try {
             QueryResults<Milestone> query = 
@@ -106,9 +114,16 @@ public class Project extends DatabaseModel<Project> {
                     .setOrderByType(SQLOrderType.ASC)
                     .execute();
 
+    
+            // Get the milestones
+            Milestone[] ms;
             if (query.Successful)
-                return query.Rows;
-            return new Milestone[0];
+                ms = query.Rows;
+            ms = new Milestone[0];
+            
+            // Cache the milestones
+            this.cache_Milestones = ms;
+            return ms;
         } catch(SQLException ex) {
             logger.error("Failed to load milestones from database (project_milestones_mtm).", ex);
             return new Milestone[0];
@@ -121,7 +136,7 @@ public class Project extends DatabaseModel<Project> {
     // --                                                       --
     // -----------------------------------------------------------
 
-    public Project setId(int id) {
+    public Planner setId(int id) {
         values.get("id").Value = id; return this;
     }
     
@@ -129,15 +144,15 @@ public class Project extends DatabaseModel<Project> {
         return (int) values.get("id").Value;
     }
 
-    public Project setAuthor(int author) {
+    public Planner setAuthorId(int author) {
         values.get("author").Value = author; return this;
     }
     
-    public int getAuthor() {
+    public int getAuthorId() {
         return (int) values.get("author").Value;
     }
 
-    public Project setTitle(String title) {
+    public Planner setTitle(String title) {
         values.get("title").Value = title; return this;
     }
     
@@ -145,7 +160,7 @@ public class Project extends DatabaseModel<Project> {
         return (String) values.get("title").Value;
     }
 
-    public Project setDescription(String description) {
+    public Planner setDescription(String description) {
         values.get("description").Value = description; return this;
     }
     
@@ -153,4 +168,11 @@ public class Project extends DatabaseModel<Project> {
         return (String) values.get("description").Value;
     }
 
+    public Planner setShareHash(String share) {
+        values.get("share").Value = share; return this;
+    }
+    
+    public String getShareHash() {
+        return (String) values.get("share").Value;
+    }
 }

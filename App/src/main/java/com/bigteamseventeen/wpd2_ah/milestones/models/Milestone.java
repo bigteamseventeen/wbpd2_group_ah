@@ -47,6 +47,8 @@ public class Milestone extends DatabaseModel<Milestone> {
         _addColumn( new CVarchar("name", 250) );
         _addColumn( new CVarchar("description", 500) );
         _addColumn( new CDate("due") );
+        _addColumn( new CDate("completed") );
+
 
         Milestone model = new Milestone(c);
         return model.CreateTable(true);
@@ -94,6 +96,22 @@ public class Milestone extends DatabaseModel<Milestone> {
     // --                                                       --
     // -----------------------------------------------------------
 
+    public String getStrDueDate() {
+        return "";
+    }
+
+    public String getStrCompletionDate() {
+        return "-";
+    }
+
+    public boolean isIncomplete() {
+        return false;
+    }
+
+    public boolean isOverdue() {
+        return false;
+    }
+
     // -----------------------------------------------------------
     // --                                                       --
     // ------------------- Getters and Setters ------------------- 
@@ -133,5 +151,13 @@ public class Milestone extends DatabaseModel<Milestone> {
     
     public String getDueDate() {
         return (String) values.get("due").Value;
+    }
+
+    public Milestone setCompetedOn(String completed) {
+        values.get("completed").Value = completed; return this;
+    }
+    
+    public String getCompetedOn() {
+        return (String) values.get("completed").Value;
     }
 }

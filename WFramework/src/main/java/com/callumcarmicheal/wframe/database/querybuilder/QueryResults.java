@@ -15,7 +15,7 @@ public class QueryResults<T> {
      * <pre><code>QueryResults queryResults = new QueryResults();
      * queryResults.Rows = databaseResultsParsed.toArray();
      * queryResults.Length = queryResults.Rows.Length;
-     * queryResults.Success = queryResults.Length > 0;</code>
+     * queryResults.Success = queryResults.Length &gt; 0;</code>
      * </pre></p>
      */
     public QueryResults() {

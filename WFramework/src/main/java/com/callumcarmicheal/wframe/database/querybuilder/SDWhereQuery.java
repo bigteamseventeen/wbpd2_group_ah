@@ -116,7 +116,7 @@ public class SDWhereQuery<T> {
         String attributes = "";
 
         if (this.attr_order_column != "") {
-            attributes += "ORDER BY" + attr_order_column;
+            attributes += "ORDER BY " + attr_order_column;
 
             switch(attr_order_type) {
                 case ASC:  attributes += " ASC  "; break;

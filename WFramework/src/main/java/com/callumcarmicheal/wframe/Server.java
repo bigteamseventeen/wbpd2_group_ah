@@ -123,7 +123,6 @@ public class Server implements HttpHandler {
 
 	/**
 	 * Stop the server
-	 * @return
 	 */
 	public void stop() {
 		// Check if we have not started

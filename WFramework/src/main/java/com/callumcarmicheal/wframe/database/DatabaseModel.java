@@ -137,7 +137,7 @@ public abstract class DatabaseModel<T> {
      * @param <T> Database Model
      * @param model A instance of the model
      * @param column The column
-     * @param comparison The seperation, EG: < > <= >= = "LIKE"
+     * @param comparison The seperation, Ex: &lt; &gt; &lt;= &gt;= = "LIKE"
      * @param value The value being searched for
      * @return A instance of the query generator
      */
@@ -202,7 +202,7 @@ public abstract class DatabaseModel<T> {
      * @param <T> Database Model
      * @param model A instance of the model
      * @param column The column
-     * @param comparison The seperation, EG: < > <= >= = "LIKE"
+     * @param comparison The seperation, EG: &lt;, &gt;, &lt;=, &gt;=, =, "LIKE"
      * @param value The value being searched for
      * @param qvt How the SQL is generated for the value
      * @return A instance of the query generator

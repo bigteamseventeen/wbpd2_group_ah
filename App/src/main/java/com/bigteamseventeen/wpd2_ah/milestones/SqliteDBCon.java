@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import javax.sql.PooledConnection;
 
 import com.bigteamseventeen.wpd2_ah.milestones.models.Milestone;
-import com.bigteamseventeen.wpd2_ah.milestones.models.Project;
+import com.bigteamseventeen.wpd2_ah.milestones.models.Planner;
 import com.bigteamseventeen.wpd2_ah.milestones.models.User;
 
 import org.sqlite.javax.SQLiteConnectionPoolDataSource;
@@ -40,7 +40,7 @@ public class SqliteDBCon {
         // Add all ORM models here
         User.Initialize(con);
         Milestone.Initialize(con);
-        Project.Initialize(con);
+        Planner.Initialize(con);
     }
 
     /**

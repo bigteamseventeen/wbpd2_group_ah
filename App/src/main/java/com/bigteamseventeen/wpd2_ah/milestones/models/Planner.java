@@ -52,6 +52,7 @@ public class Planner extends DatabaseModel<Planner> {
         _addColumn( new CInteger("author") );
         _addColumn( new CVarchar("title") );
         _addColumn( new CVarchar("description", 250) );
+        _addColumn( new CVarchar("share").setNullable(true).setUnique(true) );
 
         Planner model = new Planner(c);
         return model.CreateTable(true);
@@ -167,4 +168,11 @@ public class Planner extends DatabaseModel<Planner> {
         return (String) values.get("description").Value;
     }
 
+    public Planner setShareHash(String share) {
+        values.get("share").Value = share; return this;
+    }
+    
+    public String getShareHash() {
+        return (String) values.get("share").Value;
+    }
 }

@@ -5,7 +5,7 @@ public class CDate extends DatabaseColumn<CDate> {
 
     @Override
     public String getColumnDefition() {
-        // id INTEGER PRIMARY KEY AUTOINCREMENT
+        // dateAdded DATE PRIMARY KEY AUTOINCREMENT
         return String.format("\"%s\" DATE%s", this.name, this.getColumnAttributes());
     }
 } 

@@ -58,17 +58,8 @@ public class Helper {
         try {
             // Attempt to create a new instance of the modelClass 
             return modelClass.getClass().getDeclaredConstructor(instance_cArg).newInstance(modelClass.getConnection());
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (SecurityException e) {
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | 
+                 InvocationTargetException | NoSuchMethodException | SecurityException e) {
             e.printStackTrace();
         }
         

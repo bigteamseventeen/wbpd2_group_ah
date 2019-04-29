@@ -8,12 +8,13 @@ public abstract class DatabaseColumn<T> {
     protected boolean flagPrintInString = true;
 
     protected boolean primaryKey = false;
-    protected boolean nullable = true;
+    protected boolean nullable = false;
     protected boolean autoincrements = false;
     protected boolean unique  = false;
 
     protected String type = "";
     protected String name = "";
+    protected String defaultValue = null;
     protected Integer size = 0;
 
     public String getName() { return this.name; }
@@ -34,16 +35,21 @@ public abstract class DatabaseColumn<T> {
     public boolean getUnique() { return this.unique; }
     public T setUnique(boolean b) {  this.unique = b; return (T)this; }
     
+    public String getDefaultValue() { return this.defaultValue; }
+    public T setDefaultValue(String s) { this.defaultValue = s; return (T)this; }
+
+    
     public boolean getFlagPrintInString() { return this.flagPrintInString; }
     public T setFlagPrintInString(boolean b) {  this.flagPrintInString = b; return (T)this; }
 
     public abstract String getColumnDefition();
 
     protected String getColumnAttributes() {
-        return String.format("%s%s%s%s,", 
+        return String.format("%s%s%s%s%s,", 
             this.nullable ? "" : " NOT NULL ",
             this.primaryKey ? " PRIMARY KEY " : "", 
             this.autoincrements ? " AUTOINCREMENT" : "",
-            this.unique ? " UNIQUE " : "");
+            this.unique ? " UNIQUE " : "",
+            this.defaultValue != null ? " DEFAULT " + this.defaultValue : "");
     }
 }

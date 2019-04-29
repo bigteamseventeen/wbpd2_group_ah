@@ -137,7 +137,7 @@ public abstract class DatabaseModel<T> {
      * @param <T> Database Model
      * @param model A instance of the model
      * @param column The column
-     * @param comparison The seperation, EG: < > <= >= = "LIKE"
+     * @param comparison The seperation, Ex: &lt; &gt; &lt;= &gt;= = "LIKE"
      * @param value The value being searched for
      * @return A instance of the query generator
      */
@@ -202,7 +202,7 @@ public abstract class DatabaseModel<T> {
      * @param <T> Database Model
      * @param model A instance of the model
      * @param column The column
-     * @param comparison The seperation, EG: < > <= >= = "LIKE"
+     * @param comparison The seperation, EG: &lt;, &gt;, &lt;=, &gt;=, =, "LIKE"
      * @param value The value being searched for
      * @param qvt How the SQL is generated for the value
      * @return A instance of the query generator
@@ -234,6 +234,7 @@ public abstract class DatabaseModel<T> {
             if (values.keySet().contains(col)) {
                 DatabaseColumnValue store = values.get(col);
                 store.Value = rs.getObject(col);
+                store.originalValue = store.Value;
                 // logger.debug(col + ": " + store.Value);
             }
         }
@@ -324,8 +325,8 @@ public abstract class DatabaseModel<T> {
         // Get the query
         sql = sqlGenerate.y;
         
-        //logger.debug("SQL:  " + sql);
-        //logger.debug("BIND: " + stmt_bind);
+        // logger.debug("SQL:  " + sql);
+        // logger.debug("BIND: " + stmt_bind);
 
         // Query Statement
         Statement stmt;
@@ -526,10 +527,14 @@ public abstract class DatabaseModel<T> {
             if (!store.isValid() && !store.Column.primaryKey)
                 throw new MissingColumnValueException(store);
 
+            // logger.info("col = " + col + ", nullable = " + store.isNullable);   
+            // logger.info("value == null (" + (store.Value == null) + ")");
+
             // If we are only updating modified columns (shortens sql queries)
-            if (updateOnly && !store.isModified())
+            if (updateOnly && !store.isModified()) 
                 continue;
             
+
             // Check if the data is null
             if (store.isNullable && store.Value == null) 
                 // We are just adding NULL to the query

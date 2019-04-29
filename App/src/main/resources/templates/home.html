@@ -2,9 +2,9 @@
 
 {% block content %}
     <h4 style="margin-bottom:20px;">
-        Please Select a Planner
+        {{title}}
         <div class="float-right">
-            <a href="topic?new=true">
+            <a href="/planner/new">
                 <button class="btn btn-outline-primary">
                     <i class="fa fa-plus" aria-hidden="true"></i>
                     New
@@ -13,24 +13,29 @@
         </div>
     </h4>
 
-    <div class="card sb-card" style="margin-bottom: 10px">
-        <div class="card-body">
-            <a href="topic?id=0">Web Application Development</a>
-            <p class="mb-0">Planning and tracking progress in the development of the web app</p>
-        </div>
-    </div>
+    {% if planners == null %}
+        <p class="text-muted">Could not find any planners, click the New button above to create one.</p>
+    {% else %}
+        {% for p in planners %}
+            <div class="card sb-card" style="margin-bottom: 10px">
+                <div class="card-body">
+                    <a href="/planner/view?id={{p.getId()}}"><h4>{{p.getTitle()}}</h4></a>
+                    <p class="mb-0">{{p.getDescription()}}</p>
 
-    <div class="card sb-card" style="margin-bottom: 10px">
-        <div class="card-body">
-            <a href="topic?id=0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. </a>
-            <p class="mb-0">Sed iaculis gravida sapien sed egestas. Nullam eget quam tempus, faucibus mauris non, sagittis nunc. Vivamus pellentesque metus nisi, at consectetur nulla porttitor eu. Vivamus egestas.</p>
-        </div>
-    </div>
-
-    <div class="card sb-card" style="margin-bottom: 10px">
-        <div class="card-body">
-            <a href="topic?id=0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. </a>
-            <p class="mb-0">Sed iaculis gravida sapien sed egestas. Nullam eget quam tempus, faucibus mauris non, sagittis nunc. Vivamus pellentesque metus nisi, at consectetur nulla porttitor eu. Vivamus egestas.</p>
-        </div>
-    </div>
+                    <p class="mt-10 mb-0 text-muted">
+                        {% if p.getPublicStatus() %}
+                            Public,
+                        {% else %}
+                            Private,
+                        {% endif %}
+                        {% if p.getShareHash() == null or p.getShareHash().isEmpty() %}
+                            Not Shared
+                        {% else %}
+                            Shared
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
 {% endblock %}

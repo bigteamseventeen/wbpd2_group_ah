@@ -15,11 +15,15 @@ import com.callumcarmicheal.wframe.database.DatabaseModel;
 import com.callumcarmicheal.wframe.database.Helper;
 import com.callumcarmicheal.wframe.database.Helper.SQLOrderType;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Single Dimension Where Query
  */
 @SuppressWarnings("rawtypes")
 public class SDWhereQuery<T> {
+    final static Logger logger = LogManager.getLogger();
 
     // Model and queries
     DatabaseModel<T> modelClass;
@@ -32,7 +36,7 @@ public class SDWhereQuery<T> {
     // Sql attributes
     private int attr_limit = 0;
     private int attr_offset = 0;
-    private SQLOrderType attr_order_type = SQLOrderType.DESC;
+    private SQLOrderType attr_order_type = SQLOrderType.ASC;
     private String attr_order_column = "";
 
     /**
@@ -116,7 +120,7 @@ public class SDWhereQuery<T> {
         String attributes = "";
 
         if (this.attr_order_column != "") {
-            attributes += "ORDER BY" + attr_order_column;
+            attributes += "ORDER BY " + attr_order_column;
 
             switch(attr_order_type) {
                 case ASC:  attributes += " ASC  "; break;
@@ -146,8 +150,8 @@ public class SDWhereQuery<T> {
         // Generate the SQL statement
         String sql = generateSqlQuery();
 
-        //logger.debug("SQL:    " + sql);
-        //logger.debug("Params: " + this.boundParameters);
+        // logger.debug("SQL:    " + sql);
+        // logger.debug("Params: " + this.boundParameters);
 
         Connection con = modelClass.getConnection();
         Statement stmt = null;
@@ -184,8 +188,11 @@ public class SDWhereQuery<T> {
             T instance = (T)Helper.NewModelInstance(modelClass);
 
             // Error handling
-            if (instance == null)
+            if (instance == null) {
+                queryResults.Length--;
+                logger.error("SDWhereQuery.execute(): Instance == null");
                 continue;
+            }
 
             DatabaseModel<T> dmInstance = (DatabaseModel<T>)instance;
             dmInstance.orm_parseResultSet(resultSet);
@@ -203,8 +210,6 @@ public class SDWhereQuery<T> {
             queryResults.Rows = Helper.ListToGenericArray(rowsArray);
         return queryResults;
     }
-
-    
 
     public enum QueryValueType {
         /** 
@@ -300,7 +305,8 @@ public class SDWhereQuery<T> {
 
         @Override
         public String toString() {
-            return String.format("`%s` %s %s", this.Query.column, this.Query.comp, value);
+            // TODO: Make the backticks (`) optional
+            return String.format("%s %s %s", this.Query.column, this.Query.comp, value);
         }
     }
 }

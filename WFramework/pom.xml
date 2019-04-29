@@ -30,6 +30,14 @@
                 <configuration>
                     <doclint>none</doclint>
                     <jarOutputDirectory>${project.basedir}/../App/src/main/resources/lib</jarOutputDirectory>
+                    <!-- workaround for https://bugs.openjdk.java.net/browse/JDK-8212233 -->
+                    <javaApiLinks>
+                        <property>
+                            <name>foo</name>
+                            <value>bar</value>
+                        </property>
+                    </javaApiLinks>
+                    <source>8</source>
                 </configuration>
                 <executions>
                     <execution>

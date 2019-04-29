@@ -15,11 +15,7 @@
                     </li>
                 {% else %}
                     <li class="nav-item active">
-                        <a class="nav-link" href="/home">My Planners</a>
-                    </li>
-
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/planners">Planners</a>
+                        <a class="nav-link" href="/">My Planners</a>
                     </li>
 
                     {% if _user.isAdmin() %}
@@ -38,8 +34,7 @@
                             {{ _user.getUsername() }}
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownProfile">
-                            <a class="dropdown-item" href="/profile">My Profile</a>
-                            <a class="dropdown-item" href="/planners/shared">Shared Planners</a>
+                            <a class="dropdown-item" href="/shared">Shared Planners</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="/logout">Logout</a>
                         </div>

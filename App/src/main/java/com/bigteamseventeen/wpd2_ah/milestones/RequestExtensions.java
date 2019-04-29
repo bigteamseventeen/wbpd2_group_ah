@@ -18,11 +18,10 @@ public class RequestExtensions implements IHttpRequestExtensions {
     @Override public void      SendMessagePage(HttpRequest request, String title, String message, int httpResponseCode) {
         // Render the message page
         try {
-            new Renderer()
-                .render(request, "_framework/message", httpResponseCode, ImmutableMap.<String, Object>builder()
-                    .put("messageTitle", title)
-                    .put("messageText", message)
-                    .build());
+            new Renderer().render(request, "_framework/message", httpResponseCode, HashBuilder.<String, Object>builder()
+                .put("messageTitle", title)
+                .put("messageText", message)
+                .build());
         } catch (IOException e) { request.throwException(e); }
     }
 
@@ -37,14 +36,13 @@ public class RequestExtensions implements IHttpRequestExtensions {
 			PrintWriter pw = new PrintWriter(sw);
             exception.printStackTrace(pw);
             
-            new Renderer()
-                .render(request, "_framework/message", httpResponseCode, ImmutableMap.<String, Object>builder()
-                    .put("messageTitle", "A error has occurred, Please try again later.")
-                    .put("messageText", publicMessage)
-                    .put("debugMessage", debugMessage)
-                    .put("exception", exception)
-                    .put("stacktrace", sw.toString())
-                    .build()); 
+            new Renderer().render(request, "_framework/message", httpResponseCode, HashBuilder.<String, Object>builder()
+                .put("messageTitle", "A error has occurred, Please try again later.")
+                .put("messageText", publicMessage)
+                .put("debugMessage", debugMessage)
+                .put("exception", exception)
+                .put("stacktrace", sw.toString())
+                .build()); 
         } catch (IOException e) { 
             logger.error("IOException during printing framework message: ", e);
             request.throwExceptionText(publicMessage, debugMessage, exception, httpResponseCode);

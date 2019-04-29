@@ -57,16 +57,16 @@ public class User extends DatabaseModel<User> {
         _addColumn( new CInteger("isAdmin") );
         _addColumn( new CInteger("isBanned") );
 
-        User u = new User(c);
-        return u.CreateTable(true);
+        User model = new User(c);
+        return model.CreateTable(true);
     }
 
     public static SDWhereQuery<User> where(Connection connection, String column, String comparison, Object value) {
-        return User.where(new User(connection), column, comparison, value);
+        return where(new User(connection), column, comparison, value);
     }
 
     public static SDWhereQuery<User> where(Connection connection, String column, String comparison, Object value, QueryValueType qvt) {
-        return User.where(new User(connection), column, comparison, value, qvt);
+        return where(new User(connection), column, comparison, value, qvt);
     }
 
     // -----------------------------------------------------------

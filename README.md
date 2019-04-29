@@ -2,6 +2,8 @@
 
 Web Platform Development 2 (M3I322955-18-B)
 
+This project was developed on github because of this many of the branches are not visible on BitBucket, to see the changes of the project please visit [the git repository](https://github.com/bigteamseventeen/wbpd2_group_ah)
+
 # How to run
 Goto the releases section in github [here](https://github.com/bigteamseventeen/wbpd2_group_ah/releases/tag/1.0)
 

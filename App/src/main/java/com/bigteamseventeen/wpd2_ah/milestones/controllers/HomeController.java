@@ -47,8 +47,8 @@ public class HomeController extends Controller {
             .build());
     }
 
-    @GetRequest("/test")
-    public void test(HttpRequest request) throws IOException {
-        request.throwException( "There was an parsing the request information.", "Failed to load user session information.", new IOException("Index out of range.") );
-    }
+    // @GetRequest("/test")
+    // public void test(HttpRequest request) throws IOException {
+    //     request.throwException( "There was an parsing the request information.", "Failed to load user session information.", new IOException("Index out of range.") );
+    // }
 }

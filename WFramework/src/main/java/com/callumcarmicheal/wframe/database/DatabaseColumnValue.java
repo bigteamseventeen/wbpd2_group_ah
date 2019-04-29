@@ -8,7 +8,7 @@ public class DatabaseColumnValue {
     protected DatabaseModel model;
     protected boolean isNullable = false;
 
-    private Object originalValue = null;
+    protected Object originalValue = null;
     public Object getOriginalValue() {
         return originalValue;
     }

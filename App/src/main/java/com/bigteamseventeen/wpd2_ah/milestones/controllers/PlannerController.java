@@ -29,7 +29,7 @@ public class PlannerController extends Controller {
         
         Map<String,String> query = request.getQuery();
         int plannerId = -1;
-
+        
         // Check if we had any errors        
         if (query.containsKey("id")) {
             try {
@@ -65,8 +65,6 @@ public class PlannerController extends Controller {
 
                 // Load the milestones
                 planner.milestones(con);
-
-                int x = 0;
             }
         } catch (SQLException ex) {
             // Throw the error
@@ -91,6 +89,161 @@ public class PlannerController extends Controller {
             .build());
     }
 
+    /* ========================== */
+    /*   Share planner */
+    /* ========================== */
+
+    @GetRequest("/planner/share")
+    public void viewSharedPlanner(HttpRequest request) throws IOException {
+        // Redirect the user to the respected page
+        User user; // If user == null then a redirect has happened
+        if ((user = getUserOrLogin(request)) == null) return;
+        
+        Map<String,String> query = request.getQuery();
+        String shareHash = null;
+        
+        // Check if we had any errors        
+        if (query.containsKey("code"))
+            shareHash = query.get("code").trim();
+
+        // We failed to get the hash from the query
+        if (shareHash == null) {
+            request.SendMessagePage("Could not find planner", "The planner hash specified does not exist", 400);
+            return;
+        }
+
+        // Try to find the planner
+        Connection con = null;
+        Planner planner = null;
+        try {
+            // Get the db and run the query
+            con = SqliteDBCon.GetConnection();
+
+            // Find planner by id and check if the author is the current user
+            QueryResults<Planner> dbQuery = Planner
+                .where(con, "share", "=", shareHash)
+                .andWhere("author", "=", user.getId())
+                    .setLimit(1)
+                    .execute();
+
+            // Get the first item in the query
+            if (dbQuery.Successful) {
+                planner = dbQuery.first();
+
+                // Load the milestones
+                planner.milestones(con);
+            }
+        } catch (SQLException ex) {
+            // Throw the error
+            request.throwException(ex);
+            return;
+        } finally {
+            // Close the database connection
+            try { if (con != null && con.isClosed()) con.close(); } catch(Exception e) {}
+        }
+
+        // Check if the planner exists
+        if (planner == null) {
+            request.SendMessagePage("Could not find planner", "The planner hash specified does not exist", 400);
+            return;
+        }
+
+        // Render the page
+        new Renderer().setUser(user)
+            .render(request, "planner/view", 200, HashBuilder.<String,Object>builder()
+                .put("edit", false)
+                .put("planner", planner)
+            .build());
+    }
+
+    @GetRequest("/planner/share/get")
+    public void sharePlanner(HttpRequest request) throws IOException {
+        // Redirect the user to the respected page
+        User user; // If user == null then a redirect has happened
+        if ((user = getUserOrLogin(request)) == null) return;
+        
+        Map<String,String> query = request.getQuery();
+        int plannerId = -1;
+        boolean sharePlanner = true;
+        
+        // Check if we had any errors        
+        if (query.containsKey("id")) {
+            try {
+                plannerId = Integer.parseInt(query.get("id").trim());
+            } catch (NumberFormatException nfe) { 
+                plannerId = -1;
+            }
+        }
+
+        if (query.containsKey("unshare")) 
+            sharePlanner = false;
+
+        // We failed to get the planner id from the query
+        if (plannerId == -1) {
+            request.SendMessagePage("Could not find planner", "The planner id specified does not exist", 400);
+            return;
+        }
+
+        // Try to find the planner
+        Connection con = null;
+        Planner planner = null;
+        try {
+            // Get the db and run the query
+            con = SqliteDBCon.GetConnection();
+
+            // Find planner by id and check if the author is the current user
+            QueryResults<Planner> dbQuery = Planner
+                .where(con, "id", "=", plannerId)
+                .andWhere("author", "=", user.getId())
+                    .setLimit(1)
+                    .execute();
+
+            // Get the first item in the query
+            if (dbQuery.Successful) {
+                planner = dbQuery.first();
+
+                if (sharePlanner) {
+                    // Check if we need to generate a new hash
+                    if (planner.getShareHash() == null || planner.getShareHash().isEmpty()) {
+                        planner.generateShareHashCode(con, 5);
+                        planner.save();
+                    } 
+                } else {
+                    planner.setShareHash(null);
+                    planner.save();
+                }
+            }
+        } catch (SQLException | MissingColumnValueException ex) {
+            // Throw the error
+            request.throwException(ex);
+            return;
+        } finally {
+            // Close the database connection
+            try { if (con != null && con.isClosed()) con.close(); } catch(Exception e) {}
+        }
+
+        // Check if the planner exists
+        if (planner == null) {
+            request.SendMessagePage("Could not find planner", "The planner id specified does not exist", 400);
+            return;
+        }
+
+        if (!sharePlanner) {
+            request.Redirect("/planner/view?id=" + plannerId);
+            return;
+        }
+
+        // Render the page
+        new Renderer().setUser(user)
+            .render(request, "planner/share", 200, HashBuilder.<String,Object>builder()
+                .put("title", planner.getTitle())
+                .put("hash",  planner.getShareHash())
+            .build());
+    }
+
+    /* ========================== */
+    /*   New planner */
+    /* ========================== */
 
     @GetRequest("/planner/new")
     public void newPlannerForm(HttpRequest request) throws IOException {
@@ -161,6 +314,9 @@ public class PlannerController extends Controller {
         }
     }
 
+    /* ========================== */
+    /*   Edit planner */
+    /* ========================== */
 
     @GetRequest("/planner/edit")
     public void editPlannerForm(HttpRequest request) throws IOException {
@@ -327,6 +483,9 @@ public class PlannerController extends Controller {
         }
     }
 
+    /* ========================== */
+    /*   Add milestone */
+    /* ========================== */
 
     @GetRequest("/planner/milestones/add")
     public void addMilestoneForm(HttpRequest request) throws IOException {
@@ -486,7 +645,10 @@ public class PlannerController extends Controller {
 
         request.Redirect("/planner/view?id=" + plannerId);        
     }
-
+   
+    /* ========================== */
+    /*   Edit milestone */
+    /* ========================== */
 
     @GetRequest("/planner/milestones/edit")
     public void editMilestoneForm(HttpRequest request) throws IOException {

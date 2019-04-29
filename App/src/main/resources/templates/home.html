@@ -2,7 +2,7 @@
 
 {% block content %}
     <h4 style="margin-bottom:20px;">
-        Please Select a Planner
+        {{title}}
         <div class="float-right">
             <a href="/planner/new">
                 <button class="btn btn-outline-primary">
@@ -21,6 +21,19 @@
                 <div class="card-body">
                     <a href="/planner/view?id={{p.getId()}}"><h4>{{p.getTitle()}}</h4></a>
                     <p class="mb-0">{{p.getDescription()}}</p>
+
+                    <p class="mt-10 mb-0 text-muted">
+                        {% if p.getPublicStatus() %}
+                            Public,
+                        {% else %}
+                            Private,
+                        {% endif %}
+                        {% if p.getShareHash() == null or p.getShareHash().isEmpty() %}
+                            Not Shared
+                        {% else %}
+                            Shared
+                        {% endif %}
+                    </p>
                 </div>
             </div>
         {% endfor %}

@@ -211,8 +211,6 @@ public class SDWhereQuery<T> {
         return queryResults;
     }
 
-    
-
     public enum QueryValueType {
         /** 
          * Information is attached via a prepared statement
@@ -307,7 +305,8 @@ public class SDWhereQuery<T> {
 
         @Override
         public String toString() {
-            return String.format("`%s` %s %s", this.Query.column, this.Query.comp, value);
+            // TODO: Make the backticks (`) optional
+            return String.format("%s %s %s", this.Query.column, this.Query.comp, value);
         }
     }
 }

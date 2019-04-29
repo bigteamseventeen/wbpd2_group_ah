@@ -1,0 +1,21 @@
+{% extends "_site/site.html" %}
+
+{% block content %}
+    <h4 style="margin-bottom:20px;">
+        Search results ({{ SearchResults.size() }} found)
+    </h4>
+    <p style="color:#555"><i>{{ SearchCriteria }}</i></p>
+
+    {% if SearchResults.size() < 1 %}
+        <p class="text-muted">Could not find any planners, click the New button above to create one.</p>
+    {% else %}
+        {% for _t in SearchResults %}
+            <div class="card sb-card" style="margin-bottom: 10px">
+                <div class="card-body">
+                    <a href="/planner/view?id={{_t.Planner.getId()}}"><h4>{{ _t.HtmlName | raw }}</h4></a>
+                    <p class="mb-0">{{ _t.HtmlDescription | raw }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

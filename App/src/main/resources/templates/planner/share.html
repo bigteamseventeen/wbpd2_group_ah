@@ -1,0 +1,22 @@
+{% extends "../_site/site.html" %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Share code for {{title}}</h4>
+            <p>Right click the link below and copy address to share.</p>
+            <a id="shareUrl" href="../share?code={{hash}}">Right click me and copy address.</a>
+            <pre id="share">Loading share link...</pre>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block scripts %}
+    {{parent()}}
+    <script>
+        $(function() {
+            $('#share').html($('#shareUrl')[0].href);
+        });
+    </script>
+{% endblock %}

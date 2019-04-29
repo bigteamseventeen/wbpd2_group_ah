@@ -5,16 +5,46 @@
         <h4 style="margin-bottom:20px;">
             Modify Planners
             <div class="float-right">
-                <p>
-                    {% if planner.getPublicState() %}{% endif %}
-                    
-                </p>
+                <span class="small">
+                    {% if planner.getPublicStatus() %}
+                        Public,
+                    {% else %}
+                        Private,
+                    {% endif %}
+                    {% if planner.getShareHash() == null or planner.getShareHash().isEmpty() %}
+                        Not Shared
+                    {% else %}
+                        Shared
+                    {% endif %}
+                </span>
                 <a href="/planner/edit?id={{planner.getId()}}">
                     <button class="btn btn-outline-primary">
                         <i class="far fa-edit"></i>
+
                         Edit
                     </button>
                 </a>
+                
+                {% if planner.getShareHash() == null or planner.getShareHash().isEmpty() %}
+                     <a href="/planner/share/get?id={{planner.getId()}}">
+                        <button class="btn btn-outline-primary">
+                            <i class="fas fa-share"></i>
+                            Share
+                        </button>
+                    </a>
+                {% else %}
+                    <a href="/planner/share/get?id={{planner.getId()}}">
+                        <button class="btn btn-outline-primary">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </a>
+                    <a href="/planner/share/get?id={{planner.getId()}}&unshare=true">
+                        <button class="btn btn-outline-primary">
+                            <i class="fas fa-times-circle"></i>
+                            Unshare
+                        </button>
+                    </a>
+                {% endif %}
             </div>
         </h4>
     {% endif %}
@@ -78,35 +108,56 @@
                             </td>
                         </tr>
                     {% endfor %}
-{# 
-                    <tr class="table-warning">
-                        <td></td>
-                        <td scope="row"><a href="#">Documentation</a></td>
-                        <td>3rd Apr</td>
-                        <td>4th Apr</td>
-                        <td> 
-                            <a href="#">
-                                <button class="btn btn-sm btn-outline-primary"> <i class="far fa-edit"></i></button>
-                            </a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td scope="row">Implementation</td>
-                        <td>12th Apr</td>
-                        <td>12th Apr</td>
-                        <td> 
-                            <a href="#">
-                                <button class="btn btn-sm btn-outline-primary"> <i class="far fa-edit"></i></button>
-                            </a>
-                        </td>
-                    </tr> #}
                 </tbody>
         </table>
     </div>
 
 
     <h4 style="margin-bottom:30px;">Incomplete Milestones</h4>
+
+    <p class="text-muted">Click on the milestone name to see the description</p>
+    <p class="text-muted"> 
+        Color Key: 
+        <em class="text-warning">Completed && Overdue</em>, 
+        <em class="text-success">Completed</em>,
+        <em class="text-danger">Overdue</em>,
+        <em class="text-secondary">Incomplete</em>.
+    </p>
+    <div class="table-responsive" style="max-width:100%; padding-bottom: 40px;">
+        <table class="table table-striped table-bordered table-inverse table-hover table-responsive" style="width:100%">
+            <thead class="thead-default">
+                <tr>
+                    <th width="10">#</th>
+                    <th>Name</th>
+                    <th>Due Date</th>
+                    <th>Completion Date</th>
+                    <th width="50"></th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for m in planner.milestones() %}
+                        {% if m.isIncomplete() %}
+                            <tr> 
+                                <td class="{{m.getMilestoneStatusCSSClass()}}"></td>
+                                <td scope="row" style="cursor: pointer;" data-open-description-modal="true" data-description="{{m.getDescription()}}">
+                                    {{m.getName()}}
+                                </td>
+                                <td>{{m.getDueDate()}}</td>
+                                <td>{{m.getCompletedOn()}}</td>
+                                <td> 
+                                    {% if edit == true %}
+                                        <a href="/planner/milestones/edit?id={{m.getId()}}">
+                                            <button class="btn btn-sm btn-outline-primary"> <i class="far fa-edit"></i></button>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+        </table>
+    </div>
+
     <style> .table-responsive { display: table; } </style>
 {% endblock %}
 

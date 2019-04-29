@@ -96,6 +96,25 @@ public class Planner extends DatabaseModel<Planner> {
         }        
     }
 
+    public static Planner[] AllSharedFor(Connection con, User user) {
+        return AllSharedFor(con, user.getId());
+    }
+
+    public static Planner[] AllSharedFor(Connection con, int userId) {
+        try {
+            // Query the database
+            QueryResults<Planner> query = 
+                where(con, "author", "=", userId, QueryValueType.Bound)
+                    .andWhere("share", " is not ", null)
+                    .execute();
+
+            return query.Rows;
+        } catch (SQLException e) {
+            logger.error("Failed to find milestone by id, SQL Exception", e);
+            return new Planner[0];
+        }        
+    }
+
     public static Planner Get(Connection connection, int id) {
         try {
             // Query the database
@@ -108,6 +127,24 @@ public class Planner extends DatabaseModel<Planner> {
                 return query.Rows[0];
         } catch (SQLException e) {
             logger.error("Failed to find milestone by id, SQL Exception", e);
+            return null;
+        } 
+
+        return null;
+    }
+
+    public static Planner GetByShareCode(Connection connection, String shareCode) {
+        try {
+            // Query the database
+            QueryResults<Planner> query = 
+                where(connection, "share", "=", shareCode, QueryValueType.Bound)
+                    .setLimit(1)
+                    .execute();
+
+            if (query.Successful)
+                return query.Rows[0];
+        } catch (SQLException e) {
+            logger.error("Failed to find milestone by sharecode, SQL Exception", e);
             return null;
         } 
 
@@ -146,6 +183,39 @@ public class Planner extends DatabaseModel<Planner> {
             logger.error("Failed to load milestones from database.", ex);
             return new Milestone[0];
         }
+    }
+
+    /**
+     * Generate a random share hash code
+     * 
+     * @param con
+     * @param tries Amount of times to attempt to generate a hash
+     * @return
+     */
+    public boolean generateShareHashCode(Connection con, int tries) {
+        int x = 0;
+        while (x < tries) {
+            String randString = generateRandomString(25);
+
+            // Check if the sharecode does not exists
+            if (GetByShareCode(con, randString) == null) {
+                this.setShareHash(randString);
+                return true;
+            }
+
+            x++;
+        }
+
+        return false;
+    }
+
+    private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    public static String generateRandomString(int count) {
+        StringBuilder builder = new StringBuilder();
+        while (count-- != 0) {
+            int character = (int)(Math.random()*ALPHA_NUMERIC_STRING.length());
+            builder.append(ALPHA_NUMERIC_STRING.charAt(character));
+        } return builder.toString();
     }
 
     // -----------------------------------------------------------
@@ -199,6 +269,6 @@ public class Planner extends DatabaseModel<Planner> {
     }
     
     public boolean getPublicStatus() {
-        return (boolean) values.get("public").Value;
+        return (int) values.get("public").Value == 1;
     }
 }

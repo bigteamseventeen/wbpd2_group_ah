@@ -9,7 +9,7 @@
     "java.dependency.packagePresentation": "flat",
     "java.configuration.updateBuildConfiguration": "automatic",
 
-    "workbench.colorTheme": "Activate UMBRA protocol",
+//    "workbench.colorTheme": "Activate UMBRA protocol",
     "discord.workspaceElapsedTime": true,
 
     "files.associations": {

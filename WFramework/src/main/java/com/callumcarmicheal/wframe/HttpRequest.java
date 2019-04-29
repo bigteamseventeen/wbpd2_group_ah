@@ -49,13 +49,14 @@ public class HttpRequest {
 				sessionState = sessions.get(sessionId);
 				setSessionHeader(sessionState);
 
+				// Clear old values and mark new values for deletion
 				Session sesh = this.session();
 				sesh.clearFlash();
 				sesh.invalidateFlash();
-			} else { /**/ 
+			} else {
 				// logger.trace("HttpRequest: §c Session does not exist!");				
 			}
-		} else { /**/
+		} else {
 			// logger.trace("HttpRequest: §c Session cookie not found!");				
 		}
 	}
@@ -276,7 +277,7 @@ public class HttpRequest {
 		} else {
 			try {
 				Send(httpResponseCode,
-						"<h1>There was an error</h1><p>Im sorry there was a error loading resources.</p>");
+					"<h1>There was an error</h1><p>Im sorry there was a error loading resources.</p>");
 			} catch (Exception e) { }
 		}
 	}

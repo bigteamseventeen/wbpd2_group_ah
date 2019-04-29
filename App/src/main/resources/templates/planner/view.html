@@ -3,7 +3,7 @@
 {% block content %}
     {% if edit == true %}
         <h4 style="margin-bottom:20px;">
-            Modify Planner
+            Modify Plannerssss
             <div class="float-right">
                 <a href="/planner/edit?id={{planner.getId()}}">
                     <button class="btn btn-outline-primary">
@@ -38,11 +38,18 @@
     </h4>
 
     <p class="text-muted">Click on the milestone name to see the description</p>
+    <p class="text-muted"> 
+        Color Key: 
+        <em class="text-warning">Completed && Overdue</em>, 
+        <em class="text-success">Completed</em>,
+        <em class="text-danger">Overdue</em>,
+        <em class="text-secondary">Incomplete</em>.
+    </p>
     <div class="table-responsive" style="max-width:100%">
         <table class="table table-striped table-bordered table-inverse table-hover table-responsive" style="width:100%">
             <thead class="thead-default">
                 <tr>
-                    <th>Status</th>
+                    <th width="10">#</th>
                     <th>Name</th>
                     <th>Due Date</th>
                     <th>Completion Date</th>
@@ -52,17 +59,12 @@
                 <tbody>
                     {% for m in planner.milestones() %}
                         <tr> 
-                            <td class="
-                                    {% if m.isCompleted() %}
-                                        table-success
-                                    {% elseif m.isOverdue() %}
-                                        table-warning
-                                    {% endif %}">
-                                Status
+                            <td class="{{m.getMilestoneStatusCSSClass()}}"></td>
+                            <td scope="row" style="cursor: pointer;" data-open-description-modal="true" data-description="{{m.getDescription()}}">
+                                {{m.getName()}}
                             </td>
-                            <td scope="row" data-description="{{m.getDescription()}}"><a href="#">{{m.getName()}}</d></td>
                             <td>{{m.getDueDate()}}</td>
-                            <td>{{m.getCompetedOn()}}</td>
+                            <td>{{m.getCompletedOn()}}</td>
                             <td> 
                                 {% if edit == true %}
                                     <a href="/planner/milestones/edit?id={{m.getId()}}">
@@ -72,7 +74,7 @@
                             </td>
                         </tr>
                     {% endfor %}
-
+{# 
                     <tr class="table-warning">
                         <td></td>
                         <td scope="row"><a href="#">Documentation</a></td>
@@ -94,7 +96,7 @@
                                 <button class="btn btn-sm btn-outline-primary"> <i class="far fa-edit"></i></button>
                             </a>
                         </td>
-                    </tr>
+                    </tr> #}
                 </tbody>
         </table>
     </div>
@@ -102,4 +104,54 @@
 
     <h4 style="margin-bottom:30px;">Incomplete Milestones</h4>
     <style> .table-responsive { display: table; } </style>
+{% endblock %}
+
+{% block modal %}
+    {{parent()}}
+
+    <!-- Description -->
+    <div class="modal fade" id="descriptionModal">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+            <div class="modal-content">
+            
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title" modal-id="title"></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            
+            <!-- Modal body -->
+            <div class="modal-body" modal-id="description"></div>
+            
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+            
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{parent()}}
+
+    <script>
+        $(function() {
+            //
+            // This will just show the modal when clicking on the 
+            // milestones name
+            //
+
+            let $modal = $("#descriptionModal");
+            let $title = $modal.find("[modal-id='title']");
+            let $description = $modal.find("[modal-id='description']");
+
+            $("td[data-open-description-modal]").on("click", function(){
+                $title.html( $(this).html() );
+                $description.html( $(this).attr("data-description") );
+                $modal.modal("show");
+            });
+        });
+    </script>
 {% endblock %}

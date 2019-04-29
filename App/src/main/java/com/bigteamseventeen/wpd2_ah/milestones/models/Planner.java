@@ -53,6 +53,8 @@ public class Planner extends DatabaseModel<Planner> {
         _addColumn( new CVarchar("title") );
         _addColumn( new CVarchar("description", 250) );
         _addColumn( new CVarchar("share").setNullable(true).setUnique(true) );
+        _addColumn( new CInteger("public") );
+
 
         Planner model = new Planner(c);
         return model.CreateTable(true);
@@ -129,7 +131,7 @@ public class Planner extends DatabaseModel<Planner> {
             QueryResults<Milestone> query = 
                 Milestone.where(connection, "planner", "=", this.getId())
                     .setOrderBy("due")
-                    .setOrderByType(SQLOrderType.ASC)
+                    .setOrderByType(SQLOrderType.DESC)
                     .execute();
 
             // Get the milestones
@@ -190,5 +192,13 @@ public class Planner extends DatabaseModel<Planner> {
     
     public String getShareHash() {
         return (String) values.get("share").Value;
+    }
+
+    public Planner setPublicStatus(boolean pub) {
+        values.get("public").Value = pub ? 1 : 0; return this;
+    }
+    
+    public boolean getPublicStatus() {
+        return (boolean) values.get("public").Value;
     }
 }

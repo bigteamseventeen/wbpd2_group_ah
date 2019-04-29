@@ -459,7 +459,7 @@ public class PlannerController extends Controller {
                     .setDueDate(post.get("due").trim());
 
                 if (post.containsKey("completion"))
-                    ms.setCompetedOn(post.get("completion").trim());
+                    ms.setCompletedOn(post.get("completion").trim());
                 
                 // Save changes
                 ms.save();
@@ -532,8 +532,15 @@ public class PlannerController extends Controller {
                     .execute();
 
             // Get the first item in the query
-            if (dbQuery.Successful) 
+            if (dbQuery.Successful) {
                 milestone = dbQuery.first();
+
+                // Check if the user cannot edit this milestone 
+                if (!milestone.userCanEdit(con, user)) {
+                    request.SendMessagePage("You cannot edit this milestone", "You dont own this planner.", 400);
+                    return;
+                }
+            }
         } catch (SQLException ex) {
             // Throw the error
             request.throwException(ex);
@@ -546,12 +553,6 @@ public class PlannerController extends Controller {
         // Check if the milestone exists
         if (milestone == null) {
             request.SendMessagePage("Could not find planner", "The planner id specified does not exist", 400);
-            return;
-        }
-
-        // Check if the user cannot edit this milestone 
-        if (!milestone.userCanEdit(user)) {
-            request.SendMessagePage("You cannot edit this milestone", "You dont own this planner.", 400);
             return;
         }
 
@@ -616,20 +617,23 @@ public class PlannerController extends Controller {
                 ms = dbQuery.first();
 
                 // Check if the user cannot edit this milestone 
-                if (!ms.userCanEdit(user)) {
+                if (!ms.userCanEdit(con, user)) {
                     request.SendMessagePage("You cannot edit this milestone", "You dont own this planner.", 400);
                     return;
                 }
                 
+                // Update the fields
                 ms.setName(post.get("name").trim());
                 ms.setDescription(post.get("description").trim());
                 ms.setDueDate(post.get("due").trim());
-                if (post.containsKey("completion"))
-                    ms.setCompetedOn(post.get("completion").trim());
 
+                if (post.containsKey("completion"))
+                    ms.setCompletedOn(post.get("completion").trim());
+
+                // Save changes
                 ms.save();
                 
-                request.Redirect("/planner/view?id=" + milestoneId);   
+                request.Redirect("/planner/view?id=" + ms.getPlannerId());   
                 return;     
             }
         } catch (SQLException | MissingColumnValueException ex) {
@@ -647,6 +651,6 @@ public class PlannerController extends Controller {
             return;
         }
 
-        request.Redirect("/planner/view?id=" + milestoneId);
+        request.Redirect("/planner/view?id=" + ms.getPlannerId());
     }
 }

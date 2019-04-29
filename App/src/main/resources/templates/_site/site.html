@@ -20,9 +20,11 @@
     {% endblock %}
 </head>
 <body class="bg-light">
+    <!-- Modals -->
+    {% block modal %}{% endblock %}
 
     <!-- Navigation -->
-    {% block navbar %}{% include "navbar.html" %}{% endblock %}
+    {%block navbar %}{% include "navbar.html" %}{% endblock %}
 
     <!-- Page Content -->
     <div style="margin-bottom: 50px;">

@@ -62,8 +62,8 @@ public class Milestone extends DatabaseModel<Milestone> {
         _addColumn(new CInteger("planner"));
         _addColumn(new CVarchar("name", 250));
         _addColumn(new CVarchar("description", 500));
-        _addColumn(new CDate("due"));           // TODO: Change to CDateTime
-        _addColumn(new CDate("completed"));     // TODO: Change to CDateTime
+        _addColumn(new CDateTime("due"));
+        _addColumn(new CDateTime("completed"));
 
         Milestone model = new Milestone(c);
         return model.CreateTable(true);

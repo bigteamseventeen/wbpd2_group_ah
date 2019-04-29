@@ -146,8 +146,9 @@ public class PlannerController extends Controller {
                 .setAuthorId(user.getId())
                 .setTitle(post.get("title"))
                 .setDescription(post.get("description"))
+                .setPublicStatus(post.containsKey("public"))
                 .save();
-            
+
             // Redirect home
             request.Redirect("/");
         } catch (SQLException | MissingColumnValueException ex) {
@@ -312,6 +313,7 @@ public class PlannerController extends Controller {
             planner.setConnection(con);
             planner.setTitle(post.get("title").trim());
             planner.setDescription(post.get("description").trim());
+            planner.setPublicStatus(post.containsKey("public"));
             planner.save();
 
             request.Redirect("/planner/view?id=" + plannerId);

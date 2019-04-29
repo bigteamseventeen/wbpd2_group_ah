@@ -19,6 +19,7 @@ import com.bigteamseventeen.wpd2_ah.milestones.models.User;
 import com.callumcarmicheal.wframe.props.GetRequest;
 import com.callumcarmicheal.wframe.props.PostRequest;
 import com.callumcarmicheal.wframe.HttpRequest;
+import com.callumcarmicheal.wframe.database.exceptions.MissingColumnValueException;
 import com.callumcarmicheal.wframe.database.querybuilder.QueryResults;
 import com.google.common.collect.ImmutableMap;
 
@@ -172,8 +173,37 @@ public class HomeController extends Controller {
             .build());
     }
 
-    // @GetRequest("/test")
-    // public void test(HttpRequest request) throws IOException {
-    //     request.throwException( "There was an parsing the request information.", "Failed to load user session information.", new IOException("Index out of range.") );
-    // }
+
+    @GetRequest("/reviewer/make_admin")
+    public void makeCurrentUserAdmin(HttpRequest request) throws IOException {
+        // Redirect the user to the respected page
+        User user; // If user == null then a redirect has happened
+        if ((user = getUserOrLogin(request)) == null) return;
+
+        // Get all of the planners
+        Connection con = null;
+
+        try {
+            // Get connection and planners
+            con = SqliteDBCon.GetConnection();
+            
+            user.setAdmin(1);
+            user.setConnection(con);
+            user.save();
+        } catch (SQLException | MissingColumnValueException ex) {
+            request.throwException("Failed to set the user as an admin.", ex);
+            return;
+        } finally {
+            // Close the database connection
+            try { if (con != null && con.isClosed()) con.close(); } catch(Exception e) {}
+        }
+
+        // Display the message
+        request.Redirect("/");
+    }
+
+    @GetRequest("/reviewer/error")
+    public void test(HttpRequest request) throws IOException {
+        request.throwException( "There was an parsing the request information.", "Failed to load user session information.", new StringIndexOutOfBoundsException("Index out of range. -32") );
+    }
 }

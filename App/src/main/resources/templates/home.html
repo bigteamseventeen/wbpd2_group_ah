@@ -38,4 +38,22 @@
             </div>
         {% endfor %}
     {% endif %}
+
+
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">For reviewers</h4>
+            <p class="card-text">There are some additional features in the application that can't be accessed through normal means and are exceptional conditions.</p>
+
+            <p> 
+                For example the admin section to ban and set other users as an admin. To gain access to this you must set the user account to admin inside the database or through another administrator
+                After doing this you should see the admin section in the navbar.
+            </p>
+            <p> <a href="/reviewer/make_admin">Click this link to promote the current account to administrator.</a></p>
+            <p> </p>
+
+            <p> We have also implemented a custom exception page that will show up when there is an exception during the web request. To manually throw this use this link:  </p>
+            <p> <a href="/reviewer/error">Click this link to throw a IndexOutOfRange exception.</a></p>
+        </div>
+    </div>
 {% endblock %}
